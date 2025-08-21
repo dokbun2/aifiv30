@@ -3989,7 +3989,6 @@ let aiSectionsHtml = '';
 											<div class="ai-image-prompt-full-text">${translatedPrompt}</div>
 										</div>
 									` : ''}
-									${parameters ? `<div style="margin-top: 5px; font-size: 0.9em; color: #666;">Parameters: ${parameters}</div>` : ''}
 									<button class="copy-btn" onclick="copyImagePrompt('${escapeHtmlAttribute(mainPrompt)}', '${ai.name}', '${imageId}')">
 										프롬프트 복사
 									</button>

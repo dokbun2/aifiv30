@@ -231,15 +231,57 @@
 }
 
 .ai-edit-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+/* AI 수정 버튼 아이콘 제거됨 */
+
+.ai-edit-btn::after {
+    content: "" !important;
+    position: absolute !important;
+    top: -50% !important;
+    left: -50% !important;
+    width: 200% !important;
+    height: 200% !important;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%) !important;
+    transform: rotate(45deg) !important;
+    transition: all 0.6s !important;
+    opacity: 0 !important;
 }
 
 .ai-edit-btn:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+    transform: scale(1.02) !important;
+    box-shadow: 0 2px 8px rgba(118, 75, 162, 0.3) !important;
+    border-color: rgba(118, 75, 162, 0.5) !important;
+}
+
+.ai-edit-btn:hover::after {
+    animation: shine 0.6s ease-out !important;
+    opacity: 1 !important;
+}
+
+@keyframes shine {
+    0% { transform: rotate(45deg) translateX(-100%); }
+    100% { transform: rotate(45deg) translateX(100%); }
+}
+
+.ai-edit-btn:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: 0 2px 8px rgba(118, 75, 162, 0.3) !important;
 }
 
 /* Image Section Styling */
@@ -403,32 +445,111 @@
 }
 
 .ai-image-prompt-details {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .prompt-text-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
     display: block;
 }
 
 .ai-image-prompt-full-text {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 12px;
-    border-radius: 6px;
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 14px 16px;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.85);
     font-size: 13px;
-    line-height: 1.6;
-    font-family: 'SF Mono', 'Monaco', monospace;
-    max-height: 150px;
+    line-height: 1.7;
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    max-height: 180px;
     overflow-y: auto;
+    transition: all 0.2s ease;
+}
+
+.ai-image-prompt-full-text:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Prompt sections styling */
+.prompt-original,
+.prompt-translated {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.prompt-original {
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.prompt-translated {
+    padding-top: 5px;
+}
+
+/* Button group styling */
+.ai-image-prompt-details .copy-btn,
+.ai-image-prompt-details .edit-btn,
+.ai-image-prompt-details .ai-edit-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-image-prompt-details .copy-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ai-image-prompt-details .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.ai-image-prompt-details .edit-btn {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+}
+
+.ai-image-prompt-details .edit-btn:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.ai-image-prompt-details .ai-edit-btn {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+}
+
+.ai-image-prompt-details .ai-edit-btn:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.3));
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 /* Image Slot Card */

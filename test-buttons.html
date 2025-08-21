@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>버튼 테스트</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0051D5;
+        }
+        .output {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>미디어 갤러리 버튼 테스트</h1>
+    
+    <button onclick="testLoadAllMedia()">loadAllMedia 테스트</button>
+    <button onclick="checkLocalStorage()">localStorage 확인</button>
+    <button onclick="checkErrors()">콘솔 에러 확인</button>
+    <button onclick="fixMediaGallery()">미디어 갤러리 수정</button>
+    
+    <div class="output" id="output"></div>
+    
+    <script>
+        function log(msg) {
+            const output = document.getElementById('output');
+            output.innerHTML += msg + '\n';
+            console.log(msg);
+        }
+        
+        function testLoadAllMedia() {
+            log('=== loadAllMedia 테스트 ===');
+            
+            // Check if function exists
+            if (window.opener && window.opener.loadAllMedia) {
+                log('✅ loadAllMedia 함수가 존재합니다');
+                try {
+                    window.opener.loadAllMedia();
+                    log('✅ loadAllMedia 실행 성공');
+                } catch (e) {
+                    log('❌ loadAllMedia 실행 오류: ' + e.message);
+                }
+            } else {
+                log('❌ loadAllMedia 함수를 찾을 수 없습니다');
+                log('미디어 갤러리 페이지가 열려있는지 확인하세요');
+            }
+        }
+        
+        function checkLocalStorage() {
+            log('=== localStorage 확인 ===');
+            const keys = Object.keys(localStorage);
+            
+            const breakdownKeys = keys.filter(k => k.startsWith('breakdownData_'));
+            log(`breakdownData_ 키: ${breakdownKeys.length}개`);
+            breakdownKeys.forEach(k => {
+                const size = (localStorage.getItem(k).length / 1024).toFixed(2);
+                log(`  - ${k} (${size} KB)`);
+            });
+            
+            if (localStorage.getItem('storyboardData')) {
+                log('✅ storyboardData 존재');
+            } else {
+                log('❌ storyboardData 없음');
+            }
+            
+            if (localStorage.getItem('conceptArtManagerData_v1.2')) {
+                log('✅ conceptArtManagerData_v1.2 존재');
+            }
+        }
+        
+        function checkErrors() {
+            log('=== 에러 확인 ===');
+            log('콘솔을 확인하세요 (F12 -> Console)');
+            
+            // Test basic functions
+            try {
+                const test = JSON.parse('{"test": true}');
+                log('✅ JSON.parse 정상');
+            } catch (e) {
+                log('❌ JSON.parse 오류');
+            }
+            
+            try {
+                const arr = [1,2,3];
+                arr.forEach(x => x);
+                log('✅ forEach 정상');
+            } catch (e) {
+                log('❌ forEach 오류');
+            }
+        }
+        
+        function fixMediaGallery() {
+            log('=== 미디어 갤러리 수정 시도 ===');
+            
+            // Create a working loadAllMedia function
+            const fixedCode = `
+                window.loadAllMedia = function() {
+                    console.log('Fixed loadAllMedia running');
+                    
+                    // Load storyboard
+                    const breakdownKeys = Object.keys(localStorage).filter(k => k.startsWith('breakdownData_'));
+                    console.log('Found keys:', breakdownKeys);
+                    
+                    // Simple test
+                    const gallery = document.getElementById('storyboard-gallery');
+                    if (gallery) {
+                        gallery.innerHTML = '<div style="padding: 20px;">테스트 중...</div>';
+                    }
+                };
+            `;
+            
+            try {
+                eval(fixedCode);
+                log('✅ 수정 코드 적용됨');
+                log('이제 loadAllMedia를 다시 테스트해보세요');
+            } catch (e) {
+                log('❌ 수정 실패: ' + e.message);
+            }
+        }
+        
+        // Auto-run checks
+        window.onload = () => {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>

@@ -5,17 +5,35 @@ window.exportJSON = function() {
         return;
     }
     
-    const dataStr = JSON.stringify(currentData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = currentData.project_info?.name || 'storyboard_data.json';
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
-    showMessage('JSON 파일이 다운로드되었습니다', 'success');
+    try {
+        const dataStr = JSON.stringify(currentData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const exportFileDefaultName = currentData.project_info?.name || 'storyboard_data.json';
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', url);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.style.display = 'none';
+        document.body.appendChild(linkElement);
+        
+        // 다운로드 완료 감지를 위한 이벤트 리스너
+        linkElement.addEventListener('click', function() {
+            // 약간의 지연 후 메시지 표시 (브라우저가 다운로드를 시작할 시간을 줌)
+            setTimeout(() => {
+                showMessage('JSON 파일이 다운로드되었습니다', 'success');
+                // Clean up
+                URL.revokeObjectURL(url);
+                document.body.removeChild(linkElement);
+            }, 100);
+        });
+        
+        linkElement.click();
+    } catch (error) {
+        console.error('Export error:', error);
+        showMessage('내보내기 중 오류가 발생했습니다', 'error');
+    }
 };
 
 window.clearAllData = function() {
