@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIFI 영상 프레임워크 스토리보드 - Dark Theme</title>
+    <title>영상 프레임워크 스토리보드</title>
     
     <!-- Content Security Policy for Google Drive iframe -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src 'self' https://drive.google.com https://*.googleusercontent.com https://docs.google.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:;">
@@ -38,12 +38,10 @@
     <!-- 파비콘 -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     
-    <!-- 스토리보드 전용 스타일 -->
-    <link rel="stylesheet" href="css/main.css">
-    
-    <!-- Apple Developer Style (높은 우선순위) -->
+    <!-- CSS 파일 링크 -->
+    <link rel="stylesheet" href="../assets/css/core.css">
+    <link rel="stylesheet" href="../concept-art-styles-unified.css">
     <link rel="stylesheet" href="../apple-developer-style.css">
-    <link rel="stylesheet" href="css/apple-style.css">
     
     <!-- 인라인 스타일로 강제 적용 -->
     <style>
@@ -769,22 +767,32 @@
         }
     </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="apple-nav">
-        <div class="apple-nav-content">
-            <a href="../index.html#features" class="nav-brand">🎬 Film Storyboard</a>
-            <ul class="nav-menu">
-                <li><a href="../index.html#features" class="nav-link">MAKE FILM</a></li>
-                <li><a href="../concept-art/index.html" class="nav-link">컨셉아트</a></li>
-                <li><a href="../media-gallery-apple.html" class="nav-link">미디어 갤러리</a></li>
-            </ul>
+<body class="dark-theme">
+    <!-- Gradient Mesh Background -->
+    <div class="gradient-mesh-bg"></div>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="../index.html" class="home-btn">🏠 홈</a>
+                <h2 class="header-title">영상 프레임워크 스토리보드</h2>
+            </div>
+            <div class="header-right">
+                <div class="header-buttons">
+                    <a href="../concept-art/index.html" class="header-btn">컨셉아트 보기</a>
+                    <a href="../media-gallery-apple.html" class="header-btn" style="background: #dc2626; color: white; border: none;">미디어 갤러리</a>
+                    <button id="header-import-json-btn" class="header-btn header-btn-primary" onclick="document.getElementById('file-input').click()">JSON 가져오기</button>
+                    <button id="header-export-json-btn" class="header-btn header-btn-primary" onclick="if(window.exportJSON) window.exportJSON(); else console.error('exportJSON not found');">JSON 내보내기 ▼</button>
+                    <button id="header-reset-btn" class="header-btn" onclick="if(window.resetToDefaults) window.resetToDefaults(); else console.error('resetToDefaults not found');">초기 데이터 로드</button>
+                    <button id="header-clear-btn" class="header-btn header-btn-danger" onclick="if(confirm('모든 데이터를 삭제하시겠습니까?')) { if(window.clearAllData) window.clearAllData(); else console.error('clearAllData not found'); }">데이터 초기화</button>
+                </div>
+            </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="main-layout">
-        <nav class="navigation">
-            <div class="nav-header">
+    <div class="container">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="nav-header" style="padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 20px;">
                 <div class="project-header">
                     <h3 id="nav-project-title">프로젝트 로딩 중...</h3>
                     <small id="nav-project-description" style="color: rgba(255,255,255,0.6);">프로젝트 설명이 여기에 표시됩니다</small>
@@ -805,10 +813,10 @@
                         <div style="font-size: 0.9rem; margin-top: 10px;">JSON 가져오기를 사용해 데이터를 로드해주세요</div>
                     </div>
                 </div>
+                </div>
             </div>
-        </nav>
 
-        <main class="main-content">
+            <div class="content-area">
             <div class="content-wrapper">
                 <div class="content-header">
                     <div>
@@ -826,7 +834,8 @@
                     </div>
                 </div>
             </div>
-        </main>
+            </div>
+        </div>
     </div>
 
     <div id="message-container" class="message-container"></div>
