@@ -107,6 +107,12 @@ body {
   align-items: center;
   gap: 34px;
   list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li {
+  list-style: none;
 }
 
 .nav-link {
@@ -121,14 +127,17 @@ body {
   border-radius: 8px;
   letter-spacing: 0.3px;
   background: transparent;
+  cursor: pointer;
+  display: inline-block;
 }
 
 .nav-link:hover {
-  opacity: 1;
-  color: rgba(255, 255, 255, 1);
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  opacity: 1 !important;
+  color: rgba(255, 255, 255, 1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-1px) !important;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1) !important;
 }
 
 .nav-link::before {
@@ -147,7 +156,7 @@ body {
 }
 
 .nav-link:hover::before {
-  opacity: 0.3;
+  opacity: 0.5 !important;
 }
 
 .nav-link::after {

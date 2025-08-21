@@ -2933,9 +2933,14 @@ function createTestData() {
        const sequence = currentData.breakdown_data.sequences.find(s => s.id === sequenceId);
        if (!sequence) return;
        
-       document.getElementById('content-title').textContent = `시퀀스: ${sequence.title}`;
-       document.getElementById('content-subtitle').textContent = `ID: ${sequence.id}`;
-       document.getElementById('content-actions').style.display = 'none';
+       const contentTitle = document.getElementById('content-title');
+       const contentSubtitle = document.getElementById('content-subtitle');
+       if (contentTitle) contentTitle.textContent = `시퀀스: ${sequence.title}`;
+       if (contentSubtitle) contentSubtitle.textContent = `ID: ${sequence.id}`;
+       const contentActions = document.getElementById('content-actions');
+       if (contentActions) {
+           contentActions.style.display = 'none';
+       }
        
        // 시퀀스에 속한 씬들 확인
 				const sequenceScenes = currentData.breakdown_data.scenes.filter(
@@ -2994,9 +2999,14 @@ function createTestData() {
            '<span style="background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; margin-left: 10px;">Stage 5 완료</span>' : 
            '<span style="background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; margin-left: 10px;">Stage 5 대기</span>';
        
-       document.getElementById('content-title').innerHTML = `씬: ${scene.title} ${statusBadge}`;
-       document.getElementById('content-subtitle').textContent = `ID: ${scene.id}`;
-       document.getElementById('content-actions').style.display = 'none';
+       const contentTitle = document.getElementById('content-title');
+       const contentSubtitle = document.getElementById('content-subtitle');
+       if (contentTitle) contentTitle.innerHTML = `씬: ${scene.title} ${statusBadge}`;
+       if (contentSubtitle) contentSubtitle.textContent = `ID: ${scene.id}`;
+       const contentActions = document.getElementById('content-actions');
+       if (contentActions) {
+           contentActions.style.display = 'none';
+       }
        
        const scenarioText = scene.original_scenario?.scenario_text || '';
        const hasScenarioText = scenarioText.trim() !== '';
@@ -3428,9 +3438,14 @@ function createTestData() {
        const shot = currentData.breakdown_data.shots.find(s => s.id === shotId);
        if (!shot) return;
        
-       document.getElementById('content-title').textContent = `샷: ${shot.title}`;
-       document.getElementById('content-subtitle').textContent = `ID: ${shot.id}`;
-       document.getElementById('content-actions').style.display = 'none';
+       const contentTitle = document.getElementById('content-title');
+       const contentSubtitle = document.getElementById('content-subtitle');
+       if (contentTitle) contentTitle.textContent = `샷: ${shot.title}`;
+       if (contentSubtitle) contentSubtitle.textContent = `ID: ${shot.id}`;
+       const contentActions = document.getElementById('content-actions');
+       if (contentActions) {
+           contentActions.style.display = 'none';
+       }
        
        // 데이터 어댑터에 현재 데이터 설정
        if (window.dataAdapter) {
@@ -4516,7 +4531,10 @@ if (modal && (
     !event
 )) {
     modal.style.display = "none";
-    document.getElementById('modalImageContent').src = "";
+    const modalImageContent = document.getElementById('modalImageContent');
+    if (modalImageContent) {
+        modalImageContent.src = "";
+    }
 }
     }
 
@@ -5843,47 +5861,14 @@ try {
 
     // 이벤트 리스너 설정
     function setupEventListeners() {
-document.getElementById('import-btn')?.addEventListener('click', importData);
-// export-btn은 인라인 onclick 사용으로 변경
-document.getElementById('concept-art-btn')?.addEventListener('click', openConceptArt);
-document.getElementById('media-gallery-btn')?.addEventListener('click', openMediaGallery);
-
-// 전체 펼치기/접기 버튼에 이벤트 리스너 추가 (디버깅 포함)
-const expandBtn = document.getElementById('expand-all-btn');
-const collapseBtn = document.getElementById('collapse-all-btn');
-
-if (expandBtn) {
-    console.log('Expand button found, adding listener');
-    expandBtn.addEventListener('click', function() {
-        console.log('Expand button clicked');
-        if (window.expandAll) {
-            window.expandAll();
-        } else if (typeof expandAll === 'function') {
-            expandAll();
-        } else {
-            console.error('expandAll function not found');
-        }
-    });
-}
-
-if (collapseBtn) {
-    console.log('Collapse button found, adding listener');
-    collapseBtn.addEventListener('click', function() {
-        console.log('Collapse button clicked');
-        if (window.collapseAll) {
-            window.collapseAll();
-        } else if (typeof collapseAll === 'function') {
-            collapseAll();
-        } else {
-            console.error('collapseAll function not found');
-        }
-    });
-}
-
-document.getElementById('search-input')?.addEventListener('input', searchNavigation);
-document.getElementById('file-input')?.addEventListener('change', handleFileSelect);
-document.getElementById('reset-btn')?.addEventListener('click', resetData);
-document.getElementById('scenario-export-btn')?.addEventListener('click', downloadFullScenario);
+        // 검색 입력 필드
+        document.getElementById('search-input')?.addEventListener('input', searchNavigation);
+        
+        // 파일 입력 (JSON import)
+        document.getElementById('file-input')?.addEventListener('change', handleFileSelect);
+        
+        // 전체 펼치기/접기 버튼은 이제 HTML에서 직접 onclick으로 처리됨 (storyboard-functions.js)
+        // 샘플 데이터 로드와 초기화 버튼도 HTML에서 직접 처리됨
     }
 
     // 페이지 로드 시 실행
