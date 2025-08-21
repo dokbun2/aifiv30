@@ -955,6 +955,7 @@ function createTestData() {
 				}
 
 				currentData = parsedData;
+				window.currentData = currentData;
 				// Stage 2 구조 존재 여부 확인 (향상된 체크)
 				if (currentData.hasStage2Structure || 
 				    (currentData.breakdown_data && currentData.breakdown_data.sequences && currentData.breakdown_data.sequences.length > 0) ||
@@ -988,6 +989,7 @@ function createTestData() {
 			} catch (error) {
 				localStorage.removeItem('filmProductionData');
 				currentData = getEmptyData();
+				window.currentData = currentData;
 				updateUI();
 				showMessage('저장된 데이터를 불러올 수 없습니다. 새로 시작합니다.', 'warning');
 			}
@@ -1414,6 +1416,7 @@ function createTestData() {
                
                // 전체 데이터 복원
                currentData = newData.data;
+               window.currentData = currentData;
                
                // hasStage2Structure 복원
                if (newData.data.backup_metadata?.hasStage2Structure !== undefined) {
@@ -1983,6 +1986,7 @@ function createTestData() {
            // 4. 스테이지 5 또는 전체 프로젝트 구조 로드 (덮어쓰기)
            else if (newData.film_metadata && newData.breakdown_data && newData.breakdown_data.sequences) {
                currentData = newData;
+               window.currentData = currentData;
                
                if (currentData.breakdown_data && currentData.breakdown_data.shots) {
                    currentData.breakdown_data.shots.forEach(shot => {
@@ -2112,6 +2116,7 @@ function createTestData() {
 					// 기존 데이터가 없으면 새로 생성
 					if (!currentData) {
 						currentData = getEmptyData();
+				window.currentData = currentData;
 					}
 					
 					// breakdown_data가 없으면 초기화
@@ -2188,6 +2193,7 @@ function createTestData() {
 				// 현재 데이터가 없으면 새로 생성
 				if (!currentData || !currentData.breakdown_data) {
 					currentData = getEmptyData();
+				window.currentData = currentData;
 					currentData.film_metadata = jsonData.film_metadata;
 				}
 
@@ -2873,7 +2879,31 @@ function createTestData() {
    try {
        if (!currentData || !currentData.breakdown_data) return;
        
-       const shots = currentData.breakdown_data.shots.filter(shot => shot.scene_id === sceneId);
+       // 두 가지 데이터 구조 모두 지원
+       let shots = [];
+       
+       // 방법 1: shots 배열에서 scene_id로 필터링
+       if (currentData.breakdown_data.shots) {
+           shots = currentData.breakdown_data.shots.filter(shot => shot.scene_id === sceneId);
+       }
+       
+       // 방법 2: 씬의 shot_ids를 사용하여 샷 찾기
+       if (shots.length === 0) {
+           const scene = currentData.breakdown_data.scenes.find(s => s.id === sceneId);
+           if (scene && scene.shot_ids && scene.shot_ids.length > 0) {
+               // shot_ids 배열을 사용하여 샷 생성
+               shots = scene.shot_ids.map((shotId, index) => {
+                   // 실제 샷 데이터가 있으면 사용, 없으면 기본 구조 생성
+                   const existingShot = currentData.breakdown_data.shots?.find(s => s.id === shotId);
+                   return existingShot || {
+                       id: shotId,
+                       title: `샷 ${index + 1}`,
+                       scene_id: sceneId
+                   };
+               });
+           }
+       }
+       
        if (shots.length === 0) {
            container.innerHTML = '<div style="padding: 15px 60px; color: #ccc; font-size: 0.9rem;">샷이 없습니다</div>';
            return;
@@ -2883,7 +2913,7 @@ function createTestData() {
        shots.forEach(shot => {
            html += `
                <div class="shot-item" data-shot-id="${shot.id}">
-                   <span>${shot.id}: ${shot.title}</span>
+                   <span>${shot.id}: ${shot.title || '샷'}</span>
                </div>`;
        });
        
@@ -5766,6 +5796,7 @@ document.body.removeChild(input);
 					window.stage6ImagePrompts = null;
 					window.localAudioFiles = null;
 					currentData = null;
+					window.currentData = currentData;
 					selectedType = null;
 					selectedId = null;
 					selectedSceneId = null;
@@ -5773,6 +5804,7 @@ document.body.removeChild(input);
 
 					// 빈 데이터로 재설정
 					currentData = getEmptyData();
+				window.currentData = currentData;
 					updateUI();
 
 					showMessage('모든 데이터가 완전히 초기화되었습니다.', 'success');
@@ -5874,12 +5906,19 @@ try {
     // 페이지 로드 시 실행
     document.addEventListener('DOMContentLoaded', async function() {
 try {
-    // 전체 펼치기/접기 함수를 글로벌 스코프에 명시적으로 노출
+    // 전역 함수와 변수 노출
+    window.currentData = currentData;
+    window.updateNavigation = updateNavigation;
     window.expandAll = expandAll;
     window.collapseAll = collapseAll;
+    window.showMessage = showMessage;
+    
     console.log('Functions exposed to window:', {
+        currentData: typeof window.currentData,
+        updateNavigation: typeof window.updateNavigation,
         expandAll: typeof window.expandAll,
-        collapseAll: typeof window.collapseAll
+        collapseAll: typeof window.collapseAll,
+        showMessage: typeof window.showMessage
     });
     
     setupEventListeners();
@@ -5970,6 +6009,7 @@ try {
                                 // 전체 프로젝트 구조 (Stage 5 전체)
                                 else if (newData.film_metadata && newData.breakdown_data && newData.breakdown_data.sequences) {
                                     currentData = newData;
+               window.currentData = currentData;
                                     
                                     // Stage 2 구조 존재 여부 확인
                                     if (currentData.breakdown_data.sequences && currentData.breakdown_data.sequences.length > 0) {

@@ -233,11 +233,11 @@
         .scenes-container {
             margin-left: 20px;
             margin-top: 5px;
-            display: none;
+            display: block;
         }
         
-        .scenes-container.expanded {
-            display: block;
+        .scenes-container.collapsed {
+            display: none;
         }
         
         .scene-header {
@@ -265,11 +265,11 @@
         .shots-container {
             margin-left: 20px;
             margin-top: 5px;
-            display: none;
+            display: block;
         }
         
-        .shots-container.expanded {
-            display: block;
+        .shots-container.collapsed {
+            display: none;
         }
         
         .shot-item {
@@ -488,7 +488,7 @@
     <!-- Navigation Bar -->
     <nav class="apple-nav">
         <div class="nav-content">
-            <a href="../index.html" class="nav-brand">🎬 AIFI</a>
+            <a href="../index.html" class="nav-brand">STORYBOARD</a>
             <ul class="nav-menu">
                 <li><a href="../concept-art/index.html" class="nav-link">컨셉아트</a></li>
                 <li><a href="#" class="nav-link active">스토리보드</a></li>
@@ -531,7 +531,7 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">📁</div>
                         <div>데이터가 없습니다</div>
-                        <div style="font-size: 12px; margin-top: 10px;">JSON 파일을 가져오거나 샘플 데이터를 로드하세요</div>
+                        <div style="font-size: 12px; margin-top: 10px;">JSON 파일을 가져오세요</div>
                     </div>
                 </div>
             </div>

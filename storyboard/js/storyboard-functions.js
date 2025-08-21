@@ -49,33 +49,67 @@ window.resetToDefaults = function() {
     fetch('../sample-storyboard.json')
         .then(response => response.json())
         .then(data => {
-            currentData = data;
+            // app.js의 전역 변수와 함수 사용
+            if (window.currentData !== undefined) {
+                window.currentData = data;
+            }
             localStorage.setItem('storyboardData', JSON.stringify(data));
-            updateNavigation();
-            showMessage('초기 데이터가 로드되었습니다', 'success');
+            if (typeof window.updateNavigation === 'function') {
+                window.updateNavigation();
+            }
+            window.showMessage('샘플 데이터가 로드되었습니다', 'success');
         })
         .catch(error => {
             console.error('Error loading default data:', error);
-            showMessage('초기 데이터 로드에 실패했습니다', 'error');
+            // 샘플 데이터가 없는 경우 기본 구조 생성
+            const defaultData = {
+                project_info: {
+                    name: "Sample Project",
+                    description: "샘플 프로젝트입니다"
+                },
+                breakdown_data: {
+                    sequences: [],
+                    scenes: [],
+                    shots: []
+                }
+            };
+            if (window.currentData !== undefined) {
+                window.currentData = defaultData;
+            }
+            localStorage.setItem('storyboardData', JSON.stringify(defaultData));
+            if (typeof window.updateNavigation === 'function') {
+                window.updateNavigation();
+            }
+            window.showMessage('기본 구조가 생성되었습니다', 'success');
         });
 };
 
 window.expandAll = function() {
+    // 모든 시퀀스 헤더 클릭하여 씬 로드
     document.querySelectorAll('.sequence-header').forEach(header => {
-        header.classList.add('expanded');
-        const container = header.nextElementSibling;
-        if (container && container.classList.contains('scenes-container')) {
-            container.classList.remove('collapsed');
+        const sequenceId = header.getAttribute('data-sequence-id');
+        if (sequenceId) {
+            const container = document.getElementById(`scenes-${sequenceId}`);
+            if (container && container.classList.contains('collapsed')) {
+                // 클릭 이벤트 트리거하여 씬 로드
+                header.click();
+            }
         }
     });
     
-    document.querySelectorAll('.scene-header').forEach(header => {
-        header.classList.add('expanded');
-        const container = header.nextElementSibling;
-        if (container && container.classList.contains('shots-container')) {
-            container.classList.remove('collapsed');
-        }
-    });
+    // 약간의 지연 후 모든 씬 헤더 클릭하여 샷 로드
+    setTimeout(() => {
+        document.querySelectorAll('.scene-header').forEach(header => {
+            const sceneId = header.getAttribute('data-scene-id');
+            if (sceneId) {
+                const container = document.getElementById(`shots-${sceneId}`);
+                if (container && container.classList.contains('collapsed')) {
+                    // 클릭 이벤트 트리거하여 샷 로드
+                    header.click();
+                }
+            }
+        });
+    }, 100);
 };
 
 window.collapseAll = function() {
