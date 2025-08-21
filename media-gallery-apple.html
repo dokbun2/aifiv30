@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 갤러리 - AIFI</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--apple-bg-primary);
+            color: var(--apple-text-primary);
+            padding-top: var(--header-height);
+            min-height: 100vh;
+        }
+
+        /* Gallery Container */
+        .gallery-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-md);
+            background: var(--apple-bg-secondary);
+            border-radius: var(--radius-lg);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: var(--font-size-caption);
+            color: var(--apple-text-secondary);
+            min-width: 60px;
+        }
+
+        .filter-select {
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: var(--apple-bg-primary);
+            border: 1px solid var(--apple-border);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-caption);
+            color: var(--apple-text-primary);
+            cursor: pointer;
+            transition: border-color var(--transition-fast);
+        }
+
+        .filter-select:hover {
+            border-color: var(--apple-blue);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: var(--apple-bg-primary);
+            border: 1px solid var(--apple-border);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-caption);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--apple-bg-tertiary);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+        }
+
+        .view-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: transparent;
+            border: none;
+            color: var(--apple-text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            font-size: 1.25rem;
+        }
+
+        .view-btn:hover {
+            background: var(--apple-bg-primary);
+        }
+
+        .view-btn.active {
+            background: var(--apple-bg-primary);
+            color: var(--apple-blue);
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .gallery-grid.grid-view {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .gallery-grid.compact-view {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 4px;
+        }
+
+        .gallery-grid.list-view {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-xs);
+        }
+
+        /* Media Item */
+        .media-item {
+            position: relative;
+            background: var(--apple-bg-secondary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            aspect-ratio: 1;
+        }
+
+        .media-item:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .media-item.list-view {
+            aspect-ratio: auto;
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            gap: var(--spacing-md);
+        }
+
+        .media-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-thumbnail.list-view {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+        }
+
+        .media-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.7) 100%);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: var(--spacing-md);
+        }
+
+        .media-item:hover .media-overlay {
+            opacity: 1;
+        }
+
+        .media-title {
+            color: white;
+            font-size: var(--font-size-caption);
+            font-weight: 600;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .media-meta {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: var(--font-size-small);
+        }
+
+        .media-info {
+            flex: 1;
+        }
+
+        .media-info-title {
+            font-size: var(--font-size-body);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .media-info-meta {
+            font-size: var(--font-size-caption);
+            color: var(--apple-text-secondary);
+        }
+
+        /* Media Type Badge */
+        .media-badge {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-small);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .media-badge.video {
+            background: rgba(255, 59, 48, 0.9);
+        }
+
+        .media-badge.image {
+            background: rgba(52, 199, 89, 0.9);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-prev {
+            left: var(--spacing-lg);
+        }
+
+        .lightbox-next {
+            right: var(--spacing-lg);
+        }
+
+        .lightbox-info {
+            position: absolute;
+            bottom: var(--spacing-lg);
+            left: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            color: white;
+        }
+
+        .lightbox-title {
+            font-size: var(--font-size-body);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .lightbox-meta {
+            font-size: var(--font-size-caption);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--apple-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-3xl);
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--apple-blue);
+            background: var(--apple-bg-secondary);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--apple-blue);
+            background: rgba(0, 113, 227, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-title {
+            font-size: var(--font-size-heading);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .upload-subtitle {
+            font-size: var(--font-size-caption);
+            color: var(--apple-text-secondary);
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--apple-border);
+            border-top-color: var(--apple-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-3xl);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: var(--font-size-heading);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-text {
+            font-size: var(--font-size-body);
+            color: var(--apple-text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-container {
+                padding: var(--spacing-lg) var(--spacing-md);
+            }
+
+            .gallery-grid.grid-view {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .lightbox-nav {
+                display: none;
+            }
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            .upload-area {
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .upload-area:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="apple-nav">
+        <div class="apple-nav-content">
+            <a href="index.html#features" class="apple-nav-logo">← MAKE FILM</a>
+            <ul class="apple-nav-menu">
+                <li><a href="#" class="apple-nav-link" onclick="showCategory('all')">전체</a></li>
+                <li><a href="#" class="apple-nav-link" onclick="showCategory('images')">이미지</a></li>
+                <li><a href="#" class="apple-nav-link" onclick="showCategory('videos')">비디오</a></li>
+                <li><a href="#" class="apple-nav-link" onclick="showCategory('favorites')">즐겨찾기</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="gallery-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-title">미디어 갤러리</h1>
+            <p class="body-text mt-2">
+                모든 프로젝트의 이미지와 비디오를 한 곳에서 관리하세요
+            </p>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📁</div>
+            <div class="upload-title">파일 업로드</div>
+            <div class="upload-subtitle">클릭하거나 파일을 드래그하여 업로드하세요</div>
+            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">카테고리</label>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="all">전체</option>
+                    <option value="storyboard">스토리보드</option>
+                    <option value="concept">컨셉아트</option>
+                    <option value="prompt">프롬프트</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">정렬</label>
+                <select class="filter-select" id="sortFilter">
+                    <option value="newest">최신순</option>
+                    <option value="oldest">오래된순</option>
+                    <option value="name">이름순</option>
+                    <option value="size">크기순</option>
+                </select>
+            </div>
+
+            <input type="text" class="search-box" placeholder="검색..." id="searchBox">
+
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="setView('grid')" title="그리드 뷰">⊞</button>
+                <button class="view-btn" onclick="setView('compact')" title="컴팩트 뷰">⊟</button>
+                <button class="view-btn" onclick="setView('list')" title="리스트 뷰">☰</button>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-grid grid-view" id="galleryGrid">
+            <!-- Sample media items -->
+            <div class="media-item" onclick="openLightbox(0)">
+                <img src="https://picsum.photos/400/400?random=1" alt="Sample 1" class="media-thumbnail">
+                <div class="media-badge image">이미지</div>
+                <div class="media-overlay">
+                    <div class="media-title">캐릭터 컨셉 아트</div>
+                    <div class="media-meta">2024.01.15 • 2.4MB</div>
+                </div>
+            </div>
+
+            <div class="media-item" onclick="openLightbox(1)">
+                <img src="https://picsum.photos/400/400?random=2" alt="Sample 2" class="media-thumbnail">
+                <div class="media-badge video">비디오</div>
+                <div class="media-overlay">
+                    <div class="media-title">씬 1 프리뷰</div>
+                    <div class="media-meta">2024.01.14 • 15.2MB</div>
+                </div>
+            </div>
+
+            <div class="media-item" onclick="openLightbox(2)">
+                <img src="https://picsum.photos/400/400?random=3" alt="Sample 3" class="media-thumbnail">
+                <div class="media-badge image">이미지</div>
+                <div class="media-overlay">
+                    <div class="media-title">배경 아트</div>
+                    <div class="media-meta">2024.01.13 • 3.1MB</div>
+                </div>
+            </div>
+
+            <div class="media-item" onclick="openLightbox(3)">
+                <img src="https://picsum.photos/400/400?random=4" alt="Sample 4" class="media-thumbnail">
+                <div class="media-badge image">이미지</div>
+                <div class="media-overlay">
+                    <div class="media-title">소품 디자인</div>
+                    <div class="media-meta">2024.01.12 • 1.8MB</div>
+                </div>
+            </div>
+
+            <div class="media-item" onclick="openLightbox(4)">
+                <img src="https://picsum.photos/400/400?random=5" alt="Sample 5" class="media-thumbnail">
+                <div class="media-badge video">비디오</div>
+                <div class="media-overlay">
+                    <div class="media-title">액션 시퀀스</div>
+                    <div class="media-meta">2024.01.11 • 22.5MB</div>
+                </div>
+            </div>
+
+            <div class="media-item" onclick="openLightbox(5)">
+                <img src="https://picsum.photos/400/400?random=6" alt="Sample 6" class="media-thumbnail">
+                <div class="media-badge image">이미지</div>
+                <div class="media-overlay">
+                    <div class="media-title">스토리보드 샷</div>
+                    <div class="media-meta">2024.01.10 • 2.1MB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state" style="display: none;">
+            <div class="empty-icon">📷</div>
+            <div class="empty-title">미디어가 없습니다</div>
+            <div class="empty-text">파일을 업로드하여 갤러리를 시작하세요</div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">‹</button>
+        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">›</button>
+        
+        <div class="lightbox-content">
+            <img src="" alt="" class="lightbox-image" id="lightboxImage">
+            <div class="lightbox-info">
+                <div class="lightbox-title" id="lightboxTitle">제목</div>
+                <div class="lightbox-meta" id="lightboxMeta">메타 정보</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery state
+        let currentView = 'grid';
+        let currentIndex = 0;
+        let mediaItems = [
+            { src: 'https://picsum.photos/800/600?random=1', title: '캐릭터 컨셉 아트', meta: '2024.01.15 • 2.4MB', type: 'image' },
+            { src: 'https://picsum.photos/800/600?random=2', title: '씬 1 프리뷰', meta: '2024.01.14 • 15.2MB', type: 'video' },
+            { src: 'https://picsum.photos/800/600?random=3', title: '배경 아트', meta: '2024.01.13 • 3.1MB', type: 'image' },
+            { src: 'https://picsum.photos/800/600?random=4', title: '소품 디자인', meta: '2024.01.12 • 1.8MB', type: 'image' },
+            { src: 'https://picsum.photos/800/600?random=5', title: '액션 시퀀스', meta: '2024.01.11 • 22.5MB', type: 'video' },
+            { src: 'https://picsum.photos/800/600?random=6', title: '스토리보드 샷', meta: '2024.01.10 • 2.1MB', type: 'image' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDragAndDrop();
+            setupFileInput();
+            setupSearch();
+            setupFilters();
+            setupKeyboardNavigation();
+        });
+
+        // Set view mode
+        function setView(view) {
+            currentView = view;
+            const grid = document.getElementById('galleryGrid');
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            // Update buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update grid class
+            grid.className = `gallery-grid ${view}-view`;
+            
+            // Update items for list view
+            const items = grid.querySelectorAll('.media-item');
+            items.forEach(item => {
+                if (view === 'list') {
+                    item.classList.add('list-view');
+                    const thumbnail = item.querySelector('.media-thumbnail');
+                    thumbnail.classList.add('list-view');
+                    
+                    // Add info section for list view
+                    if (!item.querySelector('.media-info')) {
+                        const overlay = item.querySelector('.media-overlay');
+                        const title = overlay.querySelector('.media-title').textContent;
+                        const meta = overlay.querySelector('.media-meta').textContent;
+                        
+                        const info = document.createElement('div');
+                        info.className = 'media-info';
+                        info.innerHTML = `
+                            <div class="media-info-title">${title}</div>
+                            <div class="media-info-meta">${meta}</div>
+                        `;
+                        item.appendChild(info);
+                    }
+                } else {
+                    item.classList.remove('list-view');
+                    const thumbnail = item.querySelector('.media-thumbnail');
+                    thumbnail.classList.remove('list-view');
+                    
+                    // Remove info section
+                    const info = item.querySelector('.media-info');
+                    if (info) info.remove();
+                }
+            });
+        }
+
+        // Show category
+        function showCategory(category) {
+            console.log('Showing category:', category);
+            // Implement category filtering
+        }
+
+        // Open lightbox
+        function openLightbox(index) {
+            currentIndex = index;
+            const lightbox = document.getElementById('lightbox');
+            const image = document.getElementById('lightboxImage');
+            const title = document.getElementById('lightboxTitle');
+            const meta = document.getElementById('lightboxMeta');
+            
+            const item = mediaItems[index];
+            image.src = item.src;
+            title.textContent = item.title;
+            meta.textContent = item.meta;
+            
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close lightbox
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Navigate lightbox
+        function navigateLightbox(direction) {
+            currentIndex = (currentIndex + direction + mediaItems.length) % mediaItems.length;
+            openLightbox(currentIndex);
+        }
+
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+        }
+
+        // Setup file input
+        function setupFileInput() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        // Handle files
+        function handleFiles(files) {
+            console.log('Uploading files:', files);
+            // Implement file upload
+            alert(`${files.length}개의 파일이 선택되었습니다. 업로드 기능은 준비 중입니다.`);
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchBox = document.getElementById('searchBox');
+            let searchTimeout;
+            
+            searchBox.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    console.log('Searching for:', e.target.value);
+                    // Implement search
+                }, 300);
+            });
+        }
+
+        // Setup filters
+        function setupFilters() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            
+            categoryFilter.addEventListener('change', (e) => {
+                console.log('Category filter:', e.target.value);
+                // Implement filtering
+            });
+            
+            sortFilter.addEventListener('change', (e) => {
+                console.log('Sort by:', e.target.value);
+                // Implement sorting
+            });
+        }
+
+        // Setup keyboard navigation
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (e) => {
+                if (!document.getElementById('lightbox').classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    navigateLightbox(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateLightbox(1);
+                }
+            });
+        }
+
+        // Click outside lightbox to close
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 경로 테스트</title>
+    
+    <!-- 상대 경로로 assets 참조 테스트 -->
+    <link rel="stylesheet" href="../assets/css/core.css">
+    
+    <style>
+        /* core.css에서 폰트가 로드되므로 별도 정의 불필요 */
+        
+        body {
+            font-family: 'Paperlogy', sans-serif;
+            padding: 2rem;
+            background: #0F0F0F;
+            color: white;
+        }
+        
+        .test-box {
+            background: #1A1A1A;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .status { margin: 1rem 0; }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🧪 Dashboard 경로 테스트</h1>
+        
+        <div class="status">
+            <h3>테스트 항목:</h3>
+            <ul>
+                <li>✅ HTML 파일 위치: /dashboard/test.html</li>
+                <li id="font-test">⏳ 폰트 로딩: ../assets/fonts/</li>
+                <li id="css-test">⏳ CSS 로딩: ../assets/css/</li>
+                <li id="js-test">⏳ JS 로딩: ../assets/js/</li>
+            </ul>
+        </div>
+        
+        <div class="status">
+            <h3>네비게이션 테스트:</h3>
+            <a href="../index.html">← 메인으로</a> |
+            <a href="../concept-art/test.html">컨셉아트 →</a>
+        </div>
+    </div>
+    
+    <script>
+        // 폰트 로딩 확인
+        document.fonts.ready.then(() => {
+            const fontTest = document.getElementById('font-test');
+            const loaded = document.fonts.check('16px Paperlogy');
+            fontTest.innerHTML = loaded ? 
+                '✅ 폰트 로딩: 성공' : 
+                '❌ 폰트 로딩: 실패';
+        });
+        
+        // CSS 변수 확인
+        const cssTest = document.getElementById('css-test');
+        const rootStyles = getComputedStyle(document.documentElement);
+        const cssVar = rootStyles.getPropertyValue('--bg-primary');
+        cssTest.innerHTML = cssVar ? 
+            '✅ CSS 로딩: 성공' : 
+            '⚠️ CSS 로딩: core.css 아직 없음';
+    </script>
+</body>
+</html>

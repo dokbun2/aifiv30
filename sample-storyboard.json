@@ -1,0 +1,52 @@
+{
+  "title": "Film_Production",
+  "description": "프로젝트 설명이 여기에 표시됩니다",
+  "sequences": [
+    {
+      "id": "SEQ1",
+      "title": "화려한 환상",
+      "scenes": [
+        {
+          "id": "S01",
+          "title": "INT. 재벌가 대저택 입구 - DAY",
+          "shots": [
+            {
+              "id": "S01.01",
+              "title": "대저택 입구 확립 샷"
+            },
+            {
+              "id": "S01.02",
+              "title": "지수 첫 등장 미디엄"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SEQ2",
+      "title": "의심과 폭로",
+      "scenes": [
+        {
+          "id": "S02",
+          "title": "INT. 대저택 거실 - DAY",
+          "shots": [
+            {
+              "id": "S02.01",
+              "title": "거실 와이드 샷"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SEQ3",
+      "title": "감정의 폭발",
+      "scenes": []
+    },
+    {
+      "id": "SEQ4",
+      "title": "연극의 커튼콜",
+      "scenes": []
+    }
+  ]
+}

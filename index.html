@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI 기반 영상 제작 및 컨셉아트 관리 시스템 - AIFI Creative Platform">
+    <meta name="keywords" content="AI, 영상제작, 컨셉아트, 스토리보드, 프롬프트, 미디어">
+    <title>AIFI - AI Creative Platform</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aifiwb.netlify.app/">
+    <meta property="og:title" content="AIFI Creative Platform">
+    <meta property="og:description" content="AI로 창작하는 새로운 방법. 영상 제작부터 컨셉아트까지 모든 창작 과정을 지원합니다.">
+    <meta property="og:image" content="https://aifiwb.netlify.app/og-image.jpg">
+
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    
+    <!-- Apple Developer Style -->
+    <link rel="stylesheet" href="apple-developer-style.css">
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="apple-nav">
+        <div class="nav-content">
+            <a href="#features" class="nav-brand">🎬 AIFI FRAME WORK</a>
+            <ul class="nav-menu">
+                <li><a href="#features" class="nav-link">영상제작</a></li>
+                <li><a href="#tools" class="nav-link">TOOL</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="hero-image"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">AI로 창작하는<br>새로운 방법</h1>
+            <p class="hero-subtitle">
+                영상 제작부터 컨셉아트까지,<br>
+                AIFI는 당신의 창의적인 아이디어를 현실로 만들어주는<br>
+                종합 AI 창작 플랫폼입니다.
+            </p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn-primary">
+                    시작하기
+                    <span class="btn-icon">→</span>
+                </a>
+                <a href="#tools" class="btn-secondary">
+                    도구 살펴보기
+                    <span class="btn-icon">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section with Detailed Cards -->
+    <section class="features-section" id="features">
+        <div class="features-container">
+            <div class="features-header">
+                <div style="position: relative;">
+                    <h2 class="features-title">강력한 AI 창작 도구</h2>
+                    <button class="clear-temp-data-btn" onclick="clearAllTempData()" title="캐시 데이터 초기화">
+                        <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 2v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 12a9 9 0 0 1 15-6.7L21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 22v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M21 12a9 9 0 0 1-15 6.7L3 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="features-subtitle">
+                    당신의 아이디어를 현실로. AIFI FRAME WORK는 AI 기술과 창의성이 만나는 곳입니다.<br>
+                </p>
+                <div class="features-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">8+</span>
+                        <span class="stat-label">프로세스 단계</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">핵심 도구</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">창작 가능성</span>
+                    </div>
+                </div>
+            </div>
+            <div class="features-grid-detailed">
+                <!-- Storyboard Card -->
+                <div class="feature-card-detailed" onclick="window.location.href='storyboard/index.html'">
+                    <div class="card-gradient-header card-header-dark">
+                        <div class="card-icon-large">🎬</div>
+                        <h3>영상 프레임워크 스토리보드</h3>
+                    </div>
+                    <div class="card-detailed-content">
+                        <p class="card-description">
+                            AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템입니다. 
+                            시퀀스, 씬, 샷 단위로 체계적으로 관리하며 다양한 AI 도구와 연동됩니다.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✨ 시퀀스/씬/샷 계층 구조 관리</li>
+                            <li>✨ AI 영상 생성 도구 통합 (Luma, Kling, Veo2, Runway)</li>
+                            <li>✨ 이미지 및 오디오 관리</li>
+                            <li>✨ 프롬프트 엔지니어링 지원</li>
+                        </ul>
+                        <div class="feature-button feature-button-primary">
+                            ✓ 진행 데이터 준비 완료
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Concept Art Card -->
+                <div class="feature-card-detailed" onclick="window.location.href='concept-art/index.html'">
+                    <div class="card-gradient-header card-header-dark">
+                        <div class="card-icon-large">🎨</div>
+                        <h3>컨셉아트 프롬프트 라이브러리</h3>
+                    </div>
+                    <div class="card-detailed-content">
+                        <p class="card-description">
+                            캐릭터, 장소, 소품의 컨셉아트 생성을 위한 프롬프트 관리 및 
+                            이미지 갤러리 시스템입니다.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✨ 캐릭터/장소/소품 카테고리 관리</li>
+                            <li>✨ 다중 AI 도구 프롬프트 지원</li>
+                            <li>✨ 캐릭터 변형 프롬프트 생성</li>
+                            <li>✨ 이미지 갤러리 및 데이터 관리</li>
+                        </ul>
+                        <div class="feature-button feature-button-primary">
+                            활성 프로젝트
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompt Generator Card -->
+                <div class="feature-card-detailed" onclick="window.location.href='prompt-builder.html'">
+                    <div class="card-gradient-header card-header-dark">
+                        <div class="card-icon-large">📝</div>
+                        <h3>이미지 프롬프트 생성기</h3>
+                    </div>
+                    <div class="card-detailed-content">
+                        <p class="card-description">
+                            AI 이미지 생성을 위한 전문적인 프롬프트 작성 도구입니다.
+                            구조화된 프롬프트 편집기로 체계적으로 관리합니다.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✨ 텍스트 및 이미지 기반 프롬프트 생성</li>
+                            <li>✨ 구조별 카드 편집기 (STYLE, MEDIUM, CAMERA)</li>
+                            <li>✨ 실시간 프롬프트 미리보기</li>
+                            <li>✨ CSV 내보내기 및 데이터 관리</li>
+                        </ul>
+                        <div class="feature-button feature-button-primary">
+                            활성 프로젝트
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Gallery Card -->
+                <div class="feature-card-detailed" onclick="window.location.href='media-gallery-apple.html'">
+                    <div class="card-gradient-header card-header-dark">
+                        <div class="card-icon-large">🖼️</div>
+                        <h3>미디어 갤러리</h3>
+                    </div>
+                    <div class="card-detailed-content">
+                        <p class="card-description">
+                            스토리보드와 컨셉아트의 모든 이미지와 영상을 한 곳에서 
+                            확인할 수 있는 통합 갤러리입니다.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✨ 스토리보드 이미지/영상 모음</li>
+                            <li>✨ 컨셉아트 갤러리</li>
+                            <li>✨ 필터링 및 정렬 기능</li>
+                            <li>✨ 라이트박스 뷰어</li>
+                        </ul>
+                        <div class="feature-button feature-button-primary">
+                            활성 프로젝트
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workflow Integration -->
+            <div class="workflow-integration">
+                <h2 class="stage-upload-title">프로젝트 워크플로우</h2>
+                <p class="stage-subtitle">8단계의 체계적인 워크플로우로 프로젝트를 완성하세요</p>
+                <button class="stage-upload-main-btn" onclick="startSequentialUpload()">
+                    단계별 업로드 시작
+                </button>
+                
+                <div class="stage-cards-grid">
+                <div class="stage-upload-card" onclick="goToStoryboardWithImport()" title="시나리오">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">📜</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 2</h4>
+                        <p>시나리오 작성</p>
+                    </div>
+                </div>
+                
+                <div class="stage-upload-card" onclick="goToConceptArtWithStage4Import()" title="컨셉아트">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">🎨</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 4</h4>
+                        <p>컨셉아트 생성</p>
+                    </div>
+                </div>
+                
+                <div class="stage-upload-card" onclick="goToStoryboardWithStage5Import()" title="장면분할">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">✂️</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 5</h4>
+                        <p>장면 분할</p>
+                    </div>
+                </div>
+                
+                <div class="stage-upload-card" onclick="goToStoryboardWithStage6Import()" title="샷이미지">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">📷</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 6</h4>
+                        <p>샷이미지 생성</p>
+                    </div>
+                </div>
+                
+                <div class="stage-upload-card" onclick="goToStoryboardWithStage7Import()" title="영상">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">🎥</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 7</h4>
+                        <p>영상 생성</p>
+                    </div>
+                </div>
+                
+                <div class="stage-upload-card" onclick="goToStoryboardWithStage8Import()" title="오디오">
+                    <div class="stage-icon-wrapper">
+                        <span class="stage-emoji">🎧</span>
+                    </div>
+                    <div>
+                        <h4>STAGE 8</h4>
+                        <p>오디오 생성</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools-section" id="tools">
+        <div class="tools-container">
+            <div class="tools-header">
+                <h2 class="tools-title">AIFI GPTS 바로가기</h2>
+                <p class="tools-subtitle">
+                    작업하실 스테이지를 선택해주세요
+                </p>
+            </div>
+            
+            <!-- Stage Buttons Grid -->
+            <div class="stage-buttons-grid">
+                <a href="https://chatgpt.com/g/g-68a33472d33081918e0faeb8a0674bf5-stage-1dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 1</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a336cf727081918ae7db5075a9c6da-stage-2dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 2</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a341a33e048191b837e58322e2c335-stage-3dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 3</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a344b34d7c81918420e2f85213927b-stage-4dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 4</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a34c7cb76881918eb2254d5c9a5ce6-stage-5dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 5</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a3b146b7688191b53e98f4cf810a16-stage-6dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 6</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a3b399a6408191be66d00a9a50cf1e-stage-7dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 7</span>
+                </a>
+                <a href="https://chatgpt.com/g/g-68a3b601cbc881919067f5f5874a49e6-stage-8dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                    <span class="stage-text">STAGE 8</span>
+                </a>
+            </div>
+            
+            <div class="tools-grid">
+                <!-- Community Tools -->
+                <div class="tool-category">
+                    <h3 class="tool-category-title">커뮤니티</h3>
+                    <div class="tool-items">
+                        <a href="https://cafe.naver.com/aifi" target="_blank" class="tool-item">
+                            <span class="tool-icon">💬</span>
+                            <div class="tool-info">
+                                <h4>AIFI 네이버카페</h4>
+                                <p>커뮤니티 & 지원</p>
+                            </div>
+                            <span class="tool-arrow">→</span>
+                        </a>
+                        <a href="https://www.youtube.com/@AiFi79" target="_blank" class="tool-item">
+                            <span class="tool-icon">📺</span>
+                            <div class="tool-info">
+                                <h4>AIFI 유튜브</h4>
+                                <p>튜토리얼 & 가이드</p>
+                            </div>
+                            <span class="tool-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- AI Tools -->
+                <div class="tool-category">
+                    <h3 class="tool-category-title">AI 도구</h3>
+                    <div class="tool-items">
+                        <a href="https://chatgpt.com/g/g-67b6834763f48191a1835094c4ffa350-potori-myujig" target="_blank" class="tool-item">
+                            <span class="tool-icon">🎵</span>
+                            <div class="tool-info">
+                                <h4>포토리뮤직</h4>
+                                <p>AI 음악 생성</p>
+                            </div>
+                            <span class="tool-arrow">→</span>
+                        </a>
+                        <a href="https://aififrame.netlify.app/" target="_blank" class="tool-item">
+                            <span class="tool-icon">🎞️</span>
+                            <div class="tool-info">
+                                <h4>프레임 추출기</h4>
+                                <p>비디오 프레임 추출</p>
+                            </div>
+                            <span class="tool-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Development Tools -->
+                <div class="tool-category">
+                    <h3 class="tool-category-title">개발 도구</h3>
+                    <div class="tool-items">
+                        <a href="https://jsoneditoronline.org/" target="_blank" class="tool-item">
+                            <span class="tool-icon">📝</span>
+                            <div class="tool-info">
+                                <h4>JSON 에디터</h4>
+                                <p>데이터 편집 도구</p>
+                            </div>
+                            <span class="tool-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sequential Upload Modal -->
+    <div id="sequential-upload-modal" class="sequential-upload-modal">
+        <div class="modal-overlay" onclick="closeSequentialUploadModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📂 프로젝트 Stage 업로드</h2>
+                <button class="modal-close-btn" onclick="closeSequentialUploadModal()">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- 중요 사항 안내 -->
+                <div class="upload-notice">
+                    <div class="notice-content">
+                        <h3>⚠️ 중요!</h3>
+                        <p>스테이지8 까지 모든 제이슨 파일이 준비되셨을 때 실행하세요.</p>
+                        <p>아니시면 랜덤 스테이지별로 업로드를 이용해 주세요.</p>
+                    </div>
+                </div>
+                
+                <!-- 전체 진행률 표시 -->
+                <div class="overall-progress">
+                    <div class="progress-info">
+                        <span class="progress-label">전체 진행률</span>
+                        <span class="progress-percentage" id="overall-progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overall-progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Stage 업로드 리스트 -->
+                <div class="stage-upload-list">
+                    <!-- Stage 2 -->
+                    <div class="stage-upload-item" data-stage="2">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 2 - 시나리오 작성 단계</h3>
+                            <p>프로젝트의 기본 시나리오 구조를 업로드합니다.</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(2)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 4 -->
+                    <div class="stage-upload-item" data-stage="4">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 4 - 컨셉아트 프롬프트 생성 단계</h3>
+                            <p>캐릭터, 장소, 소품의 컨셉아트 프롬프트를 업로드합니다.</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(4)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 5 -->
+                    <div class="stage-upload-item" data-stage="5">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 5 - 장면 분할 단계</h3>
+                            <p>시퀀스와 씬을 샷 단위로 분할한 데이터를 업로드합니다. (여러 파일 가능)</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(5)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 6 -->
+                    <div class="stage-upload-item" data-stage="6">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 6 - 샷이미지 프롬프트 생성 단계</h3>
+                            <p>각 샷의 이미지 생성 프롬프트를 업로드합니다. (여러 파일 가능)</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(6)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 7 -->
+                    <div class="stage-upload-item" data-stage="7">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 7 - 영상프롬프트 생성 단계</h3>
+                            <p>동영상 생성을 위한 프롬프트를 업로드합니다. (여러 파일 가능)</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(7)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stage 8 -->
+                    <div class="stage-upload-item" data-stage="8">
+                        <div class="stage-status">
+                            <span class="status-icon waiting">⏳</span>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stage 8 - 오디오 프롬프트 생성 단계</h3>
+                            <p>대화, 내레이션, 음향효과 데이터를 업로드합니다. (여러 파일 가능)</p>
+                        </div>
+                        <div class="stage-action">
+                            <button class="stage-upload-btn" onclick="uploadStage(8)" disabled>
+                                파일 선택
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 메시지 영역 -->
+                <div class="upload-message" id="upload-message"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-action-btn" id="modal-action-btn" onclick="handleModalAction()" style="display: none;">
+                    완료
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #000; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 80px;">
+        <div style="max-width: 1440px; margin: 0 auto; padding: 0 22px; text-align: center;">
+            <p style="color: #86868b; font-size: 12px; margin: 0;">
+                © 2024 AIFI Project. AI 기반 창작 도구 플랫폼.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Hidden file inputs for JSON import -->
+    <input type="file" id="stage2-json-input" accept=".json" style="display: none;">
+    <input type="file" id="stage4-json-input" accept=".json" style="display: none;">
+    <input type="file" id="stage5-json-input" accept=".json" multiple style="display: none;">
+    <input type="file" id="stage6-json-input" accept=".json" multiple style="display: none;">
+    <input type="file" id="stage7-json-input" accept=".json" multiple style="display: none;">
+    <input type="file" id="stage8-json-input" accept=".json" multiple style="display: none;">
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script>
+        // Smooth scroll for anchor links with full viewport sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navHeight = document.querySelector('.apple-nav').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Add active state to navigation items based on scroll position
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const navHeight = document.querySelector('.apple-nav').offsetHeight;
+            
+            let current = '';
+            const scrollPosition = window.pageYOffset + navHeight + 10;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                const sectionBottom = sectionTop + sectionHeight;
+                
+                // Check if the scroll position is within this section
+                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            // If we're at the bottom of the page, highlight the last section
+            if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2) {
+                const lastSection = sections[sections.length - 1];
+                if (lastSection) {
+                    current = lastSection.getAttribute('id');
+                }
+            }
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href && href.substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveNav);
+        // window.addEventListener('load', updateActiveNav); // 페이지 로드 시 active 클래스 추가 비활성화
+        
+        // Update active state when clicking nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                setTimeout(updateActiveNav, 100);
+            });
+        });
+    </script>
+</body>
+</html>

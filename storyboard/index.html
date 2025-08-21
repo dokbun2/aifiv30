@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIFI 영상 프레임워크 스토리보드 - Dark Theme</title>
+    
+    <!-- Content Security Policy for Google Drive iframe -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; frame-src 'self' https://drive.google.com https://*.googleusercontent.com https://docs.google.com; img-src 'self' data: blob: https: http:; media-src 'self' data: blob: https: http:;">
+    
+    <!-- SEO -->
+    <meta name="description" content="AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템. 시퀀스, 씬, 샷 단위로 체계적 관리">
+    <meta name="keywords" content="AI 영상제작, 스토리보드, Luma, Kling, Veo2, Runway, 영상 프레임워크">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aifiwb.netlify.app/your_title_storyboard_v9.4.html">
+    <meta property="og:title" content="AIFI 영상 프레임워크 스토리보드">
+    <meta property="og:description" content="AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템. 시퀀스, 씬, 샷 단위로 체계적으로 관리하며 다양한 AI 도구와 연동됩니다.">
+    <meta property="og:image" content="https://aifiwb.netlify.app/og-image-storyboard.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:site_name" content="AIFI 프로젝트">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aifiwb.netlify.app/your_title_storyboard_v9.4.html">
+    <meta property="twitter:title" content="AIFI 영상 프레임워크 스토리보드">
+    <meta property="twitter:description" content="AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템. 시퀀스, 씬, 샷 단위로 체계적 관리">
+    <meta property="twitter:image" content="https://aifiwb.netlify.app/og-image-storyboard.jpg">
+
+    <!-- 카카오톡 -->
+    <meta property="kakao:title" content="AIFI 영상 프레임워크 스토리보드">
+    <meta property="kakao:description" content="AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템">
+    <meta property="kakao:image" content="https://aifiwb.netlify.app/og-image-storyboard.jpg">
+
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    
+    <!-- 스토리보드 전용 스타일 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Apple Developer Style (높은 우선순위) -->
+    <link rel="stylesheet" href="../apple-developer-style.css">
+    <link rel="stylesheet" href="css/apple-style.css">
+    
+    <!-- 인라인 스타일로 강제 적용 -->
+    <style>
+        /* 컨셉아트와 동일한 Apple Developer 스타일 */
+        body {
+            background: #000000 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+            padding-top: 48px !important; /* 네비게이션 바 높이와 동일하게 설정 */
+            margin: 0 !important;
+        }
+        
+        /* 스토리보드 헤더 스타일 - 컨셉아트와 동일 */
+        .storyboard-header {
+            background: rgba(0,0,0,0.7) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            padding: 12px 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+            position: sticky !important;
+            top: 48px !important; /* 네비게이션 바 바로 아래에 붙도록 설정 */
+            z-index: 100 !important;
+            margin-top: 0 !important;
+        }
+        
+        .storyboard-header-content {
+            max-width: 1440px !important;
+            margin: 0 auto !important;
+            padding: 0 22px !important;
+        }
+        
+        .storyboard-header-top {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 20px !important;
+        }
+        
+        
+        .storyboard-header-title {
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            color: rgba(255,255,255,0.9) !important;
+            margin: 0 !important;
+        }
+        
+        .header-subtitle {
+            font-size: 11px !important;
+            color: rgba(255,255,255,0.5) !important;
+            margin-top: 4px !important;
+        }
+        
+        .storyboard-header-buttons {
+            display: flex !important;
+            gap: 8px !important;
+            align-items: center !important;
+        }
+        
+        /* 컴팩트 버튼 스타일 - 컨셉아트와 동일 */
+        .compact-btn {
+            padding: 8px 16px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            background: rgba(255,255,255,0.08) !important;
+            color: rgba(255,255,255,0.9) !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+        }
+        
+        .compact-btn:hover {
+            background: rgba(255,255,255,0.12) !important;
+            border-color: rgba(255,255,255,0.25) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
+        }
+        
+        .compact-btn-primary {
+            background: #007AFF !important;
+            border-color: #007AFF !important;
+            color: white !important;
+        }
+        
+        .compact-btn-primary:hover {
+            background: #0051D5 !important;
+            border-color: #0051D5 !important;
+        }
+        
+        .compact-btn-danger {
+            background: rgba(220, 38, 38, 0.9) !important;
+            border-color: rgba(220, 38, 38, 0.9) !important;
+            color: white !important;
+        }
+        
+        .compact-btn-danger:hover {
+            background: rgba(220, 38, 38, 1) !important;
+        }
+        
+        
+        
+        
+        
+        /* 시퀀스/씬/샷 아이템 스타일 개선 */
+        .sequence-item {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 8px !important;
+            margin-bottom: 6px !important;
+            overflow: hidden !important;
+        }
+        
+        .sequence-header {
+            padding: 10px 12px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+        }
+        
+        .sequence-header:hover {
+            background: rgba(255, 255, 255, 0.04) !important;
+            color: #fff !important;
+        }
+        
+        .sequence-header.active {
+            background: linear-gradient(90deg, rgba(0, 122, 255, 0.15), transparent) !important;
+            color: #fff !important;
+        }
+        
+        .scene-item {
+            background: transparent !important;
+            margin: 0 !important;
+            border-left: 2px solid rgba(255, 255, 255, 0.06) !important;
+            margin-left: 16px !important;
+        }
+        
+        .scene-header {
+            padding: 8px 10px !important;
+            font-size: 12px !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+        }
+        
+        .scene-header:hover {
+            background: rgba(255, 255, 255, 0.03) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .scene-header.active {
+            background: rgba(0, 122, 255, 0.1) !important;
+            color: #fff !important;
+        }
+        
+        .shot-item {
+            padding: 6px 10px 6px 28px !important;
+            font-size: 11px !important;
+            color: rgba(255, 255, 255, 0.65) !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.04) !important;
+            margin-left: 32px !important;
+        }
+        
+        .shot-item:hover {
+            background: rgba(255, 255, 255, 0.02) !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            border-left-color: #007AFF !important;
+        }
+        
+        .shot-item.active {
+            background: rgba(0, 122, 255, 0.12) !important;
+            color: #fff !important;
+            border-left-color: #007AFF !important;
+        }
+        
+        /* 토글 아이콘 스타일 */
+        .toggle-icon {
+            font-size: 9px !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+            transition: transform 0.2s !important;
+            display: inline-block !important;
+            width: 10px !important;
+        }
+        
+        .toggle-icon.expanded {
+            transform: rotate(90deg) !important;
+        }
+        
+        /* 상태 표시기 개선 */
+        .status-indicator {
+            display: inline-block !important;
+            width: 5px !important;
+            height: 5px !important;
+            border-radius: 50% !important;
+            margin-left: 5px !important;
+            vertical-align: middle !important;
+        }
+        
+        /* 컨테이너 스타일 */
+        .scenes-container,
+        .shots-container {
+            transition: max-height 0.25s ease !important;
+        }
+        
+        .scenes-container.collapsed,
+        .shots-container.collapsed {
+            max-height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        .project-header {
+            margin-bottom: 15px !important;
+            padding-bottom: 15px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .project-header h3 {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            margin: 0 0 5px 0 !important;
+        }
+        
+        .project-header small {
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 13px !important;
+        }
+        
+        .nav-controls {
+            display: flex !important;
+            gap: 8px !important;
+            margin: 15px 0 !important;
+        }
+        
+        .nav-controls .btn {
+            flex: 1 !important;
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .nav-controls .btn:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
+        }
+        
+        .search-box input {
+            width: 100% !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 13px !important;
+        }
+        
+        .search-box input:focus {
+            outline: none !important;
+            background: rgba(0, 0, 0, 0.7) !important;
+            border-color: #007AFF !important;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1) !important;
+        }
+        
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        /* 메인 콘텐츠 영역 - 컨셉아트 스타일 */
+        .main-content {
+            flex: 1 !important;
+            background: transparent !important;
+            overflow-y: auto !important;
+            height: 100% !important;
+            padding: 0 !important;
+            margin-top: 0 !important;
+            padding-bottom: 50px !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+        }
+        
+        /* 콘텐츠 전체를 감싸는 카드 */
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            padding: 30px !important;
+            min-height: 400px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            margin-left: 0 !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        
+        /* 콘텐츠 헤더 - 카드 내부 스타일 */
+        .content-header {
+            padding-bottom: 20px !important;
+            margin-bottom: 30px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: flex-start !important;
+            flex-wrap: wrap !important;
+            gap: 20px !important;
+            text-align: left !important;
+        }
+        
+        .content-title {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 24px !important;
+            font-weight: 600 !important;
+            margin: 0 0 5px 0 !important;
+            text-align: left !important;
+        }
+        
+        .content-subtitle {
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 14px !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+        
+        /* 콘텐츠 영역 */
+        #content-area {
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            text-align: left !important;
+        }
+        
+        /* 레이아웃 오버라이드 */
+        .container {
+            display: flex !important;
+            gap: 15px !important;
+        }
+        
+        .navigation {
+            width: 300px !important;
+            flex-shrink: 0 !important;
+        }
+        
+        
+        /* 정보 섹션 스타일 개선 */
+        .info-section {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 12px !important;
+            padding: 24px !important;
+            margin-bottom: 24px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        .info-section h3 {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            margin: 0 0 20px 0 !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        
+        .info-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+        
+        .info-table th {
+            text-align: left !important;
+            padding: 12px 16px !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-weight: 500 !important;
+            font-size: 13px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            width: 30% !important;
+            min-width: 120px !important;
+        }
+        
+        .info-table td {
+            padding: 12px 16px !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 14px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            word-break: break-word !important;
+        }
+        
+        .info-table tr:last-child th,
+        .info-table tr:last-child td {
+            border-bottom: none !important;
+        }
+        
+        .info-table tr:hover {
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .navigation {
+                width: 260px !important;
+            }
+            
+            .main-content {
+                padding: 15px !important;
+            }
+            
+            .content-wrapper {
+                padding: 20px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column !important;
+            }
+            
+            .navigation {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 300px !important;
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
+            
+            .main-content {
+                padding: 15px !important;
+                height: auto !important;
+                margin-top: 0 !important;
+            }
+            
+            .content-wrapper {
+                padding: 15px !important;
+                border-radius: 12px !important;
+                min-height: auto !important;
+            }
+            
+            .info-table th {
+                width: 35% !important;
+                padding: 10px !important;
+                font-size: 12px !important;
+            }
+            
+            .info-table td {
+                padding: 10px !important;
+                font-size: 13px !important;
+            }
+            
+            .content-header {
+                flex-direction: column !important;
+                gap: 15px !important;
+            }
+            
+            .content-title {
+                font-size: 20px !important;
+            }
+            
+            .info-section {
+                padding: 16px !important;
+            }
+            
+            .info-section h3 {
+                font-size: 16px !important;
+            }
+        }
+        
+        .empty-state {
+            text-align: center !important;
+            padding: 60px 0 !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px !important;
+            margin-bottom: 15px !important;
+            opacity: 0.5 !important;
+        }
+        
+        /* 네비게이션 사이드바 콘텐츠 */
+        .navigation .nav-content {
+            overflow-y: auto !important;
+            max-height: calc(100vh - 450px) !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            text-align: left !important;
+        }
+        
+        /* 네비게이션 콘텐츠 내부 모든 요소 좌측 정렬 */
+        .navigation .nav-content * {
+            text-align: left !important;
+        }
+        
+        /* 시퀀스 아이템 */
+        .sequence-item {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            transition: none !important;
+            width: 100% !important;
+            display: block !important;
+        }
+        
+        .sequence-item:hover {
+            background: transparent !important;
+        }
+        
+        /* 시퀀스 헤더 - 기본 검정, 클릭 시 보라색 */
+        .sequence-header {
+            background: transparent !important;
+            padding: 8px 15px !important;
+            margin: 0 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 8px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            border: none !important;
+            border-radius: 4px !important;
+            transition: all 0.2s ease !important;
+            text-align: left !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* 시퀀스 헤더 - 선택됨(클릭) 상태 */
+        .sequence-header.active {
+            background: linear-gradient(135deg, #6B46C1 0%, #553C9A 100%) !important;
+            color: white !important;
+        }
+        
+        .sequence-header.active .toggle-icon {
+            color: white !important;
+        }
+        
+        .sequence-header:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        .toggle-icon {
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 10px !important;
+            transition: transform 0.2s ease, color 0.2s ease !important;
+            flex-shrink: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .sequence-header.expanded .toggle-icon {
+            transform: rotate(90deg) !important;
+        }
+        
+        /* 씬 컨테이너 - 하위 구조 */
+        .scenes-container {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .scenes-container.collapsed {
+            display: none !important;
+        }
+        
+        .nav-sequence-header {
+            background: rgba(255, 255, 255, 0.03) !important;
+            padding: 10px 15px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+        }
+        
+        .nav-sequence-header:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        
+        .nav-sequence-title {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+        }
+        
+        /* 씬 아이템 */
+        .nav-scene {
+            background: transparent !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .nav-scene-header,
+        .scene-header {
+            padding: 8px 15px 8px 20px !important;
+            cursor: pointer !important;
+            transition: background 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            background: transparent !important;
+            border: none !important;
+            position: relative !important;
+        }
+        
+        /* 새 데이터 인디케이터 */
+        .nav-scene-header.new-data::before {
+            content: '●' !important;
+            color: #10B981 !important;
+            position: absolute !important;
+            left: 10px !important;
+            font-size: 8px !important;
+        }
+        
+        .nav-scene-header:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        .nav-scene-title {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 13px !important;
+            font-weight: 400 !important;
+        }
+        
+        /* 샷 아이템 - 들여쓰기 */
+        .nav-shot,
+        .shot-item {
+            padding: 6px 15px 6px 40px !important;
+            cursor: pointer !important;
+            transition: background 0.2s ease !important;
+            border: none !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            font-size: 12px !important;
+            background: transparent !important;
+        }
+        
+        /* shot-item 특별 스타일 - 우측으로 이동 */
+        .shot-item {
+            padding-left: 35px !important;
+        }
+        
+        .nav-shot:hover,
+        .shot-item:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        .nav-shot.active,
+        .shot-item.active {
+            background: rgba(0, 122, 255, 0.15) !important;
+            color: #007AFF !important;
+        }
+        
+        .nav-shot-title {
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 12px !important;
+            font-weight: 400 !important;
+        }
+        
+        /* 상단 네비게이션 바 콘텐츠 (스크롤바 제거) */
+        .apple-nav-content {
+            max-width: 1440px !important;
+            margin: 0 auto !important;
+            padding: 0 22px !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            height: 100% !important;
+            overflow: visible !important;
+        }
+        
+        /* 푸터 스타일 */
+        footer {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            text-align: center !important;
+            padding: 10px !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            font-size: 0.85rem !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+            z-index: 99 !important;
+            height: 40px !important;
+        }
+        
+        /* 모든 버튼 기본 스타일 제거 */
+        button {
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+        
+        /* 샷 카드 스타일 - 컨셉아트 카드와 동일 */
+        .shot-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+            gap: 20px !important;
+            margin-top: 20px !important;
+        }
+        
+        .shot-card {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .shot-card:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.15) !important;
+        }
+        
+        /* 스크롤바 스타일 */
+        ::-webkit-scrollbar {
+            width: 10px !important;
+            height: 10px !important;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 5px !important;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 5px !important;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="apple-nav">
+        <div class="apple-nav-content">
+            <a href="../index.html#features" class="nav-brand">🎬 Film Storyboard</a>
+            <ul class="nav-menu">
+                <li><a href="../index.html#features" class="nav-link">MAKE FILM</a></li>
+                <li><a href="../concept-art/index.html" class="nav-link">컨셉아트</a></li>
+                <li><a href="../media-gallery-apple.html" class="nav-link">미디어 갤러리</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Compact Header with Actions -->
+    <div class="storyboard-header">
+        <div class="storyboard-header-content">
+            <div class="storyboard-header-top">
+                <div class="storyboard-header-left">
+                    <div>
+                        <h1 class="storyboard-header-title">영상 프레임워크 스토리보드</h1>
+                        <p class="header-subtitle">시퀀스, 씬, 샷 단위로 체계적으로 관리하고 AI 도구와 연동하세요.</p>
+                    </div>
+                </div>
+                <div class="storyboard-header-buttons">
+                    <button id="import-btn" class="compact-btn compact-btn-primary">
+                        JSON 가져오기
+                    </button>
+                    <button id="export-btn" class="compact-btn compact-btn-primary" onclick="exportFullData()">
+                        JSON 내보내기 ↓
+                    </button>
+                    <button id="reset-btn" class="compact-btn compact-btn-danger">
+                        데이터 초기화
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <nav class="navigation">
+            <div class="nav-header">
+                <div class="project-header">
+                    <h3 id="nav-project-title">프로젝트 로딩 중...</h3>
+                    <small id="nav-project-description" style="color: rgba(255,255,255,0.6);">프로젝트 설명이 여기에 표시됩니다</small>
+                </div>
+                <div class="nav-controls">
+                    <button class="btn btn-secondary" id="expand-all-btn" onclick="if(window.expandAll) window.expandAll(); else console.error('expandAll not found');">전체 펼치기</button>
+                    <button class="btn btn-secondary" id="collapse-all-btn" onclick="if(window.collapseAll) window.collapseAll(); else console.error('collapseAll not found');">전체 접기</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="시퀀스, 씬, 샷 검색..." />
+                </div>
+            </div>
+            <div class="nav-tree-container">
+                <div class="nav-content" id="navigation-content">
+                    <div class="empty-state" id="nav-empty">
+                        <div class="empty-state-icon">📁</div>
+                        <div>데이터가 없습니다</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px;">JSON 가져오기를 사용해 데이터를 로드해주세요</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <div class="content-header">
+                    <div>
+                        <h1 class="content-title" id="content-title">프로젝트 선택</h1>
+                        <p class="content-subtitle" id="content-subtitle">좌측에서 시퀀스, 씬, 또는 샷을 선택하세요</p>
+                    </div>
+                    <div class="content-actions" id="content-actions" style="display: none;">
+                    </div>
+                </div>
+
+                <div id="content-area">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎬</div>
+                        <div>시퀀스, 씬, 또는 샷을 선택하여 상세 정보를 확인하세요</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="message-container" class="message-container"></div>
+
+    <input type="file" id="file-input" class="hidden-file-input" accept=".json">
+	<!-- 이미지 크게 보기 모달 -->
+		<div id="imageDisplayModal" class="image-modal" onclick="closeImageModal(event)">
+			<span class="image-modal-close" onclick="closeImageModal(event)">&times;</span>
+			<img class="image-modal-content" id="modalImageContent">
+		</div>
+
+    <!-- 외부 JavaScript 파일 -->
+    <script src="js/app.js"></script>
+</body>
+</html>
