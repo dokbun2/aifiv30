@@ -837,79 +837,72 @@
             const storyboardGallery = document.getElementById('storyboard-gallery');
             let mediaCount = 0;
             let hasMedia = false;
+            let galleryHTML = '';
             
-            // Try different localStorage keys - storyboardData is the primary key
-            const dataKeys = ['storyboardData'];
+            // First check for the main storyboardData key used by the storyboard page
+            const storyboardData = localStorage.getItem('storyboardData');
             
-            // Also check for breakdown data keys with file names
-            const allKeys = Object.keys(localStorage);
-            allKeys.forEach(key => {
-                if (key.startsWith('breakdownData_')) {
-                    dataKeys.push(key);
-                }
-            });
-            
-            for (const key of dataKeys) {
-                const data = localStorage.getItem(key);
-                if (data) {
-                    try {
-                        const parsedData = JSON.parse(data);
-                        
-                        // Handle different data structures
-                        let sequences = null;
-                        
-                        // Check for breakdown_data structure
-                        if (parsedData.breakdown_data && parsedData.breakdown_data.sequences) {
-                            sequences = parsedData.breakdown_data.sequences;
-                        } else if (parsedData.sequences) {
-                            sequences = parsedData.sequences;
-                        }
+            if (storyboardData) {
+                try {
+                    const parsedData = JSON.parse(storyboardData);
+                    console.log('Found storyboardData:', parsedData);
+                    
+                    // Handle the project structure
+                    if (parsedData.project && parsedData.project.sequences) {
+                        const sequences = parsedData.project.sequences;
                         
                         // Extract media from sequences > scenes > shots
-                        if (sequences && Array.isArray(sequences)) {
-                            let galleryHTML = '';
-                            
+                        if (Array.isArray(sequences)) {
                             sequences.forEach(sequence => {
                                 if (sequence.scenes && Array.isArray(sequence.scenes)) {
                                     sequence.scenes.forEach(scene => {
                                         if (scene.shots && Array.isArray(scene.shots)) {
                                             scene.shots.forEach(shot => {
                                                 // Main image URL
-                                                if (shot.main_image_url) {
+                                                if (shot.main_image_url && shot.main_image_url.trim() !== '') {
                                                     hasMedia = true;
                                                     mediaCount++;
                                                     galleryHTML += createGalleryItem({
                                                         url: shot.main_image_url,
                                                         title: shot.shot_number || shot.shot_id || '샷',
-                                                        subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
+                                                        subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                         type: 'image',
                                                         category: 'shot'
                                                     });
                                                 }
                                                 
                                                 // Video URL
-                                                if (shot.video_url) {
+                                                if (shot.video_url && shot.video_url.trim() !== '') {
                                                     hasMedia = true;
                                                     mediaCount++;
                                                     galleryHTML += createGalleryItem({
                                                         url: shot.video_url,
                                                         title: `${shot.shot_number || shot.shot_id || '샷'} 영상`,
-                                                        subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
+                                                        subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                         type: 'video',
                                                         category: 'shot'
                                                     });
                                                 }
                                                 
-                                                // Reference images array
+                                                // Reference images array - handle both object and string formats
                                                 if (shot.reference_images && Array.isArray(shot.reference_images)) {
                                                     shot.reference_images.forEach((refImg, idx) => {
-                                                        if (refImg && refImg.trim() !== '') {
+                                                        let imageUrl = '';
+                                                        
+                                                        // Handle different data formats
+                                                        if (typeof refImg === 'object' && refImg) {
+                                                            imageUrl = refImg.url || refImg.image_url || '';
+                                                        } else if (typeof refImg === 'string') {
+                                                            imageUrl = refImg;
+                                                        }
+                                                        
+                                                        if (imageUrl && imageUrl.trim() !== '') {
                                                             hasMedia = true;
                                                             mediaCount++;
                                                             galleryHTML += createGalleryItem({
-                                                                url: refImg,
+                                                                url: imageUrl,
                                                                 title: `${shot.shot_number || shot.shot_id || '샷'} 참조 ${idx + 1}`,
-                                                                subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
+                                                                subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                                 type: 'image',
                                                                 category: 'shot'
                                                             });
@@ -917,7 +910,7 @@
                                                     });
                                                 }
                                                 
-                                                // Reference images from stage6 data
+                                                // Also check for stage6 reference_image_slots
                                                 if (shot.reference_image_slots && Array.isArray(shot.reference_image_slots)) {
                                                     shot.reference_image_slots.forEach((slot, idx) => {
                                                         if (slot && slot.image_url && slot.image_url.trim() !== '') {
@@ -926,7 +919,7 @@
                                                             galleryHTML += createGalleryItem({
                                                                 url: slot.image_url,
                                                                 title: `${shot.shot_number || shot.shot_id || '샷'} 참조 ${idx + 1}`,
-                                                                subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
+                                                                subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                                 type: 'image',
                                                                 category: 'shot'
                                                             });
@@ -938,17 +931,55 @@
                                     });
                                 }
                             });
-                            
-                            if (hasMedia) {
-                                storyboardGallery.innerHTML = galleryHTML;
-                                break; // Found data, stop searching
-                            }
                         }
-                    } catch (e) {
-                        console.error(`Error parsing storyboard data from ${key}:`, e);
                     }
+                } catch (e) {
+                    console.error('Error parsing storyboard data:', e);
                 }
             }
+            
+            // Also check for breakdown data keys with different structure
+            const allKeys = Object.keys(localStorage);
+            allKeys.forEach(key => {
+                if (key.startsWith('breakdownData_') && !hasMedia) {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        try {
+                            const parsedData = JSON.parse(data);
+                            
+                            // Check for breakdown_data structure
+                            if (parsedData.breakdown_data && parsedData.breakdown_data.sequences) {
+                                const sequences = parsedData.breakdown_data.sequences;
+                                
+                                sequences.forEach(sequence => {
+                                    if (sequence.scenes && Array.isArray(sequence.scenes)) {
+                                        sequence.scenes.forEach(scene => {
+                                            if (scene.shots && Array.isArray(scene.shots)) {
+                                                scene.shots.forEach(shot => {
+                                                    // Process shots similar to above
+                                                    if (shot.main_image_url && shot.main_image_url.trim() !== '') {
+                                                        hasMedia = true;
+                                                        mediaCount++;
+                                                        galleryHTML += createGalleryItem({
+                                                            url: shot.main_image_url,
+                                                            title: shot.shot_number || shot.shot_id || '샷',
+                                                            subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
+                                                            type: 'image',
+                                                            category: 'shot'
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        } catch (e) {
+                            console.error(`Error parsing breakdown data from ${key}:`, e);
+                        }
+                    }
+                }
+            })
             
             if (!hasMedia) {
                 storyboardGallery.classList.add('empty');
