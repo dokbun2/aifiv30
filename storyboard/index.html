@@ -56,51 +56,7 @@
             margin: 0 !important;
         }
         
-        /* 스토리보드 헤더 스타일 - 컨셉아트와 동일 */
-        .storyboard-header {
-            background: rgba(0,0,0,0.7) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            padding: 12px 0 !important;
-            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
-            position: sticky !important;
-            top: 48px !important; /* 네비게이션 바 바로 아래에 붙도록 설정 */
-            z-index: 100 !important;
-            margin-top: 0 !important;
-        }
         
-        .storyboard-header-content {
-            max-width: 1440px !important;
-            margin: 0 auto !important;
-            padding: 0 22px !important;
-        }
-        
-        .storyboard-header-top {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            gap: 20px !important;
-        }
-        
-        
-        .storyboard-header-title {
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            color: rgba(255,255,255,0.9) !important;
-            margin: 0 !important;
-        }
-        
-        .header-subtitle {
-            font-size: 11px !important;
-            color: rgba(255,255,255,0.5) !important;
-            margin-top: 4px !important;
-        }
-        
-        .storyboard-header-buttons {
-            display: flex !important;
-            gap: 8px !important;
-            align-items: center !important;
-        }
         
         /* 컴팩트 버튼 스타일 - 컨셉아트와 동일 */
         .compact-btn {
@@ -825,31 +781,6 @@
             </ul>
         </div>
     </nav>
-    
-    <!-- Compact Header with Actions -->
-    <div class="storyboard-header">
-        <div class="storyboard-header-content">
-            <div class="storyboard-header-top">
-                <div class="storyboard-header-left">
-                    <div>
-                        <h1 class="storyboard-header-title">영상 프레임워크 스토리보드</h1>
-                        <p class="header-subtitle">시퀀스, 씬, 샷 단위로 체계적으로 관리하고 AI 도구와 연동하세요.</p>
-                    </div>
-                </div>
-                <div class="storyboard-header-buttons">
-                    <button id="import-btn" class="compact-btn compact-btn-primary">
-                        JSON 가져오기
-                    </button>
-                    <button id="export-btn" class="compact-btn compact-btn-primary" onclick="exportFullData()">
-                        JSON 내보내기 ↓
-                    </button>
-                    <button id="reset-btn" class="compact-btn compact-btn-danger">
-                        데이터 초기화
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="main-layout">
         <nav class="navigation">
