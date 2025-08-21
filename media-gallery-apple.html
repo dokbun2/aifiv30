@@ -266,7 +266,7 @@
             top: calc(100% + 4px);
             left: 0;
             right: 0;
-            background: rgba(30, 30, 30, 0.98);
+            background: rgb(30, 30, 30);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             overflow: hidden;
@@ -274,12 +274,13 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.2s;
-            z-index: 1000;
+            z-index: 10000;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
             max-height: 200px;
             overflow-y: auto;
+            pointer-events: none;
         }
         
         .custom-dropdown.active .dropdown-options {
