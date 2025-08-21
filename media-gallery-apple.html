@@ -355,10 +355,45 @@
         /* Gallery Grid - 컴팩트한 카드 스타일 */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
             min-height: 400px;
             position: relative;
+        }
+        
+        /* Scene Group Styles */
+        .scene-group {
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .scene-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .scene-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 4px;
+        }
+        
+        .scene-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .scene-shots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            grid-auto-flow: dense;
         }
         
         /* When gallery has empty state class */
@@ -371,7 +406,7 @@
         .gallery-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -387,14 +422,35 @@
         
         .gallery-item-image {
             width: 100%;
-            height: 180px;
-            object-fit: cover;
+            height: 150px;
+            object-fit: contain;
             background: rgba(0, 0, 0, 0.4);
+            display: block;
+            cursor: pointer;
+        }
+        
+        /* 가로형 이미지 - 더 넓게 */
+        .gallery-item.landscape {
+            grid-column: span 2;
+        }
+        
+        .gallery-item.landscape .gallery-item-image {
+            height: 120px;
+        }
+        
+        /* 세로형 이미지 */
+        .gallery-item.portrait .gallery-item-image {
+            height: 180px;
+        }
+        
+        /* 정사각형 이미지 */
+        .gallery-item.square .gallery-item-image {
+            height: 150px;
         }
         
         .gallery-item-video {
             width: 100%;
-            height: 180px;
+            height: 120px;
             background: rgba(0, 0, 0, 0.6);
             position: relative;
             display: flex;
@@ -403,14 +459,14 @@
         }
         
         .video-play-btn {
-            width: 48px;
-            height: 48px;
+            width: 32px;
+            height: 32px;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 14px;
             color: #000;
             transition: all 0.3s;
         }
@@ -421,21 +477,21 @@
         }
         
         .gallery-item-info {
-            padding: 12px;
+            padding: 8px;
         }
         
         .gallery-item-title {
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 600;
             color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         
         .gallery-item-subtitle {
-            font-size: 12px;
+            font-size: 10px;
             color: rgba(255, 255, 255, 0.5);
             overflow: hidden;
             text-overflow: ellipsis;
@@ -556,6 +612,25 @@
             transform: rotate(90deg);
         }
         
+        /* No image placeholder */
+        .no-image-placeholder {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+        
+        .no-image-placeholder .empty-state-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            opacity: 0.3;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .gallery-main-layout {
@@ -569,6 +644,15 @@
             .gallery-grid {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 16px;
+            }
+            
+            .scene-group {
+                padding: 15px;
+            }
+            
+            .scene-shots {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
             }
             
             .tab-buttons {
@@ -889,13 +973,14 @@
             console.log('=== 전체 미디어 로딩 완료 ===');
         }
         
-        // Load storyboard media
+        // Load storyboard media with scene grouping
         function loadStoryboardMedia() {
             console.log('>>> loadStoryboardMedia 시작');
             const storyboardGallery = document.getElementById('storyboard-gallery');
             let mediaCount = 0;
             let hasMedia = false;
             let galleryHTML = '';
+            let sceneGroups = {}; // Store shots grouped by scene
             
             // Check for breakdownData_ keys (actual keys used by storyboard)
             const allKeys = Object.keys(localStorage);
@@ -943,7 +1028,16 @@
                                                 if (imageData && imageData.url && imageData.url.trim() !== '') {
                                                     hasMedia = true;
                                                     mediaCount++;
-                                                    galleryHTML += createGalleryItem({
+                                                    // Store in scene groups for later rendering
+                                                    const sceneKey = shot.scene_id || 'ungrouped';
+                                                    if (!sceneGroups[sceneKey]) {
+                                                        sceneGroups[sceneKey] = {
+                                                            sceneTitle: shot.scene_title || shot.scene_id || '씬',
+                                                            sequenceTitle: shot.sequence_title || shot.sequence_id || '시퀀스',
+                                                            shots: []
+                                                        };
+                                                    }
+                                                    sceneGroups[sceneKey].shots.push({
                                                         url: imageData.url,
                                                         title: `${shot.shot_number || shot.shot_id || shot.id || '샷'} - ${aiTool}`,
                                                         subtitle: shot.shot_title || shot.description || '',
@@ -1127,10 +1221,10 @@
                 } catch (e) {
                     console.error('Error parsing storyboard data:', e);
                 }
-            }
+            });
             
             // Also check for breakdown data keys with different structure
-            const allKeys = Object.keys(localStorage);
+            // Re-use existing allKeys variable
             allKeys.forEach(key => {
                 if (key.startsWith('breakdownData_') && !hasMedia) {
                     const data = localStorage.getItem(key);
@@ -1214,8 +1308,9 @@
                         }
                     }
                 }
-            })
+            });
             
+            // Render scene groups
             if (!hasMedia) {
                 storyboardGallery.classList.add('empty');
                 storyboardGallery.innerHTML = `
@@ -1227,6 +1322,27 @@
                 `;
             } else {
                 storyboardGallery.classList.remove('empty');
+                
+                // Render scene groups
+                let finalHTML = '';
+                Object.keys(sceneGroups).forEach(sceneKey => {
+                    const group = sceneGroups[sceneKey];
+                    if (group.shots && group.shots.length > 0) {
+                        finalHTML += createSceneGroup(
+                            sceneKey,
+                            group.sceneTitle,
+                            group.sequenceTitle,
+                            group.shots
+                        );
+                    }
+                });
+                
+                // If no scene groups but has gallery HTML, use the regular grid
+                if (!finalHTML && galleryHTML) {
+                    finalHTML = galleryHTML;
+                }
+                
+                storyboardGallery.innerHTML = finalHTML;
             }
             
             updateMediaCount('storyboard', mediaCount);
@@ -1372,10 +1488,11 @@
             }
         }
         
-        // Create gallery item HTML
+        // Create gallery item HTML with aspect ratio detection
         function createGalleryItem(item) {
             const isVideo = item.type === 'video';
             const isGoogleDrive = item.url && item.url.includes('drive.google.com');
+            const itemId = 'gallery-item-' + Math.random().toString(36).substr(2, 9);
             
             // Convert Google Drive URL to embed format if needed
             let displayUrl = item.url;
@@ -1387,19 +1504,71 @@
             }
             
             return `
-                <div class="gallery-item" data-category="${item.category || 'all'}" data-type="${item.type}">
+                <div class="gallery-item" id="${itemId}" data-category="${item.category || 'all'}" data-type="${item.type}">
                     ${isVideo ? `
                         <div class="gallery-item-video" onclick="openLightbox('${displayUrl}', 'video')">
                             <div class="video-play-btn">▶</div>
                         </div>
                     ` : `
                         <img class="gallery-item-image" src="${item.url}" alt="${item.title}" 
-                             onclick="openLightbox('${item.url}', 'image')" 
+                             onclick="event.stopPropagation(); openLightbox('${item.url.replace(/'/g, "\\'")}', 'image')"
+                             onload="detectImageRatio('${itemId}', this)"
                              onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=\"no-image-placeholder\"><div class=\"empty-state-icon\">🖼️</div><div>이미지 로드 실패</div></div>'">
                     `}
                     <div class="gallery-item-info">
                         <div class="gallery-item-title">${item.title}</div>
                         ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Detect image aspect ratio and add appropriate class
+        function detectImageRatio(itemId, img) {
+            const item = document.getElementById(itemId);
+            if (!item) return;
+            
+            const width = img.naturalWidth;
+            const height = img.naturalHeight;
+            
+            if (!width || !height) {
+                // 이미지가 로드되지 않은 경우 기본값
+                console.log('Image dimensions not available for:', itemId);
+                return;
+            }
+            
+            const ratio = width / height;
+            
+            console.log(`Image ${itemId}: ${width}x${height}, ratio: ${ratio}`);
+            
+            // Remove existing ratio classes
+            item.classList.remove('landscape', 'portrait', 'square');
+            
+            // Add appropriate class based on ratio
+            if (ratio > 1.3) {
+                item.classList.add('landscape'); // 가로형
+                console.log('Added landscape class');
+            } else if (ratio < 0.77) {
+                item.classList.add('portrait'); // 세로형
+                console.log('Added portrait class');
+            } else {
+                item.classList.add('square'); // 정사각형
+                console.log('Added square class');
+            }
+        }
+        
+        // Create scene group HTML
+        function createSceneGroup(sceneId, sceneTitle, sequenceTitle, shots) {
+            let shotsHTML = shots.map(shot => createGalleryItem(shot)).join('');
+            
+            return `
+                <div class="scene-group" data-scene-id="${sceneId}">
+                    <div class="scene-header">
+                        <div class="scene-title">${sceneTitle || '씬'}</div>
+                        <div class="scene-subtitle">${sequenceTitle || '시퀀스'} • ${shots.length}개 샷</div>
+                    </div>
+                    <div class="scene-shots">
+                        ${shotsHTML}
                     </div>
                 </div>
             `;
