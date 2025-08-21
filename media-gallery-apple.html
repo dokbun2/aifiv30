@@ -696,6 +696,57 @@
     </div>
 
     <script>
+        // Custom Dropdown Functions
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const allDropdowns = document.querySelectorAll('.custom-dropdown');
+            
+            // Close other dropdowns
+            allDropdowns.forEach(d => {
+                if (d.id !== dropdownId) {
+                    d.classList.remove('active');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('active');
+        }
+        
+        function selectOption(dropdownId, value, text) {
+            const dropdown = document.getElementById(dropdownId);
+            const selected = dropdown.querySelector('.dropdown-selected');
+            const options = dropdown.querySelectorAll('.dropdown-option');
+            
+            // Update selected text
+            selected.textContent = text;
+            
+            // Update selected class
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.value === value) {
+                    opt.classList.add('selected');
+                }
+            });
+            
+            // Close dropdown
+            dropdown.classList.remove('active');
+            
+            // Store value for filtering
+            dropdown.dataset.value = value;
+            
+            // Trigger filter
+            filterGallery();
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+        
         // Tab switching
         function switchTab(tabName) {
             // Update buttons
@@ -716,20 +767,28 @@
         
         // Update filters based on selected tab
         function updateFilters(tabName) {
-            const categoryFilter = document.getElementById('category-filter');
-            categoryFilter.innerHTML = '<option value="all">전체</option>';
+            const categoryDropdown = document.getElementById('category-dropdown');
+            const optionsContainer = categoryDropdown.querySelector('.dropdown-options');
+            const selected = categoryDropdown.querySelector('.dropdown-selected');
             
+            // Reset selection
+            selected.textContent = '전체';
+            categoryDropdown.dataset.value = 'all';
+            
+            // Update options based on tab
             if (tabName === 'storyboard') {
-                categoryFilter.innerHTML += `
-                    <option value="sequence">시퀀스</option>
-                    <option value="scene">씬</option>
-                    <option value="shot">샷</option>
+                optionsContainer.innerHTML = `
+                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
+                    <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스')">시퀀스</div>
+                    <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬')">씬</div>
+                    <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷')">샷</div>
                 `;
             } else {
-                categoryFilter.innerHTML += `
-                    <option value="character">캐릭터</option>
-                    <option value="location">장소</option>
-                    <option value="prop">소품</option>
+                optionsContainer.innerHTML = `
+                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
+                    <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터')">캐릭터</div>
+                    <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소')">장소</div>
+                    <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품')">소품</div>
                 `;
             }
         }
@@ -1025,9 +1084,9 @@
         // Filter gallery items
         function filterGallery() {
             const activeTab = document.querySelector('.tab-button.active').dataset.tab;
-            const categoryFilter = document.getElementById('category-filter').value;
-            const typeFilter = document.getElementById('type-filter').value;
-            const sortFilter = document.getElementById('sort-filter').value;
+            const categoryFilter = document.getElementById('category-dropdown').dataset.value || 'all';
+            const typeFilter = document.getElementById('type-dropdown').dataset.value || 'all';
+            const sortFilter = document.getElementById('sort-dropdown').dataset.value || 'newest';
             
             const gallery = document.getElementById(`${activeTab}-gallery`);
             const items = gallery.querySelectorAll('.gallery-item');
@@ -1060,14 +1119,14 @@
             }
         }
         
-        // Add event listeners for filters
-        document.getElementById('category-filter').addEventListener('change', filterGallery);
-        document.getElementById('type-filter').addEventListener('change', filterGallery);
-        document.getElementById('sort-filter').addEventListener('change', filterGallery);
-        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
             loadAllMedia();
+            
+            // Initialize dropdown values
+            document.getElementById('category-dropdown').dataset.value = 'all';
+            document.getElementById('type-dropdown').dataset.value = 'all';
+            document.getElementById('sort-dropdown').dataset.value = 'newest';
         });
     </script>
 </body>
