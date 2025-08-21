@@ -287,6 +287,7 @@
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
         }
         
         .dropdown-option {
@@ -295,15 +296,19 @@
             cursor: pointer;
             transition: all 0.15s;
             font-size: 13px;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+            user-select: none;
         }
         
         .dropdown-option:hover {
-            background: rgba(0, 122, 255, 0.2);
+            background: rgba(0, 122, 255, 0.3);
             color: white;
         }
         
         .dropdown-option.selected {
-            background: rgba(0, 122, 255, 0.15);
+            background: rgba(0, 122, 255, 0.2);
             color: var(--apple-blue);
         }
         
@@ -610,15 +615,15 @@
                 <div class="filter-group">
                     <label class="filter-label">카테고리</label>
                     <div class="custom-dropdown" id="category-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('category-dropdown')">전체</div>
+                        <div class="dropdown-selected" onclick="toggleDropdown('category-dropdown', event)">전체</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
-                            <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터')">캐릭터</div>
-                            <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소')">장소</div>
-                            <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품')">소품</div>
-                            <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스')">시퀀스</div>
-                            <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬')">씬</div>
-                            <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷')">샷</div>
+                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
+                            <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터', event)">캐릭터</div>
+                            <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소', event)">장소</div>
+                            <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품', event)">소품</div>
+                            <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스', event)">시퀀스</div>
+                            <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬', event)">씬</div>
+                            <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷', event)">샷</div>
                         </div>
                     </div>
                 </div>
@@ -626,11 +631,11 @@
                 <div class="filter-group">
                     <label class="filter-label">미디어 유형</label>
                     <div class="custom-dropdown" id="type-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('type-dropdown')">전체</div>
+                        <div class="dropdown-selected" onclick="toggleDropdown('type-dropdown', event)">전체</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('type-dropdown', 'all', '전체')">전체</div>
-                            <div class="dropdown-option" data-value="image" onclick="selectOption('type-dropdown', 'image', '이미지')">이미지</div>
-                            <div class="dropdown-option" data-value="video" onclick="selectOption('type-dropdown', 'video', '영상')">영상</div>
+                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('type-dropdown', 'all', '전체', event)">전체</div>
+                            <div class="dropdown-option" data-value="image" onclick="selectOption('type-dropdown', 'image', '이미지', event)">이미지</div>
+                            <div class="dropdown-option" data-value="video" onclick="selectOption('type-dropdown', 'video', '영상', event)">영상</div>
                         </div>
                     </div>
                 </div>
@@ -638,11 +643,11 @@
                 <div class="filter-group">
                     <label class="filter-label">정렬</label>
                     <div class="custom-dropdown" id="sort-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('sort-dropdown')">최신순</div>
+                        <div class="dropdown-selected" onclick="toggleDropdown('sort-dropdown', event)">최신순</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="newest" onclick="selectOption('sort-dropdown', 'newest', '최신순')">최신순</div>
-                            <div class="dropdown-option" data-value="oldest" onclick="selectOption('sort-dropdown', 'oldest', '오래된순')">오래된순</div>
-                            <div class="dropdown-option" data-value="name" onclick="selectOption('sort-dropdown', 'name', '이름순')">이름순</div>
+                            <div class="dropdown-option selected" data-value="newest" onclick="selectOption('sort-dropdown', 'newest', '최신순', event)">최신순</div>
+                            <div class="dropdown-option" data-value="oldest" onclick="selectOption('sort-dropdown', 'oldest', '오래된순', event)">오래된순</div>
+                            <div class="dropdown-option" data-value="name" onclick="selectOption('sort-dropdown', 'name', '이름순', event)">이름순</div>
                         </div>
                     </div>
                 </div>
@@ -698,7 +703,11 @@
 
     <script>
         // Custom Dropdown Functions
-        function toggleDropdown(dropdownId) {
+        function toggleDropdown(dropdownId, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
             const dropdown = document.getElementById(dropdownId);
             const allDropdowns = document.querySelectorAll('.custom-dropdown');
             
@@ -713,7 +722,11 @@
             dropdown.classList.toggle('active');
         }
         
-        function selectOption(dropdownId, value, text) {
+        function selectOption(dropdownId, value, text, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
             const dropdown = document.getElementById(dropdownId);
             const selected = dropdown.querySelector('.dropdown-selected');
             const options = dropdown.querySelectorAll('.dropdown-option');
@@ -730,7 +743,9 @@
             });
             
             // Close dropdown
-            dropdown.classList.remove('active');
+            setTimeout(() => {
+                dropdown.classList.remove('active');
+            }, 100);
             
             // Store value for filtering
             dropdown.dataset.value = value;
@@ -779,17 +794,17 @@
             // Update options based on tab
             if (tabName === 'storyboard') {
                 optionsContainer.innerHTML = `
-                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
-                    <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스')">시퀀스</div>
-                    <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬')">씬</div>
-                    <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷')">샷</div>
+                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
+                    <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스', event)">시퀀스</div>
+                    <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬', event)">씬</div>
+                    <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷', event)">샷</div>
                 `;
             } else {
                 optionsContainer.innerHTML = `
-                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
-                    <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터')">캐릭터</div>
-                    <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소')">장소</div>
-                    <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품')">소품</div>
+                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
+                    <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터', event)">캐릭터</div>
+                    <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소', event)">장소</div>
+                    <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품', event)">소품</div>
                 `;
             }
         }
