@@ -1,0 +1,551 @@
+/* Shot Detail Apple Style CSS */
+/* 샷 상세 정보 페이지를 위한 Apple Developer 스타일 */
+
+:root {
+    --tab-active-bg: rgba(0, 122, 255, 0.15);
+    --tab-hover-bg: rgba(255, 255, 255, 0.05);
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --section-spacing: 30px;
+    --input-bg: rgba(0, 0, 0, 0.5);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-focus-border: #007AFF;
+}
+
+/* Tab Navigation - Apple Segment Control Style */
+.tabs {
+    margin-bottom: var(--section-spacing);
+}
+
+.tab-buttons {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 4px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.tab-button:hover:not(.active) {
+    background: var(--tab-hover-bg);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.tab-button.active {
+    background: var(--apple-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* Tab Content Animation */
+.tab-content {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tab-content.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tab-inner-wrapper {
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Info Section Cards */
+.info-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.info-section:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.info-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 20px 0 15px 0;
+}
+
+/* Info Table Styling */
+.info-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.info-table th,
+.info-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-table th {
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    width: 35%;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-table td {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+}
+
+.info-table tr:last-child th,
+.info-table tr:last-child td {
+    border-bottom: none;
+}
+
+.info-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Form Elements Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.7);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+/* Button Styling */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-btn,
+.edit-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+}
+
+.copy-btn:hover,
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.ai-edit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.ai-edit-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+}
+
+/* Image Section Styling */
+.image-design-plan-selector {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(118, 75, 162, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.plan-info h5 {
+    color: white;
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.plan-metadata {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.plan-metadata span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* AI Prompt Cards */
+.ai-prompts-grid-single {
+    display: grid;
+    gap: 20px;
+}
+
+.ai-prompt-grid-item {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ai-card-header {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.2), rgba(118, 75, 162, 0.2));
+    padding: 12px 20px;
+    font-weight: 600;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-image-section {
+    padding: 20px;
+}
+
+.ai-image-prompt-details {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.prompt-text-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.ai-image-prompt-full-text {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    line-height: 1.6;
+    font-family: 'SF Mono', 'Monaco', monospace;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Image Slot Card */
+.image-slot-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.image-slot-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.image-slot-preview {
+    width: 100%;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.image-slot-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Reference Image Grid */
+.reference-image-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.reference-image-slot {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.reference-image-slot:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--apple-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.15);
+}
+
+.reference-preview {
+    width: 100%;
+    height: 160px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Audio Section Styling */
+.audio-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.audio-player-area {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 40px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.audio-content-display {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 60px;
+}
+
+/* Music Section Styling */
+.music-ost-section {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tab-buttons {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .tab-button {
+        flex: 1;
+        min-width: 80px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .reference-image-slots-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-table th {
+        width: 40%;
+    }
+}
+
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    to {
+        left: 100%;
+    }
+}
+
+/* Hover Effects */
+.hover-scale {
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Focus Styles */
+*:focus-visible {
+    outline: 2px solid var(--apple-blue);
+    outline-offset: 2px;
+}
+
+/* Disabled States */
+:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Success/Error States */
+.success {
+    border-color: #30D158 !important;
+}
+
+.error {
+    border-color: #FF453A !important;
+}
+
+/* Tooltip Styles */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
