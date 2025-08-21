@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="../apple-developer-style.css">
     <!-- Shot Detail Apple Style CSS -->
     <link rel="stylesheet" href="css/shot-detail-apple.css">
+    <!-- Image Display Improvements CSS -->
+    <link rel="stylesheet" href="css/image-display-improvements.css">
     
     <style>
         /* Additional styles for storyboard - matching concept art */
@@ -66,6 +68,7 @@
             font-size: 16px;
             font-weight: 600;
             color: rgba(255,255,255,0.9);
+            margin: 0;
         }
         
         .storyboard-header-buttons {
@@ -492,8 +495,8 @@
         <div class="nav-content">
             <a href="../index.html" class="nav-brand">STORYBOARD</a>
             <ul class="nav-menu">
+                <li><a href="../index.html" class="nav-link">홈</a></li>
                 <li><a href="../concept-art/index.html" class="nav-link">컨셉아트</a></li>
-                <li><a href="#" class="nav-link active">스토리보드</a></li>
                 <li><a href="../media-gallery-apple.html" class="nav-link">미디어 갤러리</a></li>
             </ul>
         </div>
@@ -504,16 +507,17 @@
         <div class="storyboard-header-content">
             <div class="storyboard-header-top">
                 <div class="storyboard-header-left">
-                    <h1 class="storyboard-header-title">영상 프레임워크 스토리보드</h1>
+                    <div>
+                        <h1 class="storyboard-header-title">영상 프레임워크 스토리보드</h1>
+                        <p class="header-subtitle" id="project-info">프로젝트를 로드하거나 JSON 파일을 가져오세요</p>
+                    </div>
                 </div>
                 <div class="storyboard-header-buttons">
                     <button class="compact-btn compact-btn-primary" onclick="document.getElementById('file-input').click()">JSON 가져오기</button>
-                    <button class="compact-btn compact-btn-primary" onclick="if(window.exportJSON) window.exportJSON()">JSON 내보내기</button>
-                    <button class="compact-btn" onclick="if(window.resetToDefaults) window.resetToDefaults()">샘플 데이터</button>
-                    <button class="compact-btn compact-btn-danger" onclick="if(confirm('모든 데이터를 삭제하시겠습니까?')) { if(window.clearAllData) window.clearAllData() }">초기화</button>
+                    <button class="compact-btn compact-btn-primary" onclick="if(window.exportJSON) window.exportJSON()">JSON 내보내기 ↓</button>
+                    <button class="compact-btn compact-btn-danger" onclick="if(confirm('모든 데이터를 삭제하시겠습니까?')) { if(window.clearAllData) window.clearAllData() }">데이터 초기화</button>
                 </div>
             </div>
-            <div class="header-subtitle" id="project-info">프로젝트를 로드하거나 JSON 파일을 가져오세요</div>
         </div>
     </div>
     

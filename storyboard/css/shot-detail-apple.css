@@ -342,24 +342,26 @@
 .image-slot-preview {
     width: 100%;
     min-height: 200px;
-    max-height: 500px;
+    height: auto;
     background: rgba(0, 0, 0, 0.6);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 15px;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
+    padding: 10px;
 }
 
 .image-slot-preview img {
     width: 100%;
     height: auto;
-    max-height: 500px;
+    max-height: 600px;
     object-fit: contain;
     display: block;
+    margin: 0 auto;
 }
 
 /* Reference Image Grid */
@@ -387,24 +389,26 @@
 .reference-preview {
     width: 100%;
     min-height: 160px;
-    max-height: 300px;
+    height: auto;
     background: rgba(0, 0, 0, 0.6);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
+    padding: 8px;
 }
 
 .reference-preview img {
     width: 100%;
     height: auto;
-    max-height: 300px;
+    max-height: 400px;
     object-fit: contain;
     display: block;
+    margin: 0 auto;
 }
 
 /* Audio Section Styling */

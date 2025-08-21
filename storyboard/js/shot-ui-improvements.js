@@ -264,7 +264,8 @@ function updatePreviewImage(preview, url) {
     
     const img = new Image();
     img.onload = function() {
-        preview.innerHTML = `<img src="${url}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
+        // object-fit을 contain으로 변경하여 이미지가 잘리지 않도록 함
+        preview.innerHTML = `<img src="${url}" alt="Preview" style="width: 100%; height: auto; max-height: 600px; object-fit: contain; display: block; margin: 0 auto;">`;
         preview.classList.remove('loading');
         preview.classList.add('loaded');
     };
