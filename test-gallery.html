@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 갤러리 테스트</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+        .data-display {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0055ff;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>미디어 갤러리 데이터 테스트</h1>
+    
+    <div class="section">
+        <h2>1. LocalStorage 키 확인</h2>
+        <button onclick="checkLocalStorageKeys()">localStorage 키 확인</button>
+        <div id="keys-display" class="data-display"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. 스토리보드 데이터 확인</h2>
+        <button onclick="checkStoryboardData()">스토리보드 데이터 확인</button>
+        <div id="storyboard-display" class="data-display"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. 컨셉아트 데이터 확인</h2>
+        <button onclick="checkConceptArtData()">컨셉아트 데이터 확인</button>
+        <div id="conceptart-display" class="data-display"></div>
+    </div>
+    
+    <div class="section">
+        <h2>4. 이미지 URL 추출</h2>
+        <button onclick="extractAllImages()">모든 이미지 URL 추출</button>
+        <div id="images-display" class="data-display"></div>
+    </div>
+    
+    <div class="section">
+        <h2>5. 테스트 데이터 생성</h2>
+        <button onclick="createTestData()">테스트 데이터 생성</button>
+        <button onclick="clearTestData()">테스트 데이터 삭제</button>
+        <div id="test-display" class="data-display"></div>
+    </div>
+
+    <script>
+        function checkLocalStorageKeys() {
+            const display = document.getElementById('keys-display');
+            const keys = Object.keys(localStorage);
+            
+            if (keys.length === 0) {
+                display.innerHTML = '<span class="warning">⚠️ localStorage가 비어있습니다.</span>';
+                return;
+            }
+            
+            let html = '<h3>발견된 localStorage 키:</h3><ul>';
+            keys.forEach(key => {
+                const size = localStorage.getItem(key).length;
+                const isStoryboard = key.toLowerCase().includes('storyboard');
+                const isConceptArt = key.toLowerCase().includes('concept');
+                const label = isStoryboard ? '🎬' : (isConceptArt ? '🎨' : '📄');
+                html += `<li>${label} <strong>${key}</strong> (${size} bytes)</li>`;
+            });
+            html += '</ul>';
+            display.innerHTML = html;
+        }
+        
+        function checkStoryboardData() {
+            const display = document.getElementById('storyboard-display');
+            const possibleKeys = ['storyboard_data', 'storyboardData', 'project_data', 'storyboard'];
+            let foundData = false;
+            
+            // Check all localStorage keys that might contain storyboard
+            const allKeys = Object.keys(localStorage);
+            allKeys.forEach(key => {
+                if (key.toLowerCase().includes('storyboard') && !possibleKeys.includes(key)) {
+                    possibleKeys.push(key);
+                }
+            });
+            
+            for (const key of possibleKeys) {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        foundData = true;
+                        
+                        let imageCount = 0;
+                        let videoCount = 0;
+                        let structure = '데이터 구조:\n';
+                        
+                        // Analyze structure
+                        if (parsed.sequences) {
+                            structure += `- sequences: ${parsed.sequences.length}개\n`;
+                            parsed.sequences.forEach((seq, i) => {
+                                structure += `  - 시퀀스 ${i + 1}: ${seq.title || 'No title'}\n`;
+                                if (seq.scenes) {
+                                    structure += `    - scenes: ${seq.scenes.length}개\n`;
+                                    seq.scenes.forEach(scene => {
+                                        if (scene.shots) {
+                                            scene.shots.forEach(shot => {
+                                                if (shot.main_image_url) imageCount++;
+                                                if (shot.video_url) videoCount++;
+                                                if (shot.reference_images) {
+                                                    imageCount += shot.reference_images.filter(img => img).length;
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        
+                        display.innerHTML = `
+                            <h3 class="success">✅ 스토리보드 데이터 발견: ${key}</h3>
+                            <pre>${structure}</pre>
+                            <p>📷 이미지: ${imageCount}개</p>
+                            <p>🎥 비디오: ${videoCount}개</p>
+                            <details>
+                                <summary>전체 데이터 보기</summary>
+                                <pre>${JSON.stringify(parsed, null, 2)}</pre>
+                            </details>
+                        `;
+                        return;
+                    } catch (e) {
+                        display.innerHTML += `<p class="error">❌ ${key} 파싱 실패: ${e.message}</p>`;
+                    }
+                }
+            }
+            
+            if (!foundData) {
+                display.innerHTML = '<span class="error">❌ 스토리보드 데이터를 찾을 수 없습니다.</span>';
+            }
+        }
+        
+        function checkConceptArtData() {
+            const display = document.getElementById('conceptart-display');
+            const key = 'conceptArtManagerData_v1.2';
+            const data = localStorage.getItem(key);
+            
+            if (!data) {
+                display.innerHTML = '<span class="error">❌ 컨셉아트 데이터를 찾을 수 없습니다.</span>';
+                return;
+            }
+            
+            try {
+                const parsed = JSON.parse(data);
+                let imageCount = 0;
+                let structure = '데이터 구조:\n';
+                
+                ['characters', 'locations', 'props'].forEach(category => {
+                    if (parsed[category] && Array.isArray(parsed[category])) {
+                        structure += `- ${category}: ${parsed[category].length}개\n`;
+                        parsed[category].forEach(item => {
+                            if (item.image_url) imageCount++;
+                            if (item.additionalImages) {
+                                imageCount += item.additionalImages.filter(img => img && img.url).length;
+                            }
+                            if (item.imageGallery) {
+                                imageCount += item.imageGallery.filter(img => img && img.url).length;
+                            }
+                        });
+                    }
+                });
+                
+                display.innerHTML = `
+                    <h3 class="success">✅ 컨셉아트 데이터 발견</h3>
+                    <pre>${structure}</pre>
+                    <p>📷 총 이미지: ${imageCount}개</p>
+                    <details>
+                        <summary>전체 데이터 보기</summary>
+                        <pre>${JSON.stringify(parsed, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (e) {
+                display.innerHTML = `<span class="error">❌ 데이터 파싱 실패: ${e.message}</span>`;
+            }
+        }
+        
+        function extractAllImages() {
+            const display = document.getElementById('images-display');
+            let allImages = [];
+            
+            // Extract from storyboard
+            const storyboardKeys = ['storyboard_data', 'storyboardData', 'project_data'];
+            for (const key of storyboardKeys) {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (parsed.sequences) {
+                            parsed.sequences.forEach(seq => {
+                                if (seq.scenes) {
+                                    seq.scenes.forEach(scene => {
+                                        if (scene.shots) {
+                                            scene.shots.forEach(shot => {
+                                                if (shot.main_image_url) {
+                                                    allImages.push({
+                                                        url: shot.main_image_url,
+                                                        type: 'storyboard',
+                                                        label: `${seq.title} - ${scene.title} - ${shot.shot_number}`
+                                                    });
+                                                }
+                                                if (shot.video_url) {
+                                                    allImages.push({
+                                                        url: shot.video_url,
+                                                        type: 'video',
+                                                        label: `${seq.title} - ${scene.title} - ${shot.shot_number} (비디오)`
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    } catch (e) {}
+                }
+            }
+            
+            // Extract from concept art
+            const conceptData = localStorage.getItem('conceptArtManagerData_v1.2');
+            if (conceptData) {
+                try {
+                    const parsed = JSON.parse(conceptData);
+                    ['characters', 'locations', 'props'].forEach(category => {
+                        if (parsed[category]) {
+                            parsed[category].forEach(item => {
+                                if (item.image_url) {
+                                    allImages.push({
+                                        url: item.image_url,
+                                        type: 'conceptart',
+                                        label: `${category} - ${item.name}`
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } catch (e) {}
+            }
+            
+            if (allImages.length === 0) {
+                display.innerHTML = '<span class="warning">⚠️ 이미지를 찾을 수 없습니다.</span>';
+                return;
+            }
+            
+            let html = `<h3 class="success">✅ 발견된 이미지: ${allImages.length}개</h3><ul>`;
+            allImages.forEach(img => {
+                html += `<li>${img.type === 'video' ? '🎥' : '📷'} <a href="${img.url}" target="_blank">${img.label}</a></li>`;
+            });
+            html += '</ul>';
+            display.innerHTML = html;
+        }
+        
+        function createTestData() {
+            const testStoryboard = {
+                project_title: "테스트 프로젝트",
+                sequences: [
+                    {
+                        sequence_id: "seq1",
+                        title: "시퀀스 1",
+                        scenes: [
+                            {
+                                scene_id: "scene1",
+                                title: "씬 1",
+                                shots: [
+                                    {
+                                        shot_id: "shot1",
+                                        shot_number: "S01",
+                                        main_image_url: "https://picsum.photos/400/300?random=1",
+                                        video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                                        reference_images: [
+                                            "https://picsum.photos/300/200?random=2",
+                                            "https://picsum.photos/300/200?random=3"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+            
+            const testConceptArt = {
+                characters: [
+                    {
+                        name: "캐릭터 1",
+                        image_url: "https://picsum.photos/300/400?random=4",
+                        imageGallery: [
+                            { url: "https://picsum.photos/200/200?random=5", title: "갤러리 1" }
+                        ]
+                    }
+                ],
+                locations: [
+                    {
+                        name: "장소 1",
+                        image_url: "https://picsum.photos/400/200?random=6"
+                    }
+                ],
+                props: []
+            };
+            
+            localStorage.setItem('storyboard_data', JSON.stringify(testStoryboard));
+            localStorage.setItem('conceptArtManagerData_v1.2', JSON.stringify(testConceptArt));
+            
+            document.getElementById('test-display').innerHTML = '<span class="success">✅ 테스트 데이터가 생성되었습니다. 페이지를 새로고침하여 갤러리를 확인하세요.</span>';
+        }
+        
+        function clearTestData() {
+            localStorage.removeItem('storyboard_data');
+            localStorage.removeItem('conceptArtManagerData_v1.2');
+            document.getElementById('test-display').innerHTML = '<span class="warning">⚠️ 테스트 데이터가 삭제되었습니다.</span>';
+        }
+        
+        // Auto-check on load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkLocalStorageKeys();
+        });
+    </script>
+</body>
+</html>
