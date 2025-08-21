@@ -44,43 +44,48 @@ function loadStoryboardMediaSafe() {
     
     console.log(`발견된 breakdownData 키: ${breakdownKeys.length}개`);
     
-    // Process each key
+    // 먼저 간단한 방법으로 모든 이미지 URL 찾기
     breakdownKeys.forEach(key => {
-        try {
-            const data = localStorage.getItem(key);
-            if (!data) return;
+        const data = localStorage.getItem(key);
+        if (data) {
+            // Midjourney 이미지 찾기 (더 정확한 패턴)
+            const midjourneyRegex = /https?:\/\/cdn\.midjourney\.com\/[a-f0-9\-]+\/[^"'\s<>]+\.(png|jpg|jpeg|webp)/gi;
+            const midjourneyMatches = data.match(midjourneyRegex);
             
-            const parsed = JSON.parse(data);
-            console.log(`${key} 파싱 성공`);
-            
-            // Check for shots
-            if (parsed.breakdown_data && parsed.breakdown_data.shots) {
-                const shots = parsed.breakdown_data.shots;
-                console.log(`  샷 개수: ${shots.length}`);
+            if (midjourneyMatches) {
+                const uniqueUrls = [...new Set(midjourneyMatches)];
+                console.log(`${key}에서 Midjourney 이미지 ${uniqueUrls.length}개 발견`);
                 
-                // Process each shot
-                shots.forEach(shot => {
-                    // Check image_prompts
-                    if (shot.image_prompts) {
-                        ['midjourney', 'ideogram', 'leonardo', 'imagefx', 'openart', 'universal'].forEach(tool => {
-                            if (shot.image_prompts[tool] && shot.image_prompts[tool].images) {
-                                Object.values(shot.image_prompts[tool].images).forEach(img => {
-                                    if (img && img.url) {
-                                        mediaCount++;
-                                        galleryHTML += createGalleryItemSafe({
-                                            url: img.url,
-                                            title: `샷 - ${tool}`,
-                                            type: 'image'
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
+                uniqueUrls.forEach((url, index) => {
+                    // URL 정리
+                    const cleanUrl = url.trim().replace(/['"]/g, '');
+                    mediaCount++;
+                    galleryHTML += createGalleryItemSafe({
+                        url: cleanUrl,
+                        title: `Midjourney ${index + 1}`,
+                        type: 'image'
+                    });
+                    console.log(`이미지 추가: ${cleanUrl}`);
                 });
             }
-        } catch (e) {
-            console.error(`${key} 처리 오류:`, e);
+            
+            // 다른 이미지 URL 찾기 (Midjourney 제외)
+            const generalImageRegex = /https?:\/\/(?!cdn\.midjourney\.com)[^\s"'<>]+\.(jpg|jpeg|png|gif|webp)/gi;
+            const imageMatches = data.match(generalImageRegex);
+            
+            if (imageMatches) {
+                const uniqueUrls = [...new Set(imageMatches)];
+                
+                uniqueUrls.forEach((url, index) => {
+                    const cleanUrl = url.trim().replace(/['"]/g, '');
+                    mediaCount++;
+                    galleryHTML += createGalleryItemSafe({
+                        url: cleanUrl,
+                        title: `이미지 ${index + 1}`,
+                        type: 'image'
+                    });
+                });
+            }
         }
     });
     
@@ -164,14 +169,27 @@ function loadConceptArtMediaSafe() {
 // Safe gallery item creator
 function createGalleryItemSafe(item) {
     const isVideo = item.type === 'video';
+    
+    // Clean up URL (remove any trailing quotes or special characters)
+    let cleanUrl = item.url;
+    if (cleanUrl) {
+        cleanUrl = cleanUrl.replace(/["'<>]/g, '').trim();
+    }
+    
     return `
         <div class="gallery-item" data-type="${item.type}">
             ${isVideo ? 
                 `<div class="gallery-item-video">
-                    <iframe src="${item.url}" frameborder="0"></iframe>
+                    <iframe src="${cleanUrl}" frameborder="0" allowfullscreen></iframe>
                 </div>` :
-                `<div class="gallery-item-image">
-                    <img src="${item.url}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"300\" height=\"200\"><rect fill=\"%23333\" width=\"300\" height=\"200\"/><text fill=\"%23999\" x=\"50%\" y=\"50%\" text-anchor=\"middle\">로드 실패</text></svg>'">
+                `<div class="gallery-item-image" onclick="openLightbox('${cleanUrl}', 'image')">
+                    <img src="${cleanUrl}" 
+                         alt="${item.title}" 
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\'%3E%3Crect fill=\\'%23333\\' width=\\'300\\' height=\\'200\\'/%3E%3Ctext fill=\\'%23999\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3E로드 실패%3C/text%3E%3C/svg%3E';">
+                    <div class="gallery-item-overlay">
+                        <span>🔍</span>
+                    </div>
                 </div>`
             }
             <div class="gallery-item-info">
