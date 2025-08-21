@@ -212,9 +212,15 @@
             letter-spacing: 0.5px;
         }
         
-        .filter-select {
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
             width: 100%;
-            padding: 8px 12px;
+        }
+        
+        .dropdown-selected {
+            width: 100%;
+            padding: 8px 35px 8px 12px;
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
@@ -222,47 +228,82 @@
             font-size: 13px;
             cursor: pointer;
             transition: all 0.2s;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23ffffff' fill-opacity='0.6' d='M6 8L2 4h8z'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 35px;
-            position: relative;
             display: block;
+            position: relative;
+            user-select: none;
         }
         
-        .filter-select:hover {
+        .dropdown-selected::after {
+            content: "";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s;
+        }
+        
+        .custom-dropdown.active .dropdown-selected::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        
+        .dropdown-selected:hover {
             border-color: var(--apple-blue);
-            background-color: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.7);
         }
         
-        .filter-select:focus {
-            outline: none;
+        .custom-dropdown.active .dropdown-selected {
             border-color: var(--apple-blue);
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
         
-        .filter-select option {
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
             background: rgba(30, 30, 30, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .custom-dropdown.active .dropdown-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-option {
+            padding: 10px 12px;
             color: rgba(255, 255, 255, 0.9);
-            padding: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 13px;
         }
         
-        /* Ensure dropdown opens below the select */
-        .filter-select::-webkit-calendar-picker-indicator {
-            display: none;
+        .dropdown-option:hover {
+            background: rgba(0, 122, 255, 0.2);
+            color: white;
         }
         
-        select.filter-select {
-            position: relative;
-        }
-        
-        /* Fix for dropdown positioning */
-        .filter-group select {
-            position: relative;
-            z-index: 999;
+        .dropdown-option.selected {
+            background: rgba(0, 122, 255, 0.15);
+            color: var(--apple-blue);
         }
         
         /* Content Area */
@@ -567,33 +608,42 @@
                 <!-- Filters -->
                 <div class="filter-group">
                     <label class="filter-label">카테고리</label>
-                    <select class="filter-select" id="category-filter">
-                        <option value="all">전체</option>
-                        <option value="character">캐릭터</option>
-                        <option value="location">장소</option>
-                        <option value="prop">소품</option>
-                        <option value="sequence">시퀀스</option>
-                        <option value="scene">씬</option>
-                        <option value="shot">샷</option>
-                    </select>
+                    <div class="custom-dropdown" id="category-dropdown">
+                        <div class="dropdown-selected" onclick="toggleDropdown('category-dropdown')">전체</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체')">전체</div>
+                            <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터')">캐릭터</div>
+                            <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소')">장소</div>
+                            <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품')">소품</div>
+                            <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스')">시퀀스</div>
+                            <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬')">씬</div>
+                            <div class="dropdown-option" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷')">샷</div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="filter-group">
                     <label class="filter-label">미디어 유형</label>
-                    <select class="filter-select" id="type-filter">
-                        <option value="all">전체</option>
-                        <option value="image">이미지</option>
-                        <option value="video">영상</option>
-                    </select>
+                    <div class="custom-dropdown" id="type-dropdown">
+                        <div class="dropdown-selected" onclick="toggleDropdown('type-dropdown')">전체</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('type-dropdown', 'all', '전체')">전체</div>
+                            <div class="dropdown-option" data-value="image" onclick="selectOption('type-dropdown', 'image', '이미지')">이미지</div>
+                            <div class="dropdown-option" data-value="video" onclick="selectOption('type-dropdown', 'video', '영상')">영상</div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="filter-group">
                     <label class="filter-label">정렬</label>
-                    <select class="filter-select" id="sort-filter">
-                        <option value="newest">최신순</option>
-                        <option value="oldest">오래된순</option>
-                        <option value="name">이름순</option>
-                    </select>
+                    <div class="custom-dropdown" id="sort-dropdown">
+                        <div class="dropdown-selected" onclick="toggleDropdown('sort-dropdown')">최신순</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option selected" data-value="newest" onclick="selectOption('sort-dropdown', 'newest', '최신순')">최신순</div>
+                            <div class="dropdown-option" data-value="oldest" onclick="selectOption('sort-dropdown', 'oldest', '오래된순')">오래된순</div>
+                            <div class="dropdown-option" data-value="name" onclick="selectOption('sort-dropdown', 'name', '이름순')">이름순</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -692,22 +742,192 @@
         
         // Load storyboard media
         function loadStoryboardMedia() {
-            // Load from localStorage or fetch from storyboard data
-            const storyboardData = localStorage.getItem('storyboardData');
-            if (storyboardData) {
-                // Parse and display storyboard media
-                updateMediaCount('storyboard', 0); // Update with actual count
+            const storyboardGallery = document.getElementById('storyboard-gallery');
+            let mediaCount = 0;
+            let hasMedia = false;
+            
+            // Try different localStorage keys
+            const dataKeys = ['storyboard_data', 'storyboardData', 'project_data'];
+            
+            for (const key of dataKeys) {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    try {
+                        const parsedData = JSON.parse(data);
+                        
+                        // Extract media from sequences > scenes > shots
+                        if (parsedData.sequences && Array.isArray(parsedData.sequences)) {
+                            let galleryHTML = '';
+                            
+                            parsedData.sequences.forEach(sequence => {
+                                if (sequence.scenes && Array.isArray(sequence.scenes)) {
+                                    sequence.scenes.forEach(scene => {
+                                        if (scene.shots && Array.isArray(scene.shots)) {
+                                            scene.shots.forEach(shot => {
+                                                // Main image
+                                                if (shot.main_image_url) {
+                                                    hasMedia = true;
+                                                    mediaCount++;
+                                                    galleryHTML += createGalleryItem({
+                                                        url: shot.main_image_url,
+                                                        title: shot.shot_number || `샷 ${shot.shot_id}`,
+                                                        subtitle: `${sequence.title} - ${scene.title}`,
+                                                        type: 'image',
+                                                        category: 'shot'
+                                                    });
+                                                }
+                                                
+                                                // Video URL
+                                                if (shot.video_url) {
+                                                    hasMedia = true;
+                                                    mediaCount++;
+                                                    galleryHTML += createGalleryItem({
+                                                        url: shot.video_url,
+                                                        title: `${shot.shot_number || `샷 ${shot.shot_id}`} 영상`,
+                                                        subtitle: `${sequence.title} - ${scene.title}`,
+                                                        type: 'video',
+                                                        category: 'shot'
+                                                    });
+                                                }
+                                                
+                                                // Reference images
+                                                if (shot.reference_images && Array.isArray(shot.reference_images)) {
+                                                    shot.reference_images.forEach((refImg, idx) => {
+                                                        if (refImg) {
+                                                            hasMedia = true;
+                                                            mediaCount++;
+                                                            galleryHTML += createGalleryItem({
+                                                                url: refImg,
+                                                                title: `${shot.shot_number || `샷 ${shot.shot_id}`} 참조 ${idx + 1}`,
+                                                                subtitle: `${sequence.title} - ${scene.title}`,
+                                                                type: 'image',
+                                                                category: 'shot'
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                            
+                            if (hasMedia) {
+                                storyboardGallery.innerHTML = galleryHTML;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error parsing storyboard data:', e);
+                    }
+                }
             }
+            
+            if (!hasMedia) {
+                storyboardGallery.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎬</div>
+                        <div class="empty-state-title">스토리보드 미디어가 없습니다</div>
+                        <div class="empty-state-text">스토리보드에서 이미지나 영상을 추가하면 여기에 표시됩니다</div>
+                    </div>
+                `;
+            }
+            
+            updateMediaCount('storyboard', mediaCount);
         }
         
         // Load concept art media
         function loadConceptArtMedia() {
-            // Load from localStorage or fetch from concept art data
+            const conceptArtGallery = document.getElementById('conceptart-gallery');
+            let mediaCount = 0;
+            let hasMedia = false;
+            
             const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            
             if (conceptArtData) {
-                // Parse and display concept art media
-                updateMediaCount('conceptart', 0); // Update with actual count
+                try {
+                    const parsedData = JSON.parse(conceptArtData);
+                    let galleryHTML = '';
+                    
+                    // Process each category
+                    const categories = ['characters', 'locations', 'props'];
+                    const categoryNames = {
+                        characters: '캐릭터',
+                        locations: '장소',
+                        props: '소품'
+                    };
+                    
+                    categories.forEach(category => {
+                        if (parsedData[category] && Array.isArray(parsedData[category])) {
+                            parsedData[category].forEach(item => {
+                                // Main image
+                                if (item.image_url) {
+                                    hasMedia = true;
+                                    mediaCount++;
+                                    galleryHTML += createGalleryItem({
+                                        url: item.image_url,
+                                        title: item.name || '이름 없음',
+                                        subtitle: categoryNames[category],
+                                        type: 'image',
+                                        category: category.slice(0, -1) // Remove 's' from category name
+                                    });
+                                }
+                                
+                                // Additional images
+                                if (item.additionalImages && Array.isArray(item.additionalImages)) {
+                                    item.additionalImages.forEach((img, idx) => {
+                                        if (img && img.url) {
+                                            hasMedia = true;
+                                            mediaCount++;
+                                            galleryHTML += createGalleryItem({
+                                                url: img.url,
+                                                title: `${item.name || '이름 없음'} - ${img.title || `추가 ${idx + 1}`}`,
+                                                subtitle: categoryNames[category],
+                                                type: 'image',
+                                                category: category.slice(0, -1)
+                                            });
+                                        }
+                                    });
+                                }
+                                
+                                // Image gallery
+                                if (item.imageGallery && Array.isArray(item.imageGallery)) {
+                                    item.imageGallery.forEach((img, idx) => {
+                                        if (img && img.url) {
+                                            hasMedia = true;
+                                            mediaCount++;
+                                            galleryHTML += createGalleryItem({
+                                                url: img.url,
+                                                title: img.title || `${item.name || '이름 없음'} 갤러리 ${idx + 1}`,
+                                                subtitle: `${categoryNames[category]} - ${img.description || ''}`,
+                                                type: 'image',
+                                                category: category.slice(0, -1)
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (hasMedia) {
+                        conceptArtGallery.innerHTML = galleryHTML;
+                    }
+                } catch (e) {
+                    console.error('Error parsing concept art data:', e);
+                }
             }
+            
+            if (!hasMedia) {
+                conceptArtGallery.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎨</div>
+                        <div class="empty-state-title">컨셉아트가 없습니다</div>
+                        <div class="empty-state-text">컨셉아트를 추가하면 여기에 표시됩니다</div>
+                    </div>
+                `;
+            }
+            
+            updateMediaCount('conceptart', mediaCount);
         }
         
         // Update media count
@@ -751,6 +971,99 @@
                 document.getElementById('lightbox-video').src = '';
             }
         }
+        
+        // Create gallery item HTML
+        function createGalleryItem(item) {
+            const isVideo = item.type === 'video';
+            const isGoogleDrive = item.url && item.url.includes('drive.google.com');
+            
+            // Convert Google Drive URL to embed format if needed
+            let displayUrl = item.url;
+            if (isGoogleDrive && isVideo) {
+                const fileId = extractGoogleDriveId(item.url);
+                if (fileId) {
+                    displayUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+            }
+            
+            return `
+                <div class="gallery-item" data-category="${item.category || 'all'}" data-type="${item.type}">
+                    ${isVideo ? `
+                        <div class="gallery-item-video" onclick="openLightbox('${displayUrl}', 'video')">
+                            <div class="video-play-btn">▶</div>
+                        </div>
+                    ` : `
+                        <img class="gallery-item-image" src="${item.url}" alt="${item.title}" 
+                             onclick="openLightbox('${item.url}', 'image')" 
+                             onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=\"no-image-placeholder\"><div class=\"empty-state-icon\">🖼️</div><div>이미지 로드 실패</div></div>'">
+                    `}
+                    <div class="gallery-item-info">
+                        <div class="gallery-item-title">${item.title}</div>
+                        ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Extract Google Drive file ID from URL
+        function extractGoogleDriveId(url) {
+            const patterns = [
+                /\/d\/([a-zA-Z0-9-_]+)/,
+                /id=([a-zA-Z0-9-_]+)/,
+                /\/file\/d\/([a-zA-Z0-9-_]+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+        
+        // Filter gallery items
+        function filterGallery() {
+            const activeTab = document.querySelector('.tab-button.active').dataset.tab;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            const sortFilter = document.getElementById('sort-filter').value;
+            
+            const gallery = document.getElementById(`${activeTab}-gallery`);
+            const items = gallery.querySelectorAll('.gallery-item');
+            
+            items.forEach(item => {
+                const category = item.dataset.category;
+                const type = item.dataset.type;
+                
+                let show = true;
+                
+                if (categoryFilter !== 'all' && category !== categoryFilter) {
+                    show = false;
+                }
+                
+                if (typeFilter !== 'all' && type !== typeFilter) {
+                    show = false;
+                }
+                
+                item.style.display = show ? '' : 'none';
+            });
+            
+            // Sort items if needed
+            if (sortFilter && items.length > 0) {
+                const itemsArray = Array.from(items);
+                const parent = items[0].parentNode;
+                
+                // Sort logic can be implemented here based on sortFilter value
+                // For now, just reappend in current order
+                itemsArray.forEach(item => parent.appendChild(item));
+            }
+        }
+        
+        // Add event listeners for filters
+        document.getElementById('category-filter').addEventListener('change', filterGallery);
+        document.getElementById('type-filter').addEventListener('change', filterGallery);
+        document.getElementById('sort-filter').addEventListener('change', filterGallery);
         
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
