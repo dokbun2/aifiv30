@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>미디어 갤러리 - AIFI</title>
-    <link rel="stylesheet" href="apple-design-system.css">
+    <link rel="stylesheet" href="apple-developer-style.css">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: var(--apple-bg-primary);
-            color: var(--apple-text-primary);
-            padding-top: var(--header-height);
+            background: var(--dark-bg);
+            color: var(--dark-text);
+            padding-top: var(--nav-height);
             min-height: 100vh;
         }
 
@@ -19,238 +19,238 @@
         .gallery-container {
             max-width: 1440px;
             margin: 0 auto;
-            padding: var(--spacing-2xl) var(--spacing-lg);
+            padding: 40px 22px;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .gallery-title {
+            font-size: 48px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .gallery-subtitle {
+            font-size: 18px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* Tab Navigation */
+        .tab-container {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--dark-text);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .tab-btn .count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Filter Bar */
         .filter-bar {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
             display: flex;
-            gap: var(--spacing-md);
+            gap: 16px;
             align-items: center;
-            margin-bottom: var(--spacing-xl);
-            padding: var(--spacing-md);
-            background: var(--apple-bg-secondary);
-            border-radius: var(--radius-lg);
             flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .filter-group {
             display: flex;
-            gap: var(--spacing-sm);
+            gap: 8px;
             align-items: center;
         }
 
         .filter-label {
-            font-size: var(--font-size-caption);
-            color: var(--apple-text-secondary);
-            min-width: 60px;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 14px;
         }
 
         .filter-select {
-            padding: var(--spacing-xs) var(--spacing-md);
-            background: var(--apple-bg-primary);
-            border: 1px solid var(--apple-border);
-            border-radius: var(--radius-sm);
-            font-size: var(--font-size-caption);
-            color: var(--apple-text-primary);
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--dark-text);
+            font-size: 14px;
             cursor: pointer;
-            transition: border-color var(--transition-fast);
+            transition: all 0.2s;
         }
 
         .filter-select:hover {
-            border-color: var(--apple-blue);
+            border-color: #667eea;
         }
 
         .filter-select:focus {
             outline: none;
-            border-color: var(--apple-blue);
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 200px;
-            padding: var(--spacing-xs) var(--spacing-md);
-            background: var(--apple-bg-primary);
-            border: 1px solid var(--apple-border);
-            border-radius: var(--radius-sm);
-            font-size: var(--font-size-caption);
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: var(--apple-blue);
-        }
-
-        /* View Toggle */
-        .view-toggle {
-            display: flex;
-            gap: 4px;
-            background: var(--apple-bg-tertiary);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-        }
-
-        .view-btn {
-            padding: var(--spacing-xs) var(--spacing-sm);
-            background: transparent;
-            border: none;
-            color: var(--apple-text-secondary);
-            cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: all var(--transition-fast);
-            font-size: 1.25rem;
-        }
-
-        .view-btn:hover {
-            background: var(--apple-bg-primary);
-        }
-
-        .view-btn.active {
-            background: var(--apple-bg-primary);
-            color: var(--apple-blue);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         /* Gallery Grid */
         .gallery-grid {
             display: grid;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-xl);
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 4px;
         }
 
-        .gallery-grid.grid-view {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-
-        .gallery-grid.compact-view {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 4px;
-        }
-
-        .gallery-grid.list-view {
-            grid-template-columns: 1fr;
-            gap: var(--spacing-xs);
-        }
-
-        /* Media Item */
-        .media-item {
-            position: relative;
-            background: var(--apple-bg-secondary);
-            border-radius: var(--radius-md);
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: all var(--transition-base);
-            aspect-ratio: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
         }
 
-        .media-item:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
+        .gallery-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            border-color: #667eea;
         }
 
-        .media-item.list-view {
-            aspect-ratio: auto;
+        .gallery-item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .gallery-item-video {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.6);
+            position: relative;
             display: flex;
             align-items: center;
-            padding: var(--spacing-md);
-            gap: var(--spacing-md);
+            justify-content: center;
         }
 
-        .media-thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .media-thumbnail.list-view {
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius-sm);
-        }
-
-        .media-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.7) 100%);
-            opacity: 0;
-            transition: opacity var(--transition-fast);
+        .video-play-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: var(--spacing-md);
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #000;
+            position: absolute;
+            transition: all 0.3s;
         }
 
-        .media-item:hover .media-overlay {
-            opacity: 1;
+        .gallery-item:hover .video-play-btn {
+            transform: scale(1.1);
+            background: white;
         }
 
-        .media-title {
-            color: white;
-            font-size: var(--font-size-caption);
+        .gallery-item-info {
+            padding: 16px;
+        }
+
+        .gallery-item-title {
+            font-size: 16px;
             font-weight: 600;
+            color: var(--dark-text);
             margin-bottom: 4px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .media-meta {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: var(--font-size-small);
-        }
-
-        .media-info {
-            flex: 1;
-        }
-
-        .media-info-title {
-            font-size: var(--font-size-body);
-            font-weight: 600;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .media-info-meta {
-            font-size: var(--font-size-caption);
-            color: var(--apple-text-secondary);
-        }
-
-        /* Media Type Badge */
-        .media-badge {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border-radius: var(--radius-sm);
-            font-size: var(--font-size-small);
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .media-badge.video {
-            background: rgba(255, 59, 48, 0.9);
-        }
-
-        .media-badge.image {
-            background: rgba(52, 199, 89, 0.9);
+        .gallery-item-subtitle {
+            font-size: 13px;
+            color: var(--dark-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* Lightbox */
         .lightbox {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            display: none;
+            z-index: 10000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .lightbox.active {
@@ -258,8 +258,8 @@
         }
 
         .lightbox-content {
-            max-width: 90vw;
-            max-height: 90vh;
+            max-width: 90%;
+            max-height: 90%;
             position: relative;
         }
 
@@ -267,50 +267,55 @@
             max-width: 100%;
             max-height: 90vh;
             object-fit: contain;
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
+        }
+
+        .lightbox-video {
+            width: 80vw;
+            height: 80vh;
+            border-radius: 16px;
+            background: black;
         }
 
         .lightbox-close {
             position: absolute;
-            top: var(--spacing-lg);
-            right: var(--spacing-lg);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
+            top: -40px;
+            right: 0;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all var(--transition-fast);
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .lightbox-close:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+            transform: rotate(90deg);
         }
 
         .lightbox-nav {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            color: white;
-            font-size: 1.25rem;
-            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all var(--transition-fast);
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .lightbox-nav:hover {
@@ -318,147 +323,118 @@
         }
 
         .lightbox-prev {
-            left: var(--spacing-lg);
+            left: -60px;
         }
 
         .lightbox-next {
-            right: var(--spacing-lg);
-        }
-
-        .lightbox-info {
-            position: absolute;
-            bottom: var(--spacing-lg);
-            left: var(--spacing-lg);
-            right: var(--spacing-lg);
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            color: white;
-        }
-
-        .lightbox-title {
-            font-size: var(--font-size-body);
-            font-weight: 600;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .lightbox-meta {
-            font-size: var(--font-size-caption);
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Upload Area */
-        .upload-area {
-            border: 2px dashed var(--apple-border);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-3xl);
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-
-        .upload-area:hover {
-            border-color: var(--apple-blue);
-            background: var(--apple-bg-secondary);
-        }
-
-        .upload-area.dragover {
-            border-color: var(--apple-blue);
-            background: rgba(0, 113, 227, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .upload-title {
-            font-size: var(--font-size-heading);
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .upload-subtitle {
-            font-size: var(--font-size-caption);
-            color: var(--apple-text-secondary);
-        }
-
-        /* Loading State */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--apple-border);
-            border-top-color: var(--apple-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            right: -60px;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: var(--spacing-3xl);
+            padding: 80px 20px;
+            color: var(--dark-text-secondary);
         }
 
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.3;
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
 
-        .empty-title {
-            font-size: var(--font-size-heading);
+        .empty-state-title {
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: 8px;
+            color: var(--dark-text);
         }
 
-        .empty-text {
-            font-size: var(--font-size-body);
-            color: var(--apple-text-secondary);
+        .empty-state-text {
+            font-size: 16px;
+            color: var(--dark-text-secondary);
         }
 
-        /* Responsive */
+        /* Loading State */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(168, 85, 247, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;
+            gap: 20px;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .gallery-container {
-                padding: var(--spacing-lg) var(--spacing-md);
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 16px;
             }
 
-            .gallery-grid.grid-view {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-
-            .filter-bar {
+            .tab-nav {
                 flex-direction: column;
-                align-items: stretch;
             }
 
-            .filter-group {
-                width: 100%;
-            }
-
-            .search-box {
+            .tab-btn {
                 width: 100%;
             }
 
             .lightbox-nav {
                 display: none;
             }
-        }
 
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {
-            .upload-area {
-                border-color: rgba(255, 255, 255, 0.1);
-            }
-
-            .upload-area:hover {
-                background: rgba(255, 255, 255, 0.05);
+            .lightbox-video {
+                width: 95vw;
+                height: 50vh;
             }
         }
     </style>
@@ -466,334 +442,663 @@
 <body>
     <!-- Navigation -->
     <nav class="apple-nav">
-        <div class="apple-nav-content">
-            <a href="index.html#features" class="apple-nav-logo">← MAKE FILM</a>
-            <ul class="apple-nav-menu">
-                <li><a href="#" class="apple-nav-link" onclick="showCategory('all')">전체</a></li>
-                <li><a href="#" class="apple-nav-link" onclick="showCategory('images')">이미지</a></li>
-                <li><a href="#" class="apple-nav-link" onclick="showCategory('videos')">비디오</a></li>
-                <li><a href="#" class="apple-nav-link" onclick="showCategory('favorites')">즐겨찾기</a></li>
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">🎬 AIFI FRAME WORK</a>
+            <ul class="nav-menu">
+                <li><a href="storyboard/index.html" class="nav-link">스토리보드</a></li>
+                <li><a href="concept-art/index.html" class="nav-link">컨셉아트</a></li>
+                <li><a href="#" class="nav-link active">미디어 갤러리</a></li>
             </ul>
         </div>
     </nav>
 
+    <!-- Main Container -->
     <div class="gallery-container">
         <!-- Header -->
-        <div class="text-center mb-4">
-            <h1 class="display-title">미디어 갤러리</h1>
-            <p class="body-text mt-2">
-                모든 프로젝트의 이미지와 비디오를 한 곳에서 관리하세요
-            </p>
+        <div class="gallery-header">
+            <h1 class="gallery-title">미디어 갤러리</h1>
+            <p class="gallery-subtitle">스토리보드와 컨셉아트의 모든 이미지와 영상을 한 곳에서</p>
         </div>
 
-        <!-- Upload Area -->
-        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-            <div class="upload-icon">📁</div>
-            <div class="upload-title">파일 업로드</div>
-            <div class="upload-subtitle">클릭하거나 파일을 드래그하여 업로드하세요</div>
-            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
-        </div>
-
-        <!-- Filter Bar -->
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label class="filter-label">카테고리</label>
-                <select class="filter-select" id="categoryFilter">
-                    <option value="all">전체</option>
-                    <option value="storyboard">스토리보드</option>
-                    <option value="concept">컨셉아트</option>
-                    <option value="prompt">프롬프트</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label class="filter-label">정렬</label>
-                <select class="filter-select" id="sortFilter">
-                    <option value="newest">최신순</option>
-                    <option value="oldest">오래된순</option>
-                    <option value="name">이름순</option>
-                    <option value="size">크기순</option>
-                </select>
-            </div>
-
-            <input type="text" class="search-box" placeholder="검색..." id="searchBox">
-
-            <div class="view-toggle">
-                <button class="view-btn active" onclick="setView('grid')" title="그리드 뷰">⊞</button>
-                <button class="view-btn" onclick="setView('compact')" title="컴팩트 뷰">⊟</button>
-                <button class="view-btn" onclick="setView('list')" title="리스트 뷰">☰</button>
+        <!-- Tab Container -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="storyboard">
+                    🎬 스토리보드 갤러리
+                    <span class="count" id="storyboard-count">0</span>
+                </button>
+                <button class="tab-btn" data-tab="conceptart">
+                    🎨 컨셉아트 갤러리
+                    <span class="count" id="conceptart-count">0</span>
+                </button>
             </div>
         </div>
 
-        <!-- Gallery Grid -->
-        <div class="gallery-grid grid-view" id="galleryGrid">
-            <!-- Sample media items -->
-            <div class="media-item" onclick="openLightbox(0)">
-                <img src="https://picsum.photos/400/400?random=1" alt="Sample 1" class="media-thumbnail">
-                <div class="media-badge image">이미지</div>
-                <div class="media-overlay">
-                    <div class="media-title">캐릭터 컨셉 아트</div>
-                    <div class="media-meta">2024.01.15 • 2.4MB</div>
+        <!-- Storyboard Gallery Tab -->
+        <div id="storyboard-tab" class="tab-content active">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">카테고리:</span>
+                    <select class="filter-select" id="storyboard-category-filter">
+                        <option value="all">전체</option>
+                        <option value="sequence">시퀀스</option>
+                        <option value="scene">씬</option>
+                        <option value="shot">샷</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">미디어 유형:</span>
+                    <select class="filter-select" id="storyboard-type-filter">
+                        <option value="all">전체</option>
+                        <option value="image">이미지</option>
+                        <option value="video">영상</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">정렬:</span>
+                    <select class="filter-select" id="storyboard-sort-filter">
+                        <option value="newest">최신순</option>
+                        <option value="oldest">오래된순</option>
+                        <option value="name">이름순</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="media-item" onclick="openLightbox(1)">
-                <img src="https://picsum.photos/400/400?random=2" alt="Sample 2" class="media-thumbnail">
-                <div class="media-badge video">비디오</div>
-                <div class="media-overlay">
-                    <div class="media-title">씬 1 프리뷰</div>
-                    <div class="media-meta">2024.01.14 • 15.2MB</div>
-                </div>
+            <!-- Storyboard Grid -->
+            <div id="storyboard-gallery" class="gallery-grid">
+                <!-- Items will be dynamically added here -->
             </div>
 
-            <div class="media-item" onclick="openLightbox(2)">
-                <img src="https://picsum.photos/400/400?random=3" alt="Sample 3" class="media-thumbnail">
-                <div class="media-badge image">이미지</div>
-                <div class="media-overlay">
-                    <div class="media-title">배경 아트</div>
-                    <div class="media-meta">2024.01.13 • 3.1MB</div>
-                </div>
-            </div>
-
-            <div class="media-item" onclick="openLightbox(3)">
-                <img src="https://picsum.photos/400/400?random=4" alt="Sample 4" class="media-thumbnail">
-                <div class="media-badge image">이미지</div>
-                <div class="media-overlay">
-                    <div class="media-title">소품 디자인</div>
-                    <div class="media-meta">2024.01.12 • 1.8MB</div>
-                </div>
-            </div>
-
-            <div class="media-item" onclick="openLightbox(4)">
-                <img src="https://picsum.photos/400/400?random=5" alt="Sample 5" class="media-thumbnail">
-                <div class="media-badge video">비디오</div>
-                <div class="media-overlay">
-                    <div class="media-title">액션 시퀀스</div>
-                    <div class="media-meta">2024.01.11 • 22.5MB</div>
-                </div>
-            </div>
-
-            <div class="media-item" onclick="openLightbox(5)">
-                <img src="https://picsum.photos/400/400?random=6" alt="Sample 6" class="media-thumbnail">
-                <div class="media-badge image">이미지</div>
-                <div class="media-overlay">
-                    <div class="media-title">스토리보드 샷</div>
-                    <div class="media-meta">2024.01.10 • 2.1MB</div>
-                </div>
+            <!-- Empty State -->
+            <div id="storyboard-empty-state" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🎬</div>
+                <div class="empty-state-title">스토리보드 미디어가 없습니다</div>
+                <div class="empty-state-text">아직 등록된 스토리보드 이미지나 영상이 없습니다.</div>
             </div>
         </div>
 
-        <!-- Empty State (hidden by default) -->
-        <div class="empty-state" style="display: none;">
-            <div class="empty-icon">📷</div>
-            <div class="empty-title">미디어가 없습니다</div>
-            <div class="empty-text">파일을 업로드하여 갤러리를 시작하세요</div>
+        <!-- Concept Art Gallery Tab -->
+        <div id="conceptart-tab" class="tab-content">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">카테고리:</span>
+                    <select class="filter-select" id="conceptart-category-filter">
+                        <option value="all">전체</option>
+                        <option value="characters">캐릭터</option>
+                        <option value="locations">장소</option>
+                        <option value="props">소품</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">정렬:</span>
+                    <select class="filter-select" id="conceptart-sort-filter">
+                        <option value="newest">최신순</option>
+                        <option value="oldest">오래된순</option>
+                        <option value="name">이름순</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Concept Art Grid -->
+            <div id="conceptart-gallery" class="gallery-grid">
+                <!-- Items will be dynamically added here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="conceptart-empty-state" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🎨</div>
+                <div class="empty-state-title">컨셉아트가 없습니다</div>
+                <div class="empty-state-text">아직 등록된 컨셉아트 이미지가 없습니다.</div>
+            </div>
         </div>
     </div>
 
     <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">‹</button>
-        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">›</button>
-        
+    <div id="lightbox" class="lightbox">
         <div class="lightbox-content">
-            <img src="" alt="" class="lightbox-image" id="lightboxImage">
-            <div class="lightbox-info">
-                <div class="lightbox-title" id="lightboxTitle">제목</div>
-                <div class="lightbox-meta" id="lightboxMeta">메타 정보</div>
+            <button class="lightbox-close" onclick="closeLightbox()">×</button>
+            <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)">‹</button>
+            <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)">›</button>
+            <div id="lightbox-media-container">
+                <!-- Media will be displayed here -->
             </div>
         </div>
     </div>
 
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" onclick="scrollToTop()">↑</button>
+
+    <!-- JavaScript -->
     <script>
-        // Gallery state
-        let currentView = 'grid';
-        let currentIndex = 0;
-        let mediaItems = [
-            { src: 'https://picsum.photos/800/600?random=1', title: '캐릭터 컨셉 아트', meta: '2024.01.15 • 2.4MB', type: 'image' },
-            { src: 'https://picsum.photos/800/600?random=2', title: '씬 1 프리뷰', meta: '2024.01.14 • 15.2MB', type: 'video' },
-            { src: 'https://picsum.photos/800/600?random=3', title: '배경 아트', meta: '2024.01.13 • 3.1MB', type: 'image' },
-            { src: 'https://picsum.photos/800/600?random=4', title: '소품 디자인', meta: '2024.01.12 • 1.8MB', type: 'image' },
-            { src: 'https://picsum.photos/800/600?random=5', title: '액션 시퀀스', meta: '2024.01.11 • 22.5MB', type: 'video' },
-            { src: 'https://picsum.photos/800/600?random=6', title: '스토리보드 샷', meta: '2024.01.10 • 2.1MB', type: 'image' }
-        ];
+        // Global State Management
+        const galleryState = {
+            currentTab: 'storyboard',
+            storyboardMedia: [],
+            conceptArtImages: [],
+            filteredStoryboard: [],
+            filteredConceptArt: [],
+            currentLightboxIndex: -1,
+            currentLightboxType: null
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            setupDragAndDrop();
-            setupFileInput();
-            setupSearch();
-            setupFilters();
-            setupKeyboardNavigation();
+            initializeTabs();
+            loadMediaData();
+            initializeFilters();
+            initializeBackToTop();
         });
 
-        // Set view mode
-        function setView(view) {
-            currentView = view;
-            const grid = document.getElementById('galleryGrid');
-            const buttons = document.querySelectorAll('.view-btn');
-            
-            // Update buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Update grid class
-            grid.className = `gallery-grid ${view}-view`;
-            
-            // Update items for list view
-            const items = grid.querySelectorAll('.media-item');
-            items.forEach(item => {
-                if (view === 'list') {
-                    item.classList.add('list-view');
-                    const thumbnail = item.querySelector('.media-thumbnail');
-                    thumbnail.classList.add('list-view');
-                    
-                    // Add info section for list view
-                    if (!item.querySelector('.media-info')) {
-                        const overlay = item.querySelector('.media-overlay');
-                        const title = overlay.querySelector('.media-title').textContent;
-                        const meta = overlay.querySelector('.media-meta').textContent;
-                        
-                        const info = document.createElement('div');
-                        info.className = 'media-info';
-                        info.innerHTML = `
-                            <div class="media-info-title">${title}</div>
-                            <div class="media-info-meta">${meta}</div>
-                        `;
-                        item.appendChild(info);
-                    }
-                } else {
-                    item.classList.remove('list-view');
-                    const thumbnail = item.querySelector('.media-thumbnail');
-                    thumbnail.classList.remove('list-view');
-                    
-                    // Remove info section
-                    const info = item.querySelector('.media-info');
-                    if (info) info.remove();
-                }
+        // Tab Initialization
+        function initializeTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    switchTab(tabName);
+                });
             });
         }
 
-        // Show category
-        function showCategory(category) {
-            console.log('Showing category:', category);
-            // Implement category filtering
+        // Switch Tab
+        function switchTab(tabName) {
+            // Update button states
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+
+            // Update content display
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            galleryState.currentTab = tabName;
         }
 
-        // Open lightbox
-        function openLightbox(index) {
-            currentIndex = index;
-            const lightbox = document.getElementById('lightbox');
-            const image = document.getElementById('lightboxImage');
-            const title = document.getElementById('lightboxTitle');
-            const meta = document.getElementById('lightboxMeta');
+        // Load Media Data
+        function loadMediaData() {
+            // Load concept art data
+            loadConceptArtImages();
             
-            const item = mediaItems[index];
-            image.src = item.src;
-            title.textContent = item.title;
-            meta.textContent = item.meta;
+            // Load storyboard data
+            loadStoryboardMedia();
+            
+            // Update counts
+            updateCounts();
+        }
+
+        // Load Concept Art Images
+        function loadConceptArtImages() {
+            try {
+                const storedData = localStorage.getItem('conceptArtManagerData_v1.2');
+                if (storedData) {
+                    const parsedData = JSON.parse(storedData);
+                    const conceptData = parsedData.conceptArtData || parsedData.concept_art_collection || {};
+                    
+                    galleryState.conceptArtImages = [];
+                    
+                    ['characters', 'locations', 'props'].forEach(category => {
+                        const categoryData = conceptData[category] || {};
+                        Object.entries(categoryData).forEach(([id, concept]) => {
+                            // Main image
+                            if (concept.main_image_url) {
+                                galleryState.conceptArtImages.push({
+                                    url: concept.main_image_url,
+                                    title: concept.name_kr || concept.name || id,
+                                    category: category,
+                                    subtitle: `${getCategoryName(category)} - 메인 이미지`,
+                                    timestamp: concept.timestamp || Date.now(),
+                                    type: 'image'
+                                });
+                            }
+                            
+                            // Additional images
+                            if (concept.additional_images) {
+                                for (let i = 1; i <= 4; i++) {
+                                    const imageKey = `image_${i}`;
+                                    const imageData = concept.additional_images[imageKey];
+                                    if (imageData && imageData.url) {
+                                        galleryState.conceptArtImages.push({
+                                            url: imageData.url,
+                                            title: concept.name_kr || concept.name || id,
+                                            category: category,
+                                            subtitle: `${getCategoryName(category)} - 추가 이미지 ${i}`,
+                                            timestamp: imageData.timestamp || Date.now(),
+                                            type: 'image'
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Initial render
+                    renderConceptArtGallery();
+                }
+            } catch (error) {
+                console.error('컨셉아트 데이터 로드 실패:', error);
+            }
+        }
+
+        // Load Storyboard Media
+        function loadStoryboardMedia() {
+            try {
+                galleryState.storyboardMedia = [];
+                
+                // Try multiple possible storage keys
+                const possibleKeys = ['storyboardData', 'storyboard_data', 'storyboardState'];
+                let storyboardData = null;
+                
+                for (const key of possibleKeys) {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        try {
+                            storyboardData = JSON.parse(data);
+                            break;
+                        } catch (e) {
+                            console.log(`Failed to parse ${key}`);
+                        }
+                    }
+                }
+                
+                if (storyboardData) {
+                    // Process sequences
+                    if (storyboardData.sequences) {
+                        storyboardData.sequences.forEach(sequence => {
+                            // Sequence image
+                            if (sequence.imageUrl) {
+                                galleryState.storyboardMedia.push({
+                                    url: sequence.imageUrl,
+                                    title: sequence.title || `시퀀스 ${sequence.number}`,
+                                    category: 'sequence',
+                                    subtitle: `시퀀스 ${sequence.number}`,
+                                    timestamp: Date.now(),
+                                    type: 'image'
+                                });
+                            }
+                            
+                            // Process scenes
+                            if (sequence.scenes) {
+                                sequence.scenes.forEach(scene => {
+                                    if (scene.imageUrl) {
+                                        galleryState.storyboardMedia.push({
+                                            url: scene.imageUrl,
+                                            title: scene.title || `씬 ${scene.number}`,
+                                            category: 'scene',
+                                            subtitle: `시퀀스 ${sequence.number} - 씬 ${scene.number}`,
+                                            timestamp: Date.now(),
+                                            type: 'image'
+                                        });
+                                    }
+                                    
+                                    // Process shots
+                                    if (scene.shots) {
+                                        scene.shots.forEach(shot => {
+                                            if (shot.imageUrl) {
+                                                galleryState.storyboardMedia.push({
+                                                    url: shot.imageUrl,
+                                                    title: shot.title || `샷 ${shot.number}`,
+                                                    category: 'shot',
+                                                    subtitle: `시퀀스 ${sequence.number} - 씬 ${scene.number} - 샷 ${shot.number}`,
+                                                    timestamp: Date.now(),
+                                                    type: 'image'
+                                                });
+                                            }
+                                            
+                                            // Video data
+                                            if (shot.videoUrl) {
+                                                galleryState.storyboardMedia.push({
+                                                    url: shot.videoUrl,
+                                                    title: shot.title || `샷 ${shot.number}`,
+                                                    category: 'shot',
+                                                    subtitle: `시퀀스 ${sequence.number} - 씬 ${scene.number} - 샷 ${shot.number} (영상)`,
+                                                    timestamp: Date.now(),
+                                                    type: 'video'
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Initial render
+                    renderStoryboardGallery();
+                }
+            } catch (error) {
+                console.error('스토리보드 데이터 로드 실패:', error);
+            }
+        }
+
+        // Render Storyboard Gallery
+        function renderStoryboardGallery() {
+            const container = document.getElementById('storyboard-gallery');
+            const emptyState = document.getElementById('storyboard-empty-state');
+            
+            const media = galleryState.filteredStoryboard.length > 0 ? 
+                         galleryState.filteredStoryboard : galleryState.storyboardMedia;
+            
+            if (media.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = media.map((item, index) => {
+                if (item.type === 'video') {
+                    return `
+                        <div class="gallery-item" onclick="openLightbox('storyboard', ${index})">
+                            <div class="gallery-item-video">
+                                <div class="video-play-btn">▶</div>
+                            </div>
+                            <div class="gallery-item-info">
+                                <div class="gallery-item-title">${item.title}</div>
+                                <div class="gallery-item-subtitle">${item.subtitle}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="gallery-item" onclick="openLightbox('storyboard', ${index})">
+                            <img src="${getImageUrl(item.url)}" 
+                                 alt="${item.title}" 
+                                 class="gallery-item-image"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"280\" height=\"200\" viewBox=\"0 0 280 200\"%3E%3Crect fill=\"%23333\" width=\"280\" height=\"200\"/%3E%3Ctext fill=\"%23666\" font-size=\"14\" x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\"%3E이미지 로드 실패%3C/text%3E%3C/svg%3E'">
+                            <div class="gallery-item-info">
+                                <div class="gallery-item-title">${item.title}</div>
+                                <div class="gallery-item-subtitle">${item.subtitle}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // Render Concept Art Gallery
+        function renderConceptArtGallery() {
+            const container = document.getElementById('conceptart-gallery');
+            const emptyState = document.getElementById('conceptart-empty-state');
+            
+            const images = galleryState.filteredConceptArt.length > 0 ? 
+                          galleryState.filteredConceptArt : galleryState.conceptArtImages;
+            
+            if (images.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = images.map((item, index) => `
+                <div class="gallery-item" onclick="openLightbox('conceptart', ${index})">
+                    <img src="${getImageUrl(item.url)}" 
+                         alt="${item.title}" 
+                         class="gallery-item-image"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"280\" height=\"200\" viewBox=\"0 0 280 200\"%3E%3Crect fill=\"%23333\" width=\"280\" height=\"200\"/%3E%3Ctext fill=\"%23666\" font-size=\"14\" x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\"%3E이미지 로드 실패%3C/text%3E%3C/svg%3E'">
+                    <div class="gallery-item-info">
+                        <div class="gallery-item-title">${item.title}</div>
+                        <div class="gallery-item-subtitle">${item.subtitle}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get Image URL
+        function getImageUrl(url) {
+            if (!url) return '';
+            
+            // Handle Google Drive URLs
+            const fileId = extractGoogleDriveFileId(url);
+            if (fileId) {
+                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+            }
+            
+            return url;
+        }
+
+        // Extract Google Drive File ID
+        function extractGoogleDriveFileId(url) {
+            if (!url || typeof url !== 'string') return null;
+            
+            const patterns = [
+                /\/file\/d\/([a-zA-Z0-9-_]+)/,
+                /id=([a-zA-Z0-9-_]+)/,
+                /\/d\/([a-zA-Z0-9-_]+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+
+        // Get Category Name
+        function getCategoryName(category) {
+            const names = {
+                characters: '캐릭터',
+                locations: '장소',
+                props: '소품',
+                sequence: '시퀀스',
+                scene: '씬',
+                shot: '샷'
+            };
+            return names[category] || category;
+        }
+
+        // Initialize Filters
+        function initializeFilters() {
+            // Storyboard filters
+            document.getElementById('storyboard-category-filter').addEventListener('change', filterStoryboard);
+            document.getElementById('storyboard-type-filter').addEventListener('change', filterStoryboard);
+            document.getElementById('storyboard-sort-filter').addEventListener('change', sortStoryboard);
+            
+            // Concept art filters
+            document.getElementById('conceptart-category-filter').addEventListener('change', filterConceptArt);
+            document.getElementById('conceptart-sort-filter').addEventListener('change', sortConceptArt);
+        }
+
+        // Filter Storyboard
+        function filterStoryboard() {
+            const category = document.getElementById('storyboard-category-filter').value;
+            const type = document.getElementById('storyboard-type-filter').value;
+            
+            let filtered = [...galleryState.storyboardMedia];
+            
+            if (category !== 'all') {
+                filtered = filtered.filter(item => item.category === category);
+            }
+            
+            if (type !== 'all') {
+                filtered = filtered.filter(item => item.type === type);
+            }
+            
+            galleryState.filteredStoryboard = filtered;
+            sortStoryboard();
+        }
+
+        // Sort Storyboard
+        function sortStoryboard() {
+            const sortBy = document.getElementById('storyboard-sort-filter').value;
+            const media = galleryState.filteredStoryboard.length > 0 ? 
+                         galleryState.filteredStoryboard : galleryState.storyboardMedia;
+            
+            switch(sortBy) {
+                case 'newest':
+                    media.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    break;
+                case 'oldest':
+                    media.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    break;
+                case 'name':
+                    media.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+            }
+            
+            renderStoryboardGallery();
+        }
+
+        // Filter Concept Art
+        function filterConceptArt() {
+            const category = document.getElementById('conceptart-category-filter').value;
+            
+            let filtered = [...galleryState.conceptArtImages];
+            
+            if (category !== 'all') {
+                filtered = filtered.filter(item => item.category === category);
+            }
+            
+            galleryState.filteredConceptArt = filtered;
+            sortConceptArt();
+        }
+
+        // Sort Concept Art
+        function sortConceptArt() {
+            const sortBy = document.getElementById('conceptart-sort-filter').value;
+            const images = galleryState.filteredConceptArt.length > 0 ? 
+                          galleryState.filteredConceptArt : galleryState.conceptArtImages;
+            
+            switch(sortBy) {
+                case 'newest':
+                    images.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    break;
+                case 'oldest':
+                    images.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    break;
+                case 'name':
+                    images.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+            }
+            
+            renderConceptArtGallery();
+        }
+
+        // Update Counts
+        function updateCounts() {
+            document.getElementById('storyboard-count').textContent = galleryState.storyboardMedia.length;
+            document.getElementById('conceptart-count').textContent = galleryState.conceptArtImages.length;
+        }
+
+        // Open Lightbox
+        function openLightbox(type, index) {
+            const items = type === 'storyboard' ? 
+                         (galleryState.filteredStoryboard.length > 0 ? galleryState.filteredStoryboard : galleryState.storyboardMedia) :
+                         (galleryState.filteredConceptArt.length > 0 ? galleryState.filteredConceptArt : galleryState.conceptArtImages);
+            
+            const item = items[index];
+            if (!item) return;
+            
+            galleryState.currentLightboxIndex = index;
+            galleryState.currentLightboxType = type;
+            
+            const lightbox = document.getElementById('lightbox');
+            const container = document.getElementById('lightbox-media-container');
+            
+            if (item.type === 'video') {
+                // Handle video
+                const fileId = extractGoogleDriveFileId(item.url);
+                if (fileId) {
+                    container.innerHTML = `
+                        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
+                                class="lightbox-video"
+                                allow="autoplay"
+                                allowfullscreen>
+                        </iframe>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <video src="${item.url}" 
+                               class="lightbox-video"
+                               controls
+                               autoplay>
+                        </video>
+                    `;
+                }
+            } else {
+                // Handle image
+                container.innerHTML = `
+                    <img src="${getImageUrl(item.url)}" 
+                         alt="${item.title}" 
+                         class="lightbox-image">
+                `;
+            }
             
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        // Close lightbox
+        // Close Lightbox
         function closeLightbox() {
             const lightbox = document.getElementById('lightbox');
             lightbox.classList.remove('active');
             document.body.style.overflow = '';
+            galleryState.currentLightboxIndex = -1;
+            galleryState.currentLightboxType = null;
         }
 
-        // Navigate lightbox
+        // Navigate Lightbox
         function navigateLightbox(direction) {
-            currentIndex = (currentIndex + direction + mediaItems.length) % mediaItems.length;
-            openLightbox(currentIndex);
+            const type = galleryState.currentLightboxType;
+            const items = type === 'storyboard' ? 
+                         (galleryState.filteredStoryboard.length > 0 ? galleryState.filteredStoryboard : galleryState.storyboardMedia) :
+                         (galleryState.filteredConceptArt.length > 0 ? galleryState.filteredConceptArt : galleryState.conceptArtImages);
+            
+            let newIndex = galleryState.currentLightboxIndex + direction;
+            
+            if (newIndex < 0) newIndex = items.length - 1;
+            if (newIndex >= items.length) newIndex = 0;
+            
+            openLightbox(type, newIndex);
         }
 
-        // Setup drag and drop
-        function setupDragAndDrop() {
-            const uploadArea = document.getElementById('uploadArea');
+        // Initialize Back to Top
+        function initializeBackToTop() {
+            const backToTop = document.getElementById('back-to-top');
             
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                handleFiles(e.dataTransfer.files);
-            });
-        }
-
-        // Setup file input
-        function setupFileInput() {
-            const fileInput = document.getElementById('fileInput');
-            fileInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-        }
-
-        // Handle files
-        function handleFiles(files) {
-            console.log('Uploading files:', files);
-            // Implement file upload
-            alert(`${files.length}개의 파일이 선택되었습니다. 업로드 기능은 준비 중입니다.`);
-        }
-
-        // Setup search
-        function setupSearch() {
-            const searchBox = document.getElementById('searchBox');
-            let searchTimeout;
-            
-            searchBox.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    console.log('Searching for:', e.target.value);
-                    // Implement search
-                }, 300);
-            });
-        }
-
-        // Setup filters
-        function setupFilters() {
-            const categoryFilter = document.getElementById('categoryFilter');
-            const sortFilter = document.getElementById('sortFilter');
-            
-            categoryFilter.addEventListener('change', (e) => {
-                console.log('Category filter:', e.target.value);
-                // Implement filtering
-            });
-            
-            sortFilter.addEventListener('change', (e) => {
-                console.log('Sort by:', e.target.value);
-                // Implement sorting
-            });
-        }
-
-        // Setup keyboard navigation
-        function setupKeyboardNavigation() {
-            document.addEventListener('keydown', (e) => {
-                if (!document.getElementById('lightbox').classList.contains('active')) return;
-                
-                if (e.key === 'Escape') {
-                    closeLightbox();
-                } else if (e.key === 'ArrowLeft') {
-                    navigateLightbox(-1);
-                } else if (e.key === 'ArrowRight') {
-                    navigateLightbox(1);
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
                 }
             });
         }
 
-        // Click outside lightbox to close
-        document.getElementById('lightbox').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
+        // Scroll to Top
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', function(e) {
+            if (galleryState.currentLightboxIndex !== -1) {
+                if (e.key === 'ArrowLeft') {
+                    navigateLightbox(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateLightbox(1);
+                } else if (e.key === 'Escape') {
+                    closeLightbox();
+                }
+            }
+        });
+
+        // Lightbox Click Outside to Close
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
                 closeLightbox();
             }
         });
