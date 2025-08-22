@@ -722,12 +722,12 @@
                 <div class="filter-group">
                     <label class="filter-label">카테고리</label>
                     <div class="custom-dropdown" id="category-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('category-dropdown', event)">샷</div>
+                        <div class="dropdown-selected">샷</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
-                            <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스', event)">시퀀스</div>
-                            <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬', event)">씬</div>
-                            <div class="dropdown-option selected" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷', event)">샷</div>
+                            <div class="dropdown-option" data-value="all">전체</div>
+                            <div class="dropdown-option" data-value="sequence">시퀀스</div>
+                            <div class="dropdown-option" data-value="scene">씬</div>
+                            <div class="dropdown-option selected" data-value="shot">샷</div>
                         </div>
                     </div>
                 </div>
@@ -735,11 +735,11 @@
                 <div class="filter-group">
                     <label class="filter-label">미디어 유형</label>
                     <div class="custom-dropdown" id="type-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('type-dropdown', event)">전체</div>
+                        <div class="dropdown-selected">전체</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="all" onclick="selectOption('type-dropdown', 'all', '전체', event)">전체</div>
-                            <div class="dropdown-option" data-value="image" onclick="selectOption('type-dropdown', 'image', '이미지', event)">이미지</div>
-                            <div class="dropdown-option" data-value="video" onclick="selectOption('type-dropdown', 'video', '영상', event)">영상</div>
+                            <div class="dropdown-option selected" data-value="all">전체</div>
+                            <div class="dropdown-option" data-value="image">이미지</div>
+                            <div class="dropdown-option" data-value="video">영상</div>
                         </div>
                     </div>
                 </div>
@@ -747,11 +747,11 @@
                 <div class="filter-group">
                     <label class="filter-label">정렬</label>
                     <div class="custom-dropdown" id="sort-dropdown">
-                        <div class="dropdown-selected" onclick="toggleDropdown('sort-dropdown', event)">최신순</div>
+                        <div class="dropdown-selected">최신순</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="newest" onclick="selectOption('sort-dropdown', 'newest', '최신순', event)">최신순</div>
-                            <div class="dropdown-option" data-value="oldest" onclick="selectOption('sort-dropdown', 'oldest', '오래된순', event)">오래된순</div>
-                            <div class="dropdown-option" data-value="name" onclick="selectOption('sort-dropdown', 'name', '이름순', event)">이름순</div>
+                            <div class="dropdown-option selected" data-value="newest">최신순</div>
+                            <div class="dropdown-option" data-value="oldest">오래된순</div>
+                            <div class="dropdown-option" data-value="name">이름순</div>
                         </div>
                     </div>
                 </div>
@@ -796,8 +796,8 @@
     </div>
 
     <script>
-        // Custom Dropdown Functions
-        function toggleDropdown(dropdownId, event) {
+        // Make functions global so they can be called from HTML
+        window.toggleDropdown = function(dropdownId, event) {
             if (event) {
                 event.stopPropagation();
             }
@@ -816,7 +816,7 @@
             dropdown.classList.toggle('active');
         }
         
-        function selectOption(dropdownId, value, text, event) {
+        window.selectOption = function(dropdownId, value, text, event) {
             if (event) {
                 event.stopPropagation();
             }
@@ -846,7 +846,7 @@
             
             // Trigger filter
             filterGallery();
-        }
+        };
         
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
@@ -858,7 +858,7 @@
         });
         
         // Tab switching
-        function switchTab(tabName) {
+        window.switchTab = function(tabName) {
             // Update buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active');
@@ -876,7 +876,7 @@
         }
         
         // Update filters based on selected tab
-        function updateFilters(tabName) {
+        window.updateFilters = function(tabName) {
             const categoryDropdown = document.getElementById('category-dropdown');
             const optionsContainer = categoryDropdown.querySelector('.dropdown-options');
             const selected = categoryDropdown.querySelector('.dropdown-selected');
@@ -908,10 +908,10 @@
             
             // Trigger filter after updating
             filterGallery();
-        }
+        };
         
         // Load all media
-        function loadAllMedia() {
+        window.loadAllMedia = function() {
             console.log('=== 전체 미디어 로딩 시작 ===');
             
             // localStorage 상태 확인
@@ -974,7 +974,7 @@
         }
         
         // Load storyboard media with scene grouping
-        function loadStoryboardMedia() {
+        window.loadStoryboardMedia = function() {
             console.log('>>> loadStoryboardMedia 시작');
             const storyboardGallery = document.getElementById('storyboard-gallery');
             let mediaCount = 0;
@@ -1349,7 +1349,7 @@
         }
         
         // Load concept art media
-        function loadConceptArtMedia() {
+        window.loadConceptArtMedia = function() {
             const conceptArtGallery = document.getElementById('conceptart-gallery');
             let mediaCount = 0;
             let hasMedia = false;
@@ -1447,18 +1447,18 @@
         }
         
         // Update media count
-        function updateMediaCount(type, count) {
+        window.updateMediaCount = function(type, count) {
             document.getElementById(`${type}-count`).textContent = count;
         }
         
         // Export gallery
-        function exportGallery() {
+        window.exportGallery = function() {
             // Export functionality
             alert('갤러리 내보내기 기능은 준비 중입니다.');
         }
         
         // Open lightbox
-        function openLightbox(src, type) {
+        window.openLightbox = function(src, type) {
             const lightbox = document.getElementById('lightbox');
             const image = document.getElementById('lightbox-image');
             const video = document.getElementById('lightbox-video');
@@ -1477,7 +1477,7 @@
         }
         
         // Close lightbox
-        function closeLightbox(event) {
+        window.closeLightbox = function(event) {
             if (event.target.classList.contains('lightbox') || event.target.classList.contains('lightbox-close')) {
                 const lightbox = document.getElementById('lightbox');
                 lightbox.classList.remove('active');
@@ -1489,7 +1489,7 @@
         }
         
         // Create gallery item HTML with aspect ratio detection
-        function createGalleryItem(item) {
+        window.createGalleryItem = function(item) {
             const isVideo = item.type === 'video';
             const isGoogleDrive = item.url && item.url.includes('drive.google.com');
             const itemId = 'gallery-item-' + Math.random().toString(36).substr(2, 9);
@@ -1524,7 +1524,7 @@
         }
         
         // Detect image aspect ratio and add appropriate class
-        function detectImageRatio(itemId, img) {
+        window.detectImageRatio = function(itemId, img) {
             const item = document.getElementById(itemId);
             if (!item) return;
             
@@ -1558,7 +1558,7 @@
         }
         
         // Create scene group HTML
-        function createSceneGroup(sceneId, sceneTitle, sequenceTitle, shots) {
+        window.createSceneGroup = function(sceneId, sceneTitle, sequenceTitle, shots) {
             let shotsHTML = shots.map(shot => createGalleryItem(shot)).join('');
             
             return `
@@ -1575,7 +1575,7 @@
         }
         
         // Extract Google Drive file ID from URL
-        function extractGoogleDriveId(url) {
+        window.extractGoogleDriveId = function(url) {
             const patterns = [
                 /\/d\/([a-zA-Z0-9-_]+)/,
                 /id=([a-zA-Z0-9-_]+)/,
@@ -1592,7 +1592,7 @@
         }
         
         // Filter gallery items
-        function filterGallery() {
+        window.filterGallery = function() {
             const activeTab = document.querySelector('.tab-button.active').dataset.tab;
             const categoryFilter = document.getElementById('category-dropdown').dataset.value || 'all';
             const typeFilter = document.getElementById('type-dropdown').dataset.value || 'all';
@@ -1630,7 +1630,7 @@
         }
         
         // Debug function to check localStorage data
-        function debugLocalStorage() {
+        window.debugLocalStorage = function() {}
             console.log('=== localStorage Debug Info ===');
             const keys = Object.keys(localStorage);
             console.log('Total localStorage keys:', keys.length);
@@ -1669,7 +1669,7 @@
             } else {
                 console.log('No concept art data found');
             }
-        }
+        };
         
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
@@ -1695,6 +1695,49 @@
             
             // Initialize filters for the active tab
             updateFilters(activeTab);
+            
+            // 드롭다운 클릭 이벤트 추가
+            document.querySelectorAll('.dropdown-selected').forEach(selected => {
+                selected.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const dropdown = this.parentElement;
+                    
+                    // 다른 드롭다운 닫기
+                    document.querySelectorAll('.custom-dropdown').forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    
+                    // 현재 드롭다운 토글
+                    dropdown.classList.toggle('active');
+                });
+            });
+            
+            // 드롭다운 옵션 클릭 이벤트 추가
+            document.querySelectorAll('.dropdown-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const dropdown = this.closest('.custom-dropdown');
+                    const selected = dropdown.querySelector('.dropdown-selected');
+                    
+                    // 텍스트 업데이트
+                    selected.textContent = this.textContent;
+                    
+                    // selected 클래스 업데이트
+                    dropdown.querySelectorAll('.dropdown-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    // 값 저장 및 드롭다운 닫기
+                    dropdown.dataset.value = this.dataset.value;
+                    dropdown.classList.remove('active');
+                    
+                    // 필터 적용
+                    filterGallery();
+                });
+            });
         });
     </script>
     
