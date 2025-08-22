@@ -991,15 +991,27 @@
 
         // 컨셉아트 미디어 로드
         function loadConceptArtMedia() {
+            console.log('🎨 === 컨셉아트 미디어 로드 시작 ===');
             const conceptArtGallery = document.getElementById('conceptart-gallery');
+            console.log('📌 컨셉아트 갤러리 요소:', conceptArtGallery);
+            
             let categoryGroups = {};
             let totalMedia = 0;
 
             const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            console.log('📚 컨셉아트 localStorage 데이터 존재:', !!conceptArtData);
             
             if (conceptArtData) {
                 try {
                     const parsedData = JSON.parse(conceptArtData);
+                    console.log('📝 파싱된 컨셉아트 데이터:', parsedData);
+                    console.log('🔍 데이터 구조 체크:');
+                    console.log('  - conceptArtData 필드 존재:', !!parsedData.conceptArtData);
+                    console.log('  - 직접 characters 필드 존재:', !!parsedData.characters);
+                    
+                    // 데이터 구조에 따라 적절한 경로 선택
+                    const actualData = parsedData.conceptArtData || parsedData;
+                    
                     const categories = ['characters', 'locations', 'props'];
                     const categoryNames = {
                         characters: '캐릭터',
@@ -1008,7 +1020,15 @@
                     };
                     
                     categories.forEach(category => {
-                        if (parsedData[category] && Array.isArray(parsedData[category])) {
+                        console.log(`🔍 ${category} 카테고리 확인:`, actualData[category]);
+                        
+                        // characters, locations, props는 객체 형태
+                        const categoryData = actualData[category];
+                        
+                        if (categoryData && typeof categoryData === 'object') {
+                            const itemIds = Object.keys(categoryData);
+                            console.log(`✅ ${category} 카테고리 데이터 있음: ${itemIds.length}개`);
+                            
                             // 카테고리별 그룹 초기화
                             if (!categoryGroups[category]) {
                                 categoryGroups[category] = {
@@ -1017,9 +1037,14 @@
                                 };
                             }
                             
-                            parsedData[category].forEach(item => {
-                                // 메인 이미지
+                            // 객체를 순회하며 각 아이템 처리
+                            itemIds.forEach((itemId, itemIndex) => {
+                                const item = categoryData[itemId];
+                                console.log(`  📌 ${category} 아이템 ${itemId}:`, item);
+                                
+                                // 메인 이미지 URL
                                 if (item.image_url) {
+                                    console.log(`    🖼️ 메인 이미지 URL:`, item.image_url);
                                     categoryGroups[category].items.push({
                                         url: item.image_url,
                                         title: item.name || '이름 없음',
@@ -1031,23 +1056,28 @@
                                     totalMedia++;
                                 }
                                 
-                                // 이미지 갤러리
-                                if (item.imageGallery && Array.isArray(item.imageGallery)) {
-                                    item.imageGallery.forEach((img, idx) => {
-                                        if (img && img.url) {
+                                // additional_images 필드 확인 (image_1, image_2, image_3)
+                                if (item.additional_images && typeof item.additional_images === 'object') {
+                                    console.log(`    🎨 추가 이미지:`, item.additional_images);
+                                    Object.keys(item.additional_images).forEach(imageKey => {
+                                        const imageData = item.additional_images[imageKey];
+                                        if (imageData && imageData.url) {
+                                            console.log(`      📸 추가 이미지 ${imageKey}:`, imageData.url);
                                             categoryGroups[category].items.push({
-                                                url: img.url,
-                                                title: img.title || `${item.name} - 갤러리 ${idx + 1}`,
-                                                description: img.description || '',
+                                                url: imageData.url,
+                                                title: imageData.title || `${item.name} - ${imageKey}`,
+                                                description: imageData.description || '',
                                                 type: 'image',
                                                 category: category,
-                                                source: 'gallery'
+                                                source: 'additional'
                                             });
                                             totalMedia++;
                                         }
                                     });
                                 }
                             });
+                        } else {
+                            console.log(`❌ ${category} 카테고리 데이터 없음 또는 잘못된 형식`);
                         }
                     });
                 } catch (e) {
@@ -1055,28 +1085,49 @@
                 }
             }
 
-            // 갤러리 렌더링 - 그룹 기반 구조 사용
-            if (hasMedia && categoryGroups.characters.length + categoryGroups.locations.length + categoryGroups.props.length > 0) {
+            // 갤러리 렌더링 - 스토리보드와 동일한 그룹 기반 구조 사용
+            const hasMedia = totalMedia > 0;
+            console.log('🎨 컨셉아트 총 미디어 수:', totalMedia);
+            console.log('📦 카테고리별 그룹:', categoryGroups);
+            
+            if (hasMedia) {
                 let galleryHTML = '';
                 let totalCount = 0;
                 
-                // 각 카테고리별로 그룹 렌더링
+                // 각 카테고리별로 그룹 렌더링 (스토리보드와 동일한 스타일)
                 ['characters', 'locations', 'props'].forEach(category => {
-                    const items = categoryGroups[category];
-                    if (items.length > 0) {
-                        const categoryTitle = category === 'characters' ? '캐릭터' : 
-                                            category === 'locations' ? '로케이션' : '프롭';
+                    const group = categoryGroups[category];
+                    if (group && group.items && group.items.length > 0) {
+                        console.log(`📁 ${group.title} 카테고리: ${group.items.length}개 아이템`);
                         
-                        galleryHTML += `<div class="media-group">
-                            <h3 class="group-title">${categoryTitle} (${items.length})</h3>
-                            <div class="gallery-grid">`;
+                        // 카테고리 아이콘 설정
+                        const categoryIcon = category === 'characters' ? '👤' : 
+                                           category === 'locations' ? '🏛️' : '🎭';
                         
-                        items.forEach(item => {
-                            galleryHTML += createGalleryItem(item);
+                        galleryHTML += `
+                            <div class="scene-group">
+                                <div class="scene-header">
+                                    <div class="scene-title">${categoryIcon} ${group.title}</div>
+                                    <div class="scene-subtitle">${group.items.length}개 아이템</div>
+                                </div>
+                                <div class="scene-shots">`;
+                        
+                        group.items.forEach(item => {
+                            console.log(`🖼️ ${group.title} 아이템:`, item.title, item.url);
+                            galleryHTML += createGalleryItem({
+                                url: item.url,
+                                title: item.title,
+                                subtitle: item.description,
+                                type: 'image',
+                                category: category,
+                                source: item.source
+                            });
                         });
                         
-                        galleryHTML += `</div></div>`;
-                        totalCount += items.length;
+                        galleryHTML += `
+                                </div>
+                            </div>`;
+                        totalCount += group.items.length;
                     }
                 });
                 
@@ -1084,6 +1135,11 @@
                 // 카운트 업데이트
                 document.getElementById('conceptart-count').textContent = totalCount;
             } else {
+                console.log('⚠️ 컨셉아트 데이터 없음 - 빈 상태 표시');
+                console.log('   hasMedia:', hasMedia);
+                console.log('   categoryGroups:', categoryGroups);
+                console.log('   totalMedia:', totalMedia);
+                
                 conceptArtGallery.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🎨</div>
@@ -1233,6 +1289,7 @@
                 `;
             } else {
                 // 이미지 아이템
+                console.log('🖼️ 이미지 아이템 생성:', item.title, item.url);
                 return `
                     <div class="gallery-item" data-type="${item.type}">
                         <div class="gallery-item-image-container" onclick="openLightbox('${item.url}', '${item.type}')">
@@ -1246,7 +1303,7 @@
                             <div class="gallery-item-title">${item.title || '제목 없음'}</div>
                             ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
                             <div class="gallery-item-meta">
-                                <span>📌 ${item.tool || item.category || 'media'}</span>
+                                <span>📌 ${item.source === 'main' ? '메인' : item.source === 'additional' ? '추가' : item.tool || item.category || 'media'}</span>
                             </div>
                         </div>
                     </div>
@@ -1408,12 +1465,22 @@
             if (conceptArtData) {
                 try {
                     const data = JSON.parse(conceptArtData);
+                    console.log('📊 컨셉아트 데이터 구조:', data);
+                    
+                    // 데이터 구조에 따라 적절한 경로 선택
+                    const actualData = data.conceptArtData || data;
+                    
                     ['characters', 'locations', 'props'].forEach(category => {
-                        if (data[category] && Array.isArray(data[category])) {
-                            data[category].forEach(item => {
+                        const categoryData = actualData[category];
+                        if (categoryData && typeof categoryData === 'object') {
+                            Object.keys(categoryData).forEach(itemId => {
+                                const item = categoryData[itemId];
                                 if (item.image_url) conceptArtCount++;
-                                if (item.imageGallery && Array.isArray(item.imageGallery)) {
-                                    conceptArtCount += item.imageGallery.filter(img => img && img.url).length;
+                                // additional_images 확인
+                                if (item.additional_images && typeof item.additional_images === 'object') {
+                                    conceptArtCount += Object.keys(item.additional_images).filter(key => 
+                                        item.additional_images[key] && item.additional_images[key].url
+                                    ).length;
                                 }
                             });
                         }
