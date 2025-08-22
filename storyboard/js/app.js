@@ -3787,6 +3787,10 @@ const complexity = imageDesign.complexity || 'complex';
 const aiGeneratedImages = imageDesign.ai_generated_images || {};
 const referenceImagesData = shot.reference_images || [];
 
+// Stage 5 CSV 데이터 (csv_mapping)에서 프롬프트 가져오기
+const csvMapping = shot.csv_mapping || {};
+console.log('🔍 Stage 5 CSV 데이터 확인:', shot.id, Object.keys(csvMapping).length, 'images');
+
 // Stage 6 데이터에서 이미지별 프롬프트 가져오기
 const stage6Data = window.stage6ImagePrompts || {};
 const shotStage6Data = stage6Data[shot.id] || {};
@@ -3880,12 +3884,19 @@ let aiSectionsHtml = '';
 					return selectedPlanData.images.some(planImage => {
 						const imageId = planImage.id;
 						const imageStage6Data = shotStage6Data[imageId] || {};
+						const imageCsvData = csvMapping[imageId] || {};
+						
+						// Stage 5 CSV 데이터 확인
+						let hasStage5Prompt = false;
+						if (imageCsvData.SCENE || imageCsvData.CHARACTER_1) {
+							hasStage5Prompt = true;
+						}
 						
 						// universal 프롬프트 특별 처리
 						let hasPrompt = false;
 						if (ai.id === 'universal') {
 							// universal은 문자열로 직접 저장되거나 universal_translated와 함께 있음
-							hasPrompt = !!(imageStage6Data.prompts?.universal || imageStage6Data.prompts?.universal_translated);
+							hasPrompt = !!(imageStage6Data.prompts?.universal || imageStage6Data.prompts?.universal_translated || hasStage5Prompt);
 						} else {
 							const imagePrompts = imageStage6Data.prompts?.[ai.id] || {};
 							hasPrompt = !!(imagePrompts.prompt || imagePrompts.main_prompt);
@@ -3893,7 +3904,7 @@ let aiSectionsHtml = '';
 						
 						// 수정된 프롬프트도 확인
 						const editedPromptExists = getEditedPrompt(shot.id, ai.name, imageId);
-						return hasPrompt || editedPromptExists;
+						return hasPrompt || editedPromptExists || hasStage5Prompt;
 					});
 				});
 
@@ -3912,32 +3923,56 @@ let aiSectionsHtml = '';
 					selectedPlanData.images.forEach((planImage, imgIdx) => {
 						const imageId = planImage.id;
 						const imageStage6Data = shotStage6Data[imageId] || {};
-						console.log(`  🖼️ AI: ${ai.name}, Image ${imgIdx + 1}:`, imageId, 'has data:', !!imageStage6Data.prompts);
+						const imageCsvData = csvMapping[imageId] || {};
+						console.log(`  🖼️ AI: ${ai.name}, Image ${imgIdx + 1}:`, imageId, 'has Stage6:', !!imageStage6Data.prompts, 'has Stage5:', !!imageCsvData.SCENE);
+						
 						let imagePrompts = imageStage6Data.prompts?.[ai.id] || {};
 						
 						// universal 프롬프트 특별 처리
-						if (ai.id === 'universal' && imageStage6Data.prompts?.universal) {
-							const universalData = imageStage6Data.prompts.universal;
-							if (typeof universalData === 'string') {
-								imagePrompts = {
-									prompt: universalData,
-									prompt_translated: imageStage6Data.prompts.universal_translated || ''
-								};
-							} else {
-								imagePrompts = universalData;
+						if (ai.id === 'universal') {
+							// Stage 6 데이터가 있으면 사용
+							if (imageStage6Data.prompts?.universal) {
+								const universalData = imageStage6Data.prompts.universal;
+								if (typeof universalData === 'string') {
+									imagePrompts = {
+										prompt: universalData,
+										prompt_translated: imageStage6Data.prompts.universal_translated || ''
+									};
+								} else {
+									imagePrompts = universalData;
+								}
+							}
+							// Stage 6 데이터가 없고 Stage 5 CSV 데이터가 있으면 CSV 데이터를 프롬프트로 사용
+							else if (imageCsvData && Object.keys(imageCsvData).length > 0) {
+								// CSV 필드들을 조합하여 프롬프트 생성
+								const csvPromptParts = [];
+								const csvFields = ['CAMERA', 'SCENE', 'CHARACTER_1', 'CHARACTER_1_DETAIL', 
+												   'CAMERA_EFFECTS', 'ATMOSPHERE', 'FOREGROUND', 'BACKGROUND'];
+								
+								csvFields.forEach(field => {
+									if (imageCsvData[field]) {
+										csvPromptParts.push(imageCsvData[field]);
+									}
+								});
+								
+								if (csvPromptParts.length > 0) {
+									imagePrompts = {
+										prompt: csvPromptParts.join(', '),
+										prompt_translated: '',  // 번역본은 아직 없음
+										isFromStage5: true
+									};
+								}
 							}
 						}
 						
 						// universal 프롬프트 특별 처리를 고려한 hasPrompt 체크
 						let hasPrompt = false;
 						if (ai.id === 'universal') {
-							hasPrompt = !!(imageStage6Data.prompts?.universal || imageStage6Data.prompts?.universal_translated || imagePrompts.prompt || imagePrompts.main_prompt);
+							hasPrompt = !!(imageStage6Data.prompts?.universal || imageStage6Data.prompts?.universal_translated || 
+										   imagePrompts.prompt || imagePrompts.main_prompt || imageCsvData.SCENE);
 						} else {
 							hasPrompt = !!(imagePrompts.prompt || imagePrompts.main_prompt);
 						}
-						
-						// csv_data 또는 block_data 가져오기 (v3.0)
-						const blockData = imageStage6Data.csv_data || imageStage6Data.block_data || {};
 
 						// 프롬프트가 없으면 건너뛰기
 						const editedPrompt = getEditedPrompt(shot.id, ai.name, imageId);
@@ -3947,18 +3982,36 @@ let aiSectionsHtml = '';
 						let mainPrompt = '';
 						let translatedPrompt = '';
 						let parameters = '';
+						let isFromStage5 = false;
 						
 						// universal 프롬프트 특별 처리
-						if (ai.id === 'universal' && imageStage6Data.prompts?.universal) {
-							const universalData = imageStage6Data.prompts.universal;
-							if (typeof universalData === 'string') {
-								mainPrompt = universalData;
-								translatedPrompt = imageStage6Data.prompts.universal_translated || '';
+						if (ai.id === 'universal') {
+							if (imageStage6Data.prompts?.universal) {
+								// Stage 6 데이터 사용
+								const universalData = imageStage6Data.prompts.universal;
+								if (typeof universalData === 'string') {
+									mainPrompt = universalData;
+									translatedPrompt = imageStage6Data.prompts.universal_translated || '';
+								} else {
+									mainPrompt = universalData.prompt || universalData.main_prompt || '';
+									translatedPrompt = universalData.prompt_translated || universalData.main_prompt_translated || '';
+								}
+								parameters = imageStage6Data.csv_data?.['502'] || imageStage6Data.csv_data?.PARAMETERS || '';
+							} else if (imagePrompts.isFromStage5) {
+								// Stage 5 CSV 데이터 사용
+								mainPrompt = imagePrompts.prompt || '';
+								translatedPrompt = imagePrompts.prompt_translated || '';
+								isFromStage5 = true;
+								
+								// Stage 5 PARAMETERS 필드 사용
+								if (imageCsvData.PARAMETERS) {
+									parameters = imageCsvData.PARAMETERS;
+								}
 							} else {
-								mainPrompt = universalData.prompt || universalData.main_prompt || '';
-								translatedPrompt = universalData.prompt_translated || universalData.main_prompt_translated || '';
+								mainPrompt = imagePrompts.prompt || imagePrompts.main_prompt || '';
+								translatedPrompt = imagePrompts.prompt_translated || imagePrompts.main_prompt_translated || '';
+								parameters = imagePrompts.parameters || '';
 							}
-							parameters = imageStage6Data.csv_data?.['502'] || imageStage6Data.csv_data?.PARAMETERS || '';
 						} else {
 							mainPrompt = imagePrompts.prompt || imagePrompts.main_prompt || '';
 							translatedPrompt = imagePrompts.prompt_translated || imagePrompts.main_prompt_translated || '';
@@ -3977,7 +4030,10 @@ let aiSectionsHtml = '';
 
 						aiContentHtml += `
 							<div style="margin-bottom: 30px; padding: 15px; background: #1a1a1a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px;">
-								<h5 style="color: #ccc; margin-bottom: 10px;">📸 ${imageId}: ${planImage.description || '설명 없음'} ${editedPrompt ? '<span style="background: #4ade80; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">수정됨</span>' : ''}</h5>
+								<h5 style="color: #ccc; margin-bottom: 10px;">📸 ${imageId}: ${planImage.description || '설명 없음'} 
+									${editedPrompt ? '<span style="background: #4ade80; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">수정됨</span>' : ''}
+									${isFromStage5 ? '<span style="background: #3b82f6; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Stage 5</span>' : ''}
+								</h5>
 								<div class="ai-image-prompt-details">
 									<div class="prompt-original">
 										<label class="prompt-text-label">프롬프트:</label>

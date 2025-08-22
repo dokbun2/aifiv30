@@ -128,6 +128,14 @@
             min-height: 400px;
             padding: 20px 0;
             width: 100%;
+            position: relative;
+        }
+        
+        /* Empty state가 있을 때 grid를 flex로 변경 */
+        .gallery-grid:has(.empty-state) {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
         }
         
         /* 갤러리 아이템 - 세로형 카드 스타일 */
@@ -333,6 +341,7 @@
             justify-content: center;
             min-height: 400px;
             width: 100%;
+            grid-column: 1 / -1;  /* 전체 그리드 너비 차지 */
         }
         
         .empty-state-icon {
@@ -418,6 +427,17 @@
             transform: rotate(90deg);
         }
         
+        /* Import Button Hover Effects */
+        .import-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.15) !important;
+            border-color: rgba(255,255,255,0.3) !important;
+        }
+        
         /* Responsive */
         @media (max-width: 1200px) {
             .gallery-grid {
@@ -430,6 +450,20 @@
         }
         
         @media (max-width: 768px) {
+            .gallery-header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .action-buttons {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+            
+            .action-buttons button {
+                flex: 1;
+            }
+            
             .gallery-grid {
                 grid-template-columns: 1fr !important;
                 gap: 16px !important;
@@ -448,7 +482,7 @@
         <div class="nav-content">
             <a href="index.html" class="nav-brand">MEDIA GALLERY</a>
             <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">홈</a></li>
+                <li><a href="index.html#features" class="nav-link">홈</a></li>
                 <li><a href="storyboard/index.html" class="nav-link">스토리보드</a></li>
                 <li><a href="concept-art/index.html" class="nav-link">컨셉아트</a></li>
             </ul>
@@ -473,6 +507,11 @@
                     <button class="tab-btn" data-tab="conceptart">
                         🎨 컨셉아트
                         <span class="tab-count" id="conceptart-count">0</span>
+                    </button>
+                </div>
+                <div class="action-buttons" style="display: flex; gap: 8px; margin-left: 16px;">
+                    <button class="import-btn" onclick="syncFromLocalStorage()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" title="스토리보드와 컨셉아트에서 데이터 가져오기">
+                        <span>🔄</span> 가져오기
                     </button>
                 </div>
             </div>
@@ -502,6 +541,15 @@
         <div class="lightbox-content">
             <img class="lightbox-image" id="lightbox-image" style="display: none;">
             <iframe class="lightbox-video" id="lightbox-video" style="display: none;" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Sync Status Modal -->
+    <div id="sync-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 20px; min-width: 300px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); z-index: 10000;">
+        <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 15px;">🔄</div>
+            <div id="sync-status-text" style="color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 500;"></div>
+            <div id="sync-details" style="margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.6);"></div>
         </div>
     </div>
 
@@ -553,91 +601,168 @@
         // 스토리보드 미디어 로드
         function loadStoryboardMedia() {
             const storyboardGallery = document.getElementById('storyboard-gallery');
-            let mediaItems = [];
-            let hasMedia = false;
+            let shotGroups = {};
+            let totalMedia = 0;
 
-            // localStorage에서 breakdownData_ 키 찾기
-            const keys = Object.keys(localStorage);
-            const breakdownKeys = keys.filter(key => key.startsWith('breakdownData_'));
-
-            breakdownKeys.forEach(key => {
+            // localStorage에서 storyboardData 가져오기
+            const storyboardData = localStorage.getItem('storyboardData');
+            
+            if (storyboardData) {
                 try {
-                    const data = JSON.parse(localStorage.getItem(key));
+                    const data = JSON.parse(storyboardData);
                     
                     if (data.breakdown_data && data.breakdown_data.shots) {
                         const shots = data.breakdown_data.shots;
                         
                         shots.forEach(shot => {
-                            // 이미지 프롬프트 섹션에서 이미지 추출
-                            if (shot.image_prompts) {
+                            const shotId = shot.id || shot.shot_id;
+                            const shotNumber = shot.shot_number || shotId || '샷';
+                            const shotTitle = shot.shot_title || shot.description || '';
+                            const sceneId = shot.scene_id || '';
+                            
+                            // 샷별 미디어 그룹 초기화
+                            if (!shotGroups[shotId]) {
+                                shotGroups[shotId] = {
+                                    shotNumber: shotNumber,
+                                    shotTitle: shotTitle,
+                                    sceneId: sceneId,
+                                    images: [],
+                                    videos: [],
+                                    referenceImages: []
+                                };
+                            }
+                            
+                            // 1. AI 생성 이미지 추출 (새로운 구조)
+                            if (shot.image_design && shot.image_design.ai_generated_images) {
                                 const aiTools = ['midjourney', 'ideogram', 'leonardo', 'imagefx', 'openart', 'universal'];
                                 
                                 aiTools.forEach(tool => {
-                                    if (shot.image_prompts[tool] && shot.image_prompts[tool].images) {
-                                        Object.entries(shot.image_prompts[tool].images).forEach(([imageId, imageData]) => {
+                                    const toolImages = shot.image_design.ai_generated_images[tool];
+                                    if (toolImages) {
+                                        Object.entries(toolImages).forEach(([imageId, imageData]) => {
                                             let url = '';
+                                            let description = '';
+                                            
                                             if (typeof imageData === 'string') {
                                                 url = imageData;
-                                            } else if (imageData && imageData.url) {
-                                                url = imageData.url;
+                                            } else if (imageData && typeof imageData === 'object') {
+                                                url = imageData.url || imageData.image_url || '';
+                                                description = imageData.description || '';
                                             }
                                             
                                             if (url && url.trim()) {
-                                                hasMedia = true;
-                                                mediaItems.push({
+                                                shotGroups[shotId].images.push({
                                                     url: url,
-                                                    title: `${shot.shot_number || shot.shot_id || '샷'} - ${tool}`,
-                                                    subtitle: shot.shot_title || shot.description || '',
-                                                    type: 'image',
-                                                    tool: tool
+                                                    title: `${tool.toUpperCase()} - ${imageId}`,
+                                                    description: description,
+                                                    tool: tool,
+                                                    imageId: imageId
                                                 });
+                                                totalMedia++;
                                             }
                                         });
                                     }
                                 });
                             }
                             
-                            // 비디오 프롬프트 섹션에서 비디오 추출
-                            if (shot.video_prompts) {
-                                const videoTools = ['luma', 'kling', 'veo2', 'runway', 'pika', 'universal'];
-                                
-                                videoTools.forEach(tool => {
-                                    if (shot.video_prompts[tool] && shot.video_prompts[tool].videos) {
-                                        Object.entries(shot.video_prompts[tool].videos).forEach(([videoId, videoData]) => {
-                                            let url = '';
-                                            if (typeof videoData === 'string') {
-                                                url = videoData;
-                                            } else if (videoData && videoData.url) {
-                                                url = videoData.url;
-                                            }
-                                            
-                                            if (url && url.trim()) {
-                                                hasMedia = true;
-                                                mediaItems.push({
-                                                    url: url,
-                                                    title: `${shot.shot_number || shot.shot_id || '샷'} - ${tool} 영상`,
-                                                    subtitle: shot.shot_title || shot.description || '',
-                                                    type: 'video',
-                                                    tool: tool
-                                                });
-                                            }
+                            // 2. 참조 이미지 추출
+                            if (shot.reference_images && Array.isArray(shot.reference_images)) {
+                                shot.reference_images.forEach((refImage, idx) => {
+                                    if (refImage.url && refImage.url.trim()) {
+                                        shotGroups[shotId].referenceImages.push({
+                                            url: refImage.url,
+                                            title: `참조 이미지 ${idx + 1}`,
+                                            description: refImage.description || '',
+                                            type: refImage.type || 'composition'
                                         });
+                                        totalMedia++;
+                                    }
+                                });
+                            }
+                            
+                            // 3. 비디오 URL 추출
+                            if (shot.video_urls) {
+                                Object.entries(shot.video_urls).forEach(([key, url]) => {
+                                    if (url && url.trim()) {
+                                        // key는 'aiType_imageId' 형식
+                                        const [aiType, ...imageIdParts] = key.split('_');
+                                        const imageId = imageIdParts.join('_');
+                                        
+                                        shotGroups[shotId].videos.push({
+                                            url: url,
+                                            title: `${aiType.toUpperCase()} 영상 - ${imageId}`,
+                                            tool: aiType,
+                                            imageId: imageId
+                                        });
+                                        totalMedia++;
                                     }
                                 });
                             }
                         });
                     }
                 } catch (e) {
-                    console.error('Error parsing breakdown data:', e);
+                    console.error('Error parsing storyboard data:', e);
                 }
-            });
+            }
 
             // 갤러리 렌더링
-            if (hasMedia && mediaItems.length > 0) {
+            if (totalMedia > 0) {
                 let galleryHTML = '';
-                mediaItems.forEach(item => {
-                    galleryHTML += createGalleryItem(item);
+                
+                // 샷별로 그룹화하여 렌더링
+                Object.entries(shotGroups).forEach(([shotId, group]) => {
+                    const hasAnyMedia = group.images.length > 0 || group.videos.length > 0 || group.referenceImages.length > 0;
+                    
+                    if (hasAnyMedia) {
+                        galleryHTML += `
+                            <div class="scene-group">
+                                <div class="scene-header">
+                                    <div class="scene-title">📸 ${group.shotNumber}</div>
+                                    <div class="scene-subtitle">${group.shotTitle}</div>
+                                </div>
+                                <div class="scene-shots">
+                        `;
+                        
+                        // 이미지 렌더링
+                        group.images.forEach(image => {
+                            galleryHTML += createGalleryItem({
+                                url: image.url,
+                                title: `${group.shotNumber} - ${image.title}`,
+                                subtitle: image.description || group.shotTitle,
+                                type: 'image',
+                                tool: image.tool
+                            });
+                        });
+                        
+                        // 참조 이미지 렌더링
+                        group.referenceImages.forEach(refImage => {
+                            galleryHTML += createGalleryItem({
+                                url: refImage.url,
+                                title: `${group.shotNumber} - ${refImage.title}`,
+                                subtitle: `${refImage.type} | ${refImage.description}`,
+                                type: 'image',
+                                tool: 'reference'
+                            });
+                        });
+                        
+                        // 비디오 렌더링
+                        group.videos.forEach(video => {
+                            galleryHTML += createGalleryItem({
+                                url: video.url,
+                                title: `${group.shotNumber} - ${video.title}`,
+                                subtitle: group.shotTitle,
+                                type: 'video',
+                                tool: video.tool
+                            });
+                        });
+                        
+                        galleryHTML += `
+                                </div>
+                            </div>
+                        `;
+                    }
                 });
+                
                 storyboardGallery.innerHTML = galleryHTML;
             } else {
                 storyboardGallery.innerHTML = `
@@ -650,7 +775,7 @@
             }
 
             // 카운트 업데이트
-            document.getElementById('storyboard-count').textContent = mediaItems.length;
+            document.getElementById('storyboard-count').textContent = totalMedia;
         }
 
         // 컨셉아트 미디어 로드
@@ -816,6 +941,103 @@
                 document.getElementById('lightbox-image').src = '';
                 document.getElementById('lightbox-video').src = '';
             }
+        }
+
+        // localStorage에서 데이터 동기화
+        function syncFromLocalStorage() {
+            showSyncModal('데이터 가져오는 중...');
+            
+            let storyboardCount = 0;
+            let conceptArtCount = 0;
+            
+            // 스토리보드 데이터 확인
+            const storyboardData = localStorage.getItem('storyboardData');
+            if (storyboardData) {
+                try {
+                    const data = JSON.parse(storyboardData);
+                    if (data.breakdown_data && data.breakdown_data.shots) {
+                        data.breakdown_data.shots.forEach(shot => {
+                            // AI 생성 이미지 카운트
+                            if (shot.image_design && shot.image_design.ai_generated_images) {
+                                Object.values(shot.image_design.ai_generated_images).forEach(toolImages => {
+                                    if (toolImages && typeof toolImages === 'object') {
+                                        storyboardCount += Object.keys(toolImages).length;
+                                    }
+                                });
+                            }
+                            // 참조 이미지 카운트
+                            if (shot.reference_images && Array.isArray(shot.reference_images)) {
+                                storyboardCount += shot.reference_images.filter(ref => ref.url).length;
+                            }
+                            // 비디오 카운트
+                            if (shot.video_urls) {
+                                storyboardCount += Object.keys(shot.video_urls).filter(key => shot.video_urls[key]).length;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('스토리보드 데이터 파싱 오류:', e);
+                }
+            }
+            
+            // 컨셉아트 데이터 확인
+            const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            if (conceptArtData) {
+                try {
+                    const data = JSON.parse(conceptArtData);
+                    ['characters', 'locations', 'props'].forEach(category => {
+                        if (data[category] && Array.isArray(data[category])) {
+                            data[category].forEach(item => {
+                                if (item.image_url) conceptArtCount++;
+                                if (item.imageGallery && Array.isArray(item.imageGallery)) {
+                                    conceptArtCount += item.imageGallery.filter(img => img && img.url).length;
+                                }
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.error('컨셉아트 데이터 파싱 오류:', e);
+                }
+            }
+            
+            // 갤러리 새로고침
+            loadAllMedia();
+            
+            // 동기화 완료 메시지
+            const totalCount = storyboardCount + conceptArtCount;
+            if (totalCount > 0) {
+                showSyncModal(
+                    `✅ 가져오기 완료!`,
+                    `스토리보드: ${storyboardCount}개 | 컨셉아트: ${conceptArtCount}개`
+                );
+            } else {
+                showSyncModal(
+                    `⚠️ 미디어가 없습니다`,
+                    `스토리보드나 컨셉아트에서 URL을 추가해주세요`
+                );
+            }
+            
+            // 모달 자동 닫기
+            setTimeout(() => {
+                closeSyncModal();
+            }, 2000);
+        }
+        
+        // 동기화 모달 표시
+        function showSyncModal(status, details = '') {
+            const modal = document.getElementById('sync-modal');
+            const statusText = document.getElementById('sync-status-text');
+            const detailsText = document.getElementById('sync-details');
+            
+            modal.style.display = 'block';
+            statusText.textContent = status;
+            detailsText.textContent = details;
+        }
+        
+        // 동기화 모달 닫기
+        function closeSyncModal() {
+            const modal = document.getElementById('sync-modal');
+            modal.style.display = 'none';
         }
     </script>
 </body>

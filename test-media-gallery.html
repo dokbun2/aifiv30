@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 갤러리 테스트</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #007AFF;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #FF8C00;
+        }
+        
+        .data-display {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 5px;
+            font-size: 12px;
+        }
+        
+        .status.found {
+            background: #28a745;
+        }
+        
+        .status.not-found {
+            background: #dc3545;
+        }
+        
+        .status.warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .button-group {
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0051D5;
+        }
+        
+        .media-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .media-item {
+            background: rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .media-item img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .media-item .title {
+            font-size: 12px;
+            color: #007AFF;
+            margin-bottom: 4px;
+        }
+        
+        .media-item .type {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 미디어 갤러리 테스트 페이지</h1>
+        
+        <div class="test-section">
+            <div class="test-header">📊 localStorage 데이터 상태</div>
+            <div id="storage-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">🎬 스토리보드 데이터 구조 분석</div>
+            <div id="storyboard-analysis"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">🖼️ 수집된 미디어 미리보기</div>
+            <div id="media-preview" class="media-preview"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-header">📝 상세 데이터 (JSON)</div>
+            <div id="data-display" class="data-display"></div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="analyzeData()">데이터 분석</button>
+            <button onclick="testMediaGallery()">미디어 갤러리 테스트</button>
+            <button onclick="clearDisplay()">화면 초기화</button>
+        </div>
+    </div>
+    
+    <script>
+        function analyzeData() {
+            const storageStatus = document.getElementById('storage-status');
+            const storyboardAnalysis = document.getElementById('storyboard-analysis');
+            const dataDisplay = document.getElementById('data-display');
+            const mediaPreview = document.getElementById('media-preview');
+            
+            // localStorage 상태 체크
+            let statusHTML = '';
+            const storyboardData = localStorage.getItem('storyboardData');
+            const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            
+            if (storyboardData) {
+                statusHTML += '<span class="status found">✅ storyboardData 발견</span>';
+            } else {
+                statusHTML += '<span class="status not-found">❌ storyboardData 없음</span>';
+            }
+            
+            if (conceptArtData) {
+                statusHTML += '<span class="status found">✅ conceptArtManagerData_v1.2 발견</span>';
+            } else {
+                statusHTML += '<span class="status not-found">❌ conceptArtManagerData_v1.2 없음</span>';
+            }
+            
+            storageStatus.innerHTML = statusHTML;
+            
+            // 스토리보드 데이터 분석
+            if (storyboardData) {
+                try {
+                    const data = JSON.parse(storyboardData);
+                    let analysisHTML = '';
+                    let mediaCount = {
+                        images: 0,
+                        references: 0,
+                        videos: 0
+                    };
+                    
+                    if (data.breakdown_data && data.breakdown_data.shots) {
+                        const shots = data.breakdown_data.shots;
+                        analysisHTML += `<p>📌 총 샷 개수: ${shots.length}</p>`;
+                        
+                        let mediaItems = [];
+                        
+                        shots.forEach(shot => {
+                            const shotId = shot.id || shot.shot_id;
+                            const shotNumber = shot.shot_number || shotId;
+                            
+                            // AI 생성 이미지 체크
+                            if (shot.image_design && shot.image_design.ai_generated_images) {
+                                Object.entries(shot.image_design.ai_generated_images).forEach(([tool, images]) => {
+                                    if (images && typeof images === 'object') {
+                                        Object.entries(images).forEach(([imageId, imageData]) => {
+                                            let url = '';
+                                            if (typeof imageData === 'string') {
+                                                url = imageData;
+                                            } else if (imageData && imageData.url) {
+                                                url = imageData.url;
+                                            }
+                                            
+                                            if (url) {
+                                                mediaCount.images++;
+                                                mediaItems.push({
+                                                    type: 'image',
+                                                    shot: shotNumber,
+                                                    tool: tool,
+                                                    url: url
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            
+                            // 참조 이미지 체크
+                            if (shot.reference_images && Array.isArray(shot.reference_images)) {
+                                shot.reference_images.forEach(ref => {
+                                    if (ref.url) {
+                                        mediaCount.references++;
+                                        mediaItems.push({
+                                            type: 'reference',
+                                            shot: shotNumber,
+                                            url: ref.url
+                                        });
+                                    }
+                                });
+                            }
+                            
+                            // 비디오 체크
+                            if (shot.video_urls) {
+                                Object.entries(shot.video_urls).forEach(([key, url]) => {
+                                    if (url) {
+                                        mediaCount.videos++;
+                                        mediaItems.push({
+                                            type: 'video',
+                                            shot: shotNumber,
+                                            key: key,
+                                            url: url
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                        
+                        analysisHTML += `
+                            <p>🖼️ AI 생성 이미지: ${mediaCount.images}개</p>
+                            <p>📎 참조 이미지: ${mediaCount.references}개</p>
+                            <p>🎥 비디오: ${mediaCount.videos}개</p>
+                            <p>📊 총 미디어: ${mediaCount.images + mediaCount.references + mediaCount.videos}개</p>
+                        `;
+                        
+                        // 미디어 미리보기
+                        let previewHTML = '';
+                        mediaItems.slice(0, 12).forEach(item => {
+                            if (item.type === 'image' || item.type === 'reference') {
+                                previewHTML += `
+                                    <div class="media-item">
+                                        <img src="${item.url}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22150%22%3E%3Crect width=%22200%22 height=%22150%22 fill=%22%23333%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23999%22%3E이미지 로드 실패%3C/text%3E%3C/svg%3E'">
+                                        <div class="title">${item.shot}</div>
+                                        <div class="type">${item.type} ${item.tool || ''}</div>
+                                    </div>
+                                `;
+                            } else if (item.type === 'video') {
+                                previewHTML += `
+                                    <div class="media-item">
+                                        <div style="height: 150px; background: #222; display: flex; align-items: center; justify-content: center; border-radius: 4px; margin-bottom: 8px;">
+                                            <span style="font-size: 48px;">🎥</span>
+                                        </div>
+                                        <div class="title">${item.shot}</div>
+                                        <div class="type">video ${item.key}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (mediaItems.length > 12) {
+                            previewHTML += `
+                                <div class="media-item" style="display: flex; align-items: center; justify-content: center; height: 200px;">
+                                    <div>
+                                        <div style="font-size: 24px; margin-bottom: 8px;">➕</div>
+                                        <div class="type">${mediaItems.length - 12}개 더 있음</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        mediaPreview.innerHTML = previewHTML || '<p style="color: rgba(255,255,255,0.5);">미디어가 없습니다</p>';
+                        
+                    } else {
+                        analysisHTML = '<span class="status warning">⚠️ breakdown_data.shots가 없습니다</span>';
+                    }
+                    
+                    storyboardAnalysis.innerHTML = analysisHTML;
+                    
+                    // JSON 데이터 표시 (축약)
+                    const displayData = {
+                        project_info: data.project_info,
+                        shots_count: data.breakdown_data?.shots?.length || 0,
+                        first_shot: data.breakdown_data?.shots?.[0] || null
+                    };
+                    dataDisplay.textContent = JSON.stringify(displayData, null, 2);
+                    
+                } catch (e) {
+                    storyboardAnalysis.innerHTML = `<span class="status not-found">❌ 파싱 오류: ${e.message}</span>`;
+                }
+            }
+        }
+        
+        function testMediaGallery() {
+            window.open('media-gallery-apple.html', '_blank');
+        }
+        
+        function clearDisplay() {
+            document.getElementById('storage-status').innerHTML = '';
+            document.getElementById('storyboard-analysis').innerHTML = '';
+            document.getElementById('media-preview').innerHTML = '';
+            document.getElementById('data-display').textContent = '';
+        }
+        
+        // 페이지 로드 시 자동 분석
+        window.addEventListener('DOMContentLoaded', analyzeData);
+    </script>
+</body>
+</html>
