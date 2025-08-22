@@ -155,5 +155,5 @@ mkdir -p _archive/{backups,old-versions,deprecated}
 
 ---
 
-작성일: 2024년 1월 20일
+작성일: 2025년 1월 20일
 작성자: Claude Code Assistant

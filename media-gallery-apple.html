@@ -352,13 +352,13 @@
             color: rgba(255, 255, 255, 0.6);
         }
         
-        /* Gallery Grid - 컴팩트한 카드 스타일 */
+        /* Gallery Grid - 스토리보드 스타일 */
         .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             min-height: 400px;
-            position: relative;
+            padding: 20px 0;
         }
         
         /* Scene Group Styles */
@@ -390,10 +390,9 @@
         }
         
         .scene-shots {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 12px;
-            grid-auto-flow: dense;
         }
         
         /* When gallery has empty state class */
@@ -404,13 +403,16 @@
         }
         
         .gallery-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
+            display: flex;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            backdrop-filter: blur(10px);
+            height: 200px;
         }
         
         .gallery-item:hover {
@@ -420,55 +422,65 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
         
+        /* 이미지 컨테이너 - 가로형 카드 */
+        .gallery-item-image-container {
+            width: 320px;
+            height: 100%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
         .gallery-item-image {
             width: 100%;
-            height: 150px;
-            object-fit: contain;
-            background: rgba(0, 0, 0, 0.4);
+            height: 100%;
+            object-fit: contain;  /* cover에서 contain으로 변경 - 이미지 전체 표시 */
             display: block;
-            cursor: pointer;
         }
         
-        /* 가로형 이미지 - 더 넓게 */
-        .gallery-item.landscape {
-            grid-column: span 2;
+        /* 모든 이미지 동일한 비율로 표시 */
+        .gallery-item.landscape,
+        .gallery-item.portrait,
+        .gallery-item.square {
+            /* 모든 아이템 동일한 크기 */
         }
         
-        .gallery-item.landscape .gallery-item-image {
-            height: 120px;
-        }
-        
-        /* 세로형 이미지 */
-        .gallery-item.portrait .gallery-item-image {
-            height: 180px;
-        }
-        
-        /* 정사각형 이미지 */
-        .gallery-item.square .gallery-item-image {
-            height: 150px;
-        }
-        
+        /* 비디오 컨테이너 - 가로형 카드 */
         .gallery-item-video {
-            width: 100%;
-            height: 120px;
-            background: rgba(0, 0, 0, 0.6);
+            width: 320px;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        /* 비디오 썸네일 이미지 */
+        .video-thumbnail {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;  /* cover에서 contain으로 변경 - 이미지 전체 표시 */
+            opacity: 0.7;
         }
         
         .video-play-btn {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.9);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 24px;
             color: #000;
             transition: all 0.3s;
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .gallery-item:hover .video-play-btn {
@@ -477,25 +489,46 @@
         }
         
         .gallery-item-info {
-            padding: 8px;
+            flex: 1;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: transparent;
         }
         
         .gallery-item-title {
-            font-size: 11px;
+            font-size: 16px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 8px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         
         .gallery-item-subtitle {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            margin-bottom: 12px;
+        }
+        
+        .gallery-item-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .gallery-item-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         /* Tab Content */
@@ -583,10 +616,13 @@
         }
         
         .lightbox-video {
-            width: 80vw;
-            height: 80vh;
+            width: 90%;
+            height: 90vh;
+            max-width: 1200px;
+            border: none;
             border-radius: 12px;
             background: black;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
         
         .lightbox-close {
@@ -642,7 +678,7 @@
             }
             
             .gallery-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                 gap: 16px;
             }
             
@@ -651,7 +687,7 @@
             }
             
             .scene-shots {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                 gap: 12px;
             }
             
@@ -661,6 +697,11 @@
             
             .tab-button {
                 width: 100%;
+            }
+            
+            .lightbox-video {
+                width: 95%;
+                height: 60vh;
             }
         }
     </style>
@@ -689,10 +730,10 @@
                     </div>
                 </div>
                 <div class="gallery-header-buttons">
-                    <button class="compact-btn compact-btn-primary" onclick="loadAllMedia()">
+                    <button class="compact-btn compact-btn-primary" id="refreshBtn">
                         🔄 전체 새로고침
                     </button>
-                    <button class="compact-btn" onclick="exportGallery()">
+                    <button class="compact-btn" id="exportBtn">
                         갤러리 내보내기
                     </button>
                 </div>
@@ -708,11 +749,11 @@
                 <div class="filter-title">갤러리 선택</div>
                 <!-- Tab Buttons -->
                 <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="storyboard" onclick="switchTab('storyboard')">
+                    <button class="tab-button active" data-tab="storyboard">
                         <span style="font-size: 14px;">🎬</span> 스토리보드
                         <span class="count" id="storyboard-count">0</span>
                     </button>
-                    <button class="tab-button" data-tab="conceptart" onclick="switchTab('conceptart')">
+                    <button class="tab-button" data-tab="conceptart">
                         <span style="font-size: 14px;">🎨</span> 컨셉아트
                         <span class="count" id="conceptart-count">0</span>
                     </button>
@@ -796,84 +837,116 @@
     </div>
 
     <script>
-        // Make functions global so they can be called from HTML
-        window.toggleDropdown = function(dropdownId, event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            const dropdown = document.getElementById(dropdownId);
-            const allDropdowns = document.querySelectorAll('.custom-dropdown');
-            
-            // Close other dropdowns
-            allDropdowns.forEach(d => {
-                if (d.id !== dropdownId) {
-                    d.classList.remove('active');
+        // Create gallery item HTML
+        window.createGalleryItem = function(item) {
+            // 비디오 아이템
+            if (item.type === 'video') {
+                // Google Drive 비디오 URL 처리
+                let videoUrl = item.url;
+                let thumbnailUrl = '';
+                
+                // Google Drive URL인 경우 embed URL로 변환
+                if (videoUrl && videoUrl.includes('drive.google.com')) {
+                    const fileIdMatch = videoUrl.match(/[-\w]{25,}/);
+                    if (fileIdMatch) {
+                        const fileId = fileIdMatch[0];
+                        videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                        thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`;
+                    }
                 }
-            });
-            
-            // Toggle current dropdown
-            dropdown.classList.toggle('active');
-        }
-        
-        window.selectOption = function(dropdownId, value, text, event) {
-            if (event) {
-                event.stopPropagation();
+                
+                return `
+                    <div class="gallery-item" data-type="${item.type}" data-category="${item.category || ''}">
+                        <div class="gallery-item-video" onclick="openLightbox('${videoUrl}', '${item.type}')">
+                            ${thumbnailUrl ? `<img class="video-thumbnail" src="${thumbnailUrl}" alt="${item.title || ''}" onerror="this.style.display='none'">` : ''}
+                            <div class="video-play-btn">▶</div>
+                        </div>
+                        <div class="gallery-item-info">
+                            <div class="gallery-item-title">${item.title || '영상 제목 없음'}</div>
+                            ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            } 
+            // 이미지 아이템
+            else {
+                return `
+                    <div class="gallery-item" data-type="${item.type}" data-category="${item.category || ''}">
+                        <div class="gallery-item-image-container" onclick="openLightbox('${item.url}', '${item.type}')">
+                            <img class="gallery-item-image" 
+                                 src="${item.url}" 
+                                 alt="${item.title || ''}" 
+                                 loading="lazy" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'225\\' viewBox=\\'0 0 400 225\\'%3E%3Crect width=\\'400\\' height=\\'225\\' fill=\\'%23222\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23666\\' font-family=\\'sans-serif\\' font-size=\\'14\\'%3E이미지 없음%3C/text%3E%3C/svg%3E'">
+                        </div>
+                        <div class="gallery-item-info">
+                            <div class="gallery-item-title">${item.title || '제목 없음'}</div>
+                            ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
+                        </div>
+                    </div>
+                `;
             }
-            
-            const dropdown = document.getElementById(dropdownId);
-            const selected = dropdown.querySelector('.dropdown-selected');
-            const options = dropdown.querySelectorAll('.dropdown-option');
-            
-            // Update selected text
-            selected.textContent = text;
-            
-            // Update selected class
-            options.forEach(opt => {
-                opt.classList.remove('selected');
-                if (opt.dataset.value === value) {
-                    opt.classList.add('selected');
-                }
-            });
-            
-            // Close dropdown
-            setTimeout(() => {
-                dropdown.classList.remove('active');
-            }, 100);
-            
-            // Store value for filtering
-            dropdown.dataset.value = value;
-            
-            // Trigger filter
-            filterGallery();
         };
         
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.custom-dropdown')) {
-                document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                });
-            }
-        });
-        
-        // Tab switching
-        window.switchTab = function(tabName) {
-            // Update buttons
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
+        // Create scene group HTML
+        window.createSceneGroup = function(sceneKey, sceneTitle, sequenceTitle, shots) {
+            let shotsHTML = '';
+            shots.forEach(shot => {
+                shotsHTML += createGalleryItem(shot);
             });
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
             
-            // Update content
+            return `
+                <div class="scene-group">
+                    <div class="scene-header">
+                        <div class="scene-title">${sceneTitle || sceneKey}</div>
+                        <div class="scene-subtitle">${sequenceTitle || ''} - ${shots.length}개 샷</div>
+                    </div>
+                    <div class="scene-shots">
+                        ${shotsHTML}
+                    </div>
+                </div>
+            `;
+        };
+        
+        // Debug localStorage function
+        window.debugLocalStorage = function() {
+            console.log('=== localStorage Debug Info ===');
+            const keys = Object.keys(localStorage);
+            console.log(`Total keys: ${keys.length}`);
+            
+            keys.forEach(key => {
+                const value = localStorage.getItem(key);
+                const size = (value.length / 1024).toFixed(2);
+                console.log(`${key}: ${size} KB`);
+                
+                // Try to parse and show structure
+                try {
+                    const parsed = JSON.parse(value);
+                    console.log(`  - Structure:`, Object.keys(parsed));
+                } catch(e) {
+                    console.log(`  - Not JSON or parse error`);
+                }
+            });
+            console.log('=== End Debug Info ===');
+        };
+        
+        // Show tab function
+        window.showTab = function(tabName) {
+            // Update tab content visibility
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            
-            // Update filters based on tab
-            updateFilters(tabName);
-        }
+            const targetTab = document.getElementById(`${tabName}-tab`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        };
+        
+        // Filter gallery function
+        window.filterGallery = function() {
+            // 필터 로직 구현 예정
+            console.log('Filtering gallery...');
+        };
         
         // Update filters based on selected tab
         window.updateFilters = function(tabName) {
@@ -888,10 +961,10 @@
                 categoryDropdown.dataset.value = 'shot';
                 
                 optionsContainer.innerHTML = `
-                    <div class="dropdown-option" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
-                    <div class="dropdown-option" data-value="sequence" onclick="selectOption('category-dropdown', 'sequence', '시퀀스', event)">시퀀스</div>
-                    <div class="dropdown-option" data-value="scene" onclick="selectOption('category-dropdown', 'scene', '씬', event)">씬</div>
-                    <div class="dropdown-option selected" data-value="shot" onclick="selectOption('category-dropdown', 'shot', '샷', event)">샷</div>
+                    <div class="dropdown-option" data-value="all">전체</div>
+                    <div class="dropdown-option" data-value="sequence">시퀀스</div>
+                    <div class="dropdown-option" data-value="scene">씬</div>
+                    <div class="dropdown-option selected" data-value="shot">샷</div>
                 `;
             } else {
                 // Reset to '전체' for concept art
@@ -899,10 +972,10 @@
                 categoryDropdown.dataset.value = 'all';
                 
                 optionsContainer.innerHTML = `
-                    <div class="dropdown-option selected" data-value="all" onclick="selectOption('category-dropdown', 'all', '전체', event)">전체</div>
-                    <div class="dropdown-option" data-value="character" onclick="selectOption('category-dropdown', 'character', '캐릭터', event)">캐릭터</div>
-                    <div class="dropdown-option" data-value="location" onclick="selectOption('category-dropdown', 'location', '장소', event)">장소</div>
-                    <div class="dropdown-option" data-value="prop" onclick="selectOption('category-dropdown', 'prop', '소품', event)">소품</div>
+                    <div class="dropdown-option selected" data-value="all">전체</div>
+                    <div class="dropdown-option" data-value="character">캐릭터</div>
+                    <div class="dropdown-option" data-value="location">장소</div>
+                    <div class="dropdown-option" data-value="prop">소품</div>
                 `;
             }
             
@@ -1025,7 +1098,15 @@
                                             Object.entries(shot.image_prompts[aiTool].images).forEach(([imageId, imageData]) => {
                                                 console.log(`    이미지 ${imageId}:`, imageData);
                                                 
-                                                if (imageData && imageData.url && imageData.url.trim() !== '') {
+                                                // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                                let imageUrl = '';
+                                                if (typeof imageData === 'string') {
+                                                    imageUrl = imageData;
+                                                } else if (imageData && imageData.url) {
+                                                    imageUrl = imageData.url;
+                                                }
+                                                
+                                                if (imageUrl && imageUrl.trim() !== '') {
                                                     hasMedia = true;
                                                     mediaCount++;
                                                     // Store in scene groups for later rendering
@@ -1038,15 +1119,15 @@
                                                         };
                                                     }
                                                     sceneGroups[sceneKey].shots.push({
-                                                        url: imageData.url,
+                                                        url: imageUrl,
                                                         title: `${shot.shot_number || shot.shot_id || shot.id || '샷'} - ${aiTool}`,
                                                         subtitle: shot.shot_title || shot.description || '',
                                                         type: 'image',
                                                         category: 'shot'
                                                     });
-                                                    console.log(`    ✅ 이미지 추가됨: ${imageData.url}`);
+                                                    console.log(`    ✅ 이미지 추가됨: ${imageUrl}`);
                                                 } else {
-                                                    console.log(`    ⚠️ URL이 없거나 비어있음`);
+                                                    console.log(`    ⚠️ URL이 없거나 비어있음`, imageData);
                                                 }
                                             });
                                         } else {
@@ -1065,11 +1146,19 @@
                                 videoTools.forEach(videoTool => {
                                     if (shot.video_prompts[videoTool] && shot.video_prompts[videoTool].videos) {
                                         Object.entries(shot.video_prompts[videoTool].videos).forEach(([videoId, videoData]) => {
-                                            if (videoData && videoData.url && videoData.url.trim() !== '') {
+                                            // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                            let videoUrl = '';
+                                            if (typeof videoData === 'string') {
+                                                videoUrl = videoData;
+                                            } else if (videoData && videoData.url) {
+                                                videoUrl = videoData.url;
+                                            }
+                                            
+                                            if (videoUrl && videoUrl.trim() !== '') {
                                                 hasMedia = true;
                                                 mediaCount++;
                                                 galleryHTML += createGalleryItem({
-                                                    url: videoData.url,
+                                                    url: videoUrl,
                                                     title: `${shot.shot_number || shot.shot_id || shot.id || '샷'} - ${videoTool} 영상`,
                                                     subtitle: shot.shot_title || shot.description || '',
                                                     type: 'video',
@@ -1172,11 +1261,19 @@
                                                     aiTools.forEach(aiTool => {
                                                         if (shot.image_prompts[aiTool] && shot.image_prompts[aiTool].images) {
                                                             Object.entries(shot.image_prompts[aiTool].images).forEach(([imageId, imageData]) => {
-                                                                if (imageData && imageData.url && imageData.url.trim() !== '') {
+                                                                // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                                                let imageUrl = '';
+                                                                if (typeof imageData === 'string') {
+                                                                    imageUrl = imageData;
+                                                                } else if (imageData && imageData.url) {
+                                                                    imageUrl = imageData.url;
+                                                                }
+                                                                
+                                                                if (imageUrl && imageUrl.trim() !== '') {
                                                                     hasMedia = true;
                                                                     mediaCount++;
                                                                     galleryHTML += createGalleryItem({
-                                                                        url: imageData.url,
+                                                                        url: imageUrl,
                                                                         title: `${shot.shot_number || shot.shot_id || '샷'} - ${aiTool} ${imageId}`,
                                                                         subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                                         type: 'image',
@@ -1196,11 +1293,19 @@
                                                     videoTools.forEach(videoTool => {
                                                         if (shot.video_prompts[videoTool] && shot.video_prompts[videoTool].images) {
                                                             Object.entries(shot.video_prompts[videoTool].images).forEach(([imageId, videoData]) => {
-                                                                if (videoData && videoData.url && videoData.url.trim() !== '') {
+                                                                // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                                                let videoUrl = '';
+                                                                if (typeof videoData === 'string') {
+                                                                    videoUrl = videoData;
+                                                                } else if (videoData && videoData.url) {
+                                                                    videoUrl = videoData.url;
+                                                                }
+                                                                
+                                                                if (videoUrl && videoUrl.trim() !== '') {
                                                                     hasMedia = true;
                                                                     mediaCount++;
                                                                     galleryHTML += createGalleryItem({
-                                                                        url: videoData.url,
+                                                                        url: videoUrl,
                                                                         title: `${shot.shot_number || shot.shot_id || '샷'} - ${videoTool} ${imageId} 영상`,
                                                                         subtitle: `${sequence.title || sequence.sequence_title || sequence.sequence_id} - ${scene.title || scene.scene_title || scene.scene_id}`,
                                                                         type: 'video',
@@ -1221,12 +1326,10 @@
                 } catch (e) {
                     console.error('Error parsing storyboard data:', e);
                 }
-            });
+            }
             
             // Also check for breakdown data keys with different structure
-            // Re-use existing allKeys variable
-            allKeys.forEach(key => {
-                if (key.startsWith('breakdownData_') && !hasMedia) {
+            if (key.startsWith('breakdownData_') && !hasMedia) {
                     const data = localStorage.getItem(key);
                     if (data) {
                         try {
@@ -1260,11 +1363,19 @@
                                                         aiTools.forEach(aiTool => {
                                                             if (shot.image_prompts[aiTool] && shot.image_prompts[aiTool].images) {
                                                                 Object.entries(shot.image_prompts[aiTool].images).forEach(([imageId, imageData]) => {
-                                                                    if (imageData && imageData.url && imageData.url.trim() !== '') {
+                                                                    // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                                                    let imageUrl = '';
+                                                                    if (typeof imageData === 'string') {
+                                                                        imageUrl = imageData;
+                                                                    } else if (imageData && imageData.url) {
+                                                                        imageUrl = imageData.url;
+                                                                    }
+                                                                    
+                                                                    if (imageUrl && imageUrl.trim() !== '') {
                                                                         hasMedia = true;
                                                                         mediaCount++;
                                                                         galleryHTML += createGalleryItem({
-                                                                            url: imageData.url,
+                                                                            url: imageUrl,
                                                                             title: `${shot.shot_number || shot.shot_id || '샷'} - ${aiTool}`,
                                                                             subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
                                                                             type: 'image',
@@ -1282,11 +1393,19 @@
                                                         videoTools.forEach(videoTool => {
                                                             if (shot.video_prompts[videoTool] && shot.video_prompts[videoTool].images) {
                                                                 Object.entries(shot.video_prompts[videoTool].images).forEach(([imageId, videoData]) => {
-                                                                    if (videoData && videoData.url && videoData.url.trim() !== '') {
+                                                                    // URL은 문자열로 직접 저장될 수도 있고 객체의 url 속성일 수도 있음
+                                                                    let videoUrl = '';
+                                                                    if (typeof videoData === 'string') {
+                                                                        videoUrl = videoData;
+                                                                    } else if (videoData && videoData.url) {
+                                                                        videoUrl = videoData.url;
+                                                                    }
+                                                                    
+                                                                    if (videoUrl && videoUrl.trim() !== '') {
                                                                         hasMedia = true;
                                                                         mediaCount++;
                                                                         galleryHTML += createGalleryItem({
-                                                                            url: videoData.url,
+                                                                            url: videoUrl,
                                                                             title: `${shot.shot_number || shot.shot_id || '샷'} - ${videoTool} 영상`,
                                                                             subtitle: `${sequence.title || sequence.sequence_id} - ${scene.title || scene.scene_id}`,
                                                                             type: 'video',
@@ -1467,10 +1586,19 @@
                 image.src = src;
                 image.style.display = 'block';
                 video.style.display = 'none';
-            } else {
-                video.src = src;
-                video.style.display = 'block';
+                video.src = ''; // Clear video src
+            } else if (type === 'video') {
+                // 비디오인 경우 iframe으로 재생
                 image.style.display = 'none';
+                video.style.display = 'block';
+                
+                // iframe 속성 설정
+                video.src = src;
+                video.setAttribute('allowfullscreen', 'true');
+                video.setAttribute('allow', 'autoplay; fullscreen');
+                video.style.width = '90%';
+                video.style.height = '90vh';
+                video.style.maxWidth = '1200px';
             }
             
             lightbox.classList.add('active');
@@ -1488,7 +1616,7 @@
             }
         }
         
-        // Create gallery item HTML with aspect ratio detection
+        // Create gallery item HTML with horizontal card layout
         window.createGalleryItem = function(item) {
             const isVideo = item.type === 'video';
             const isGoogleDrive = item.url && item.url.includes('drive.google.com');
@@ -1510,14 +1638,18 @@
                             <div class="video-play-btn">▶</div>
                         </div>
                     ` : `
-                        <img class="gallery-item-image" src="${item.url}" alt="${item.title}" 
-                             onclick="event.stopPropagation(); openLightbox('${item.url.replace(/'/g, "\\'")}', 'image')"
-                             onload="detectImageRatio('${itemId}', this)"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=\"no-image-placeholder\"><div class=\"empty-state-icon\">🖼️</div><div>이미지 로드 실패</div></div>'">
+                        <div class="gallery-item-image-container" onclick="event.stopPropagation(); openLightbox('${item.url.replace(/'/g, "\\'")}', 'image')">
+                            <img class="gallery-item-image" src="${item.url}" alt="${item.title}" 
+                                 onload="detectImageRatio('${itemId}', this)"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\"no-image-placeholder\"><div class=\"empty-state-icon\">🖼️</div><div>이미지 로드 실패</div></div>'">
+                        </div>
                     `}
                     <div class="gallery-item-info">
                         <div class="gallery-item-title">${item.title}</div>
                         ${item.subtitle ? `<div class="gallery-item-subtitle">${item.subtitle}</div>` : ''}
+                        <div class="gallery-item-meta">
+                            <span>📌 ${item.category || 'media'}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1630,7 +1762,7 @@
         }
         
         // Debug function to check localStorage data
-        window.debugLocalStorage = function() {}
+        window.debugLocalStorageExtra = function() {
             console.log('=== localStorage Debug Info ===');
             const keys = Object.keys(localStorage);
             console.log('Total localStorage keys:', keys.length);
@@ -1669,38 +1801,16 @@
             } else {
                 console.log('No concept art data found');
             }
-        };
+        }
         
         // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
-            // Debug localStorage if needed
-            if (window.location.hash === '#debug') {
-                debugLocalStorage();
-            }
-            
-            loadAllMedia();
-            
-            // Initialize dropdown values - set storyboard tab default to 'shot'
-            const activeTab = document.querySelector('.tab-button.active').dataset.tab;
-            if (activeTab === 'storyboard') {
-                document.getElementById('category-dropdown').dataset.value = 'shot';
-                document.querySelector('#category-dropdown .dropdown-selected').textContent = '샷';
-            } else {
-                document.getElementById('category-dropdown').dataset.value = 'all';
-                document.querySelector('#category-dropdown .dropdown-selected').textContent = '전체';
-            }
-            
-            document.getElementById('type-dropdown').dataset.value = 'all';
-            document.getElementById('sort-dropdown').dataset.value = 'newest';
-            
-            // Initialize filters for the active tab
-            updateFilters(activeTab);
-            
-            // 드롭다운 클릭 이벤트 추가
-            document.querySelectorAll('.dropdown-selected').forEach(selected => {
-                selected.addEventListener('click', function(e) {
+            // 이벤트 위임을 사용한 드롭다운 관리
+            document.addEventListener('click', function(e) {
+                // 드롭다운 토글
+                if (e.target.classList.contains('dropdown-selected')) {
                     e.stopPropagation();
-                    const dropdown = this.parentElement;
+                    const dropdown = e.target.closest('.custom-dropdown');
                     
                     // 다른 드롭다운 닫기
                     document.querySelectorAll('.custom-dropdown').forEach(d => {
@@ -1711,33 +1821,107 @@
                     
                     // 현재 드롭다운 토글
                     dropdown.classList.toggle('active');
-                });
-            });
-            
-            // 드롭다운 옵션 클릭 이벤트 추가
-            document.querySelectorAll('.dropdown-option').forEach(option => {
-                option.addEventListener('click', function(e) {
+                }
+                // 드롭다운 옵션 선택
+                else if (e.target.classList.contains('dropdown-option')) {
                     e.stopPropagation();
-                    const dropdown = this.closest('.custom-dropdown');
+                    const dropdown = e.target.closest('.custom-dropdown');
                     const selected = dropdown.querySelector('.dropdown-selected');
+                    const value = e.target.getAttribute('data-value');
                     
-                    // 텍스트 업데이트
-                    selected.textContent = this.textContent;
+                    // 선택된 텍스트 업데이트
+                    selected.textContent = e.target.textContent;
                     
                     // selected 클래스 업데이트
                     dropdown.querySelectorAll('.dropdown-option').forEach(opt => {
                         opt.classList.remove('selected');
                     });
-                    this.classList.add('selected');
+                    e.target.classList.add('selected');
                     
-                    // 값 저장 및 드롭다운 닫기
-                    dropdown.dataset.value = this.dataset.value;
+                    // 드롭다운 닫기
                     dropdown.classList.remove('active');
                     
-                    // 필터 적용
+                    // 값 저장 및 필터 적용
+                    dropdown.dataset.value = value;
                     filterGallery();
+                }
+                // 외부 클릭 시 모든 드롭다운 닫기
+                else if (!e.target.closest('.custom-dropdown')) {
+                    document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
+            
+            // Tab 전환 이벤트 리스너
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    // Update buttons
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                    
+                    // Update filters based on tab
+                    updateFilters(tabName);
                 });
             });
+            
+            // 새로고침 버튼 이벤트 리스너
+            const refreshBtn = document.getElementById('refreshBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    console.log('새로고침 버튼 클릭');
+                    loadAllMedia();
+                });
+            }
+            
+            // 내보내기 버튼 이벤트 리스너
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    console.log('내보내기 버튼 클릭');
+                    exportGallery();
+                });
+            }
+            
+            // Debug localStorage if needed
+            if (window.location.hash === '#debug') {
+                if (typeof debugLocalStorage === 'function') {
+                    debugLocalStorage();
+                }
+            }
+            
+            // 초기 데이터 로드
+            console.log('이미지 및 비디오 로드 시작');
+            loadAllMedia();
+            
+            // Initialize dropdown values - set storyboard tab default to 'shot'
+            const activeTab = document.querySelector('.tab-button.active');
+            if (activeTab) {
+                const tabName = activeTab.dataset.tab;
+                if (tabName === 'storyboard') {
+                    document.getElementById('category-dropdown').dataset.value = 'shot';
+                    document.querySelector('#category-dropdown .dropdown-selected').textContent = '샷';
+                } else {
+                    document.getElementById('category-dropdown').dataset.value = 'all';
+                    document.querySelector('#category-dropdown .dropdown-selected').textContent = '전체';
+                }
+                
+                document.getElementById('type-dropdown').dataset.value = 'all';
+                document.getElementById('sort-dropdown').dataset.value = 'newest';
+                
+                // Initialize filters for the active tab
+                updateFilters(tabName);
+            }
         });
     </script>
     
