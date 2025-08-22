@@ -672,23 +672,31 @@ const uiRenderer = {
         
         let hasData = false;
         
-        // 영문 데이터 파싱 (prompts.universal에서 추출)
+        // 영문 데이터 파싱 - csv_data에서 영어 값, prompts.universal_translated에서 한글 값
         let englishData = {};
-        if (concept.prompts && concept.prompts.universal) {
-            const englishPrompt = concept.prompts.universal;
+        let koreanData = {};
+        
+        // csv_data가 있으면 이것을 영어 원본으로 사용
+        if (concept.csv_data && typeof concept.csv_data === 'object') {
+            englishData = concept.csv_data;
+        }
+        
+        // prompts.universal_translated에서 한글 번역 파싱
+        if (concept.prompts && concept.prompts.universal_translated) {
+            const koreanPrompt = concept.prompts.universal_translated;
             // 세미콜론으로 구분된 각 항목을 파싱
-            const items = englishPrompt.split(';');
+            const items = koreanPrompt.split(';');
             items.forEach(item => {
                 const parts = item.trim().split(':');
                 if (parts.length >= 2) {
                     const key = parts[0].trim();
                     const value = parts.slice(1).join(':').trim();
-                    englishData[key] = value;
+                    koreanData[key] = value;
                 }
             });
         }
         
-        // concept.csv_data가 있으면 직접 사용 (JSON 파일에서 가져온 데이터)
+        // csv_data가 있으면 직접 사용 (JSON 파일에서 가져온 데이터)
         if (concept.csv_data && typeof concept.csv_data === 'object') {
             // csv_data의 모든 필드를 순회하며 표시 (빈 값도 포함)
             for (const [fieldName, value] of Object.entries(concept.csv_data)) {
@@ -699,15 +707,15 @@ const uiRenderer = {
                     // ID 컬럼
                     row.insertCell(0).textContent = fieldName;
                     
-                    // 원본 (영문) 컬럼
+                    // 원본 (영문) 컬럼 - csv_data의 값을 그대로 사용
                     const originalCell = row.insertCell(1);
-                    const englishValue = englishData[fieldName] || '';
-                    originalCell.textContent = englishValue;
+                    originalCell.textContent = value;
                     originalCell.style.color = '#aaa';
                     
-                    // 번역본 (한글) 컬럼
+                    // 번역본 (한글) 컬럼 - 파싱된 한글 데이터에서 가져오기
                     const translationCell = row.insertCell(2);
-                    translationCell.textContent = value;
+                    const koreanValue = koreanData[fieldName] || '';
+                    translationCell.textContent = koreanValue;
                     translationCell.style.color = '#fff';
                 }
             }
