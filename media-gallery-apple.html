@@ -539,11 +539,11 @@
                     </div>
                 </div>
                 <div class="tab-navigation">
-                    <button class="tab-btn active" data-tab="storyboard">
+                    <button class="tab-btn active" data-tab="storyboard" onclick="switchTab('storyboard')">
                         🎬 스토리보드
                         <span class="tab-count" id="storyboard-count">0</span>
                     </button>
-                    <button class="tab-btn" data-tab="conceptart">
+                    <button class="tab-btn" data-tab="conceptart" onclick="switchTab('conceptart')">
                         🎨 컨셉아트
                         <span class="tab-count" id="conceptart-count">0</span>
                     </button>
@@ -562,12 +562,12 @@
         <!-- Storyboard Tab -->
         <div id="storyboard-tab" class="tab-content active">
             <!-- 스토리보드 내부 탭 (이미지/영상) -->
-            <div class="sub-tab-navigation">
-                <button class="sub-tab-btn active" data-subtab="images">
+            <div class="sub-tab-navigation" style="display: flex;">
+                <button class="sub-tab-btn active" data-subtab="images" onclick="switchSubTab('images')">
                     🖼️ 이미지
                     <span class="sub-tab-count" id="storyboard-images-count">(0)</span>
                 </button>
-                <button class="sub-tab-btn" data-subtab="videos">
+                <button class="sub-tab-btn" data-subtab="videos" onclick="switchSubTab('videos')">
                     🎥 영상
                     <span class="sub-tab-count" id="storyboard-videos-count">(0)</span>
                 </button>
@@ -620,51 +620,84 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료');
             loadAllMedia();
             setupEventListeners();
+            
+            // 초기 상태 로그
+            console.log('탭 버튼들:', document.querySelectorAll('.tab-btn'));
+            console.log('서브 탭 버튼들:', document.querySelectorAll('.sub-tab-btn'));
         });
 
         // 이벤트 리스너 설정
         function setupEventListeners() {
-            // 메인 탭 전환
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+            console.log('이벤트 리스너 설정 시작');
+            
+            // 메인 탭 전환 - 이벤트 위임 사용
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            console.log('메인 탭 버튼 개수:', tabButtons.length);
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const tabName = this.dataset.tab;
+                    console.log('메인 탭 클릭:', tabName);
                     switchTab(tabName);
                 });
             });
             
-            // 서브 탭 전환 (스토리보드 내부)
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const subTabName = this.dataset.subtab;
-                    switchSubTab(subTabName);
+            // 서브 탭 전환 (스토리보드 내부) - 이벤트 위임 사용
+            const subTabNav = document.querySelector('.sub-tab-navigation');
+            if (subTabNav) {
+                subTabNav.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.sub-tab-btn');
+                    if (btn) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const subTabName = btn.dataset.subtab;
+                        console.log('서브 탭 클릭:', subTabName);
+                        switchSubTab(subTabName);
+                    }
                 });
-            });
+            }
         }
 
-        // 메인 탭 전환
-        function switchTab(tabName) {
+        // 메인 탭 전환 - window 스코프에 노출
+        window.switchTab = function(tabName) {
+            console.log('메인 탭 전환:', tabName);
+            
             // 버튼 활성화 상태 변경
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+            const activeTabBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+            if (activeTabBtn) {
+                activeTabBtn.classList.add('active');
+            }
 
             // 콘텐츠 표시 변경
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            const activeTabContent = document.getElementById(`${tabName}-tab`);
+            if (activeTabContent) {
+                activeTabContent.classList.add('active');
+            }
             
-            // 스토리보드 탭이면 서브 탭 보이기
-            if (tabName === 'storyboard') {
-                document.querySelector('.sub-tab-navigation').style.display = 'flex';
+            // 서브 탭 표시/숨김 처리
+            const subTabNav = document.querySelector('.sub-tab-navigation');
+            if (subTabNav) {
+                if (tabName === 'storyboard') {
+                    subTabNav.style.display = 'flex';
+                } else {
+                    subTabNav.style.display = 'none';
+                }
             }
         }
         
-        // 서브 탭 전환 (스토리보드 내부)
-        function switchSubTab(subTabName) {
+        // 서브 탭 전환 (스토리보드 내부) - window 스코프에 노출
+        window.switchSubTab = function(subTabName) {
             console.log('서브 탭 전환:', subTabName);
             currentSubTab = subTabName;
             
@@ -812,6 +845,30 @@
                                         // key는 'aiType_imageId' 형식
                                         const [aiType, ...imageIdParts] = key.split('_');
                                         const imageId = imageIdParts.join('_');
+                                        
+                                        // 드롭박스 URL 확인 및 변환
+                                        if (url.includes('dropbox.com')) {
+                                            console.log('📦 스토리보드에서 드롭박스 URL 발견:', url);
+                                            
+                                            // Case 1: 이미 raw=1로 변환된 경우 - 그대로 사용
+                                            if (url.includes('raw=1')) {
+                                                console.log('✅ 이미 변환된 드롭박스 URL (raw=1)');
+                                            }
+                                            // Case 2: dl.dropboxusercontent.com으로 변환된 경우 - 그대로 사용
+                                            else if (url.includes('dl.dropboxusercontent.com')) {
+                                                console.log('✅ 이미 변환된 드롭박스 URL (dl.dropboxusercontent.com)');
+                                            }
+                                            // Case 3: dl=0이 포함된 경우 - raw=1로 변환
+                                            else if (url.includes('dl=0')) {
+                                                url = url.replace('dl=0', 'raw=1');
+                                                console.log('🔄 드롭박스 URL 변환 (dl=0 → raw=1):', url);
+                                            }
+                                            // Case 4: dl 파라미터가 없는 경우 - raw=1 추가
+                                            else if (!url.includes('dl=') && !url.includes('raw=')) {
+                                                url = url.includes('?') ? url + '&raw=1' : url + '?raw=1';
+                                                console.log('🔄 드롭박스 URL에 raw=1 추가:', url);
+                                            }
+                                        }
                                         
                                         shotGroups[shotId].videos.push({
                                             url: url,
@@ -1042,24 +1099,120 @@
         // 갤러리 아이템 생성
         function createGalleryItem(item) {
             if (item.type === 'video') {
-                // Google Drive 비디오 URL 처리
                 let videoUrl = item.url;
                 let thumbnailUrl = '';
+                let fileId = '';
+                let videoSource = 'unknown';
                 
-                if (videoUrl && videoUrl.includes('drive.google.com')) {
-                    const fileIdMatch = videoUrl.match(/[-\w]{25,}/);
-                    if (fileIdMatch) {
-                        const fileId = fileIdMatch[0];
-                        videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-                        thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`;
+                // 영상 소스 판별 및 처리
+                if (videoUrl) {
+                    // Dropbox URL 처리
+                    if (videoUrl.includes('dropbox.com')) {
+                        videoSource = 'dropbox';
+                        console.log('🎬 드롭박스 URL 감지:', videoUrl);
+                        
+                        // Dropbox 공유 링크를 직접 재생 가능한 URL로 변환
+                        // 방법 1: www.dropbox.com을 dl.dropboxusercontent.com으로 변경
+                        if (videoUrl.includes('www.dropbox.com')) {
+                            videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+                            // dl=0 파라미터 제거
+                            videoUrl = videoUrl.replace(/[?&]dl=0/, '');
+                        } 
+                        // 방법 2: dl=0을 raw=1로 변경
+                        else if (videoUrl.includes('dl=0')) {
+                            videoUrl = videoUrl.replace('dl=0', 'raw=1');
+                        } 
+                        // 방법 3: 파라미터가 없으면 raw=1 추가
+                        else if (!videoUrl.includes('raw=1') && !videoUrl.includes('dl.dropboxusercontent.com')) {
+                            videoUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'raw=1';
+                        }
+                        
+                        console.log('🔄 드롭박스 URL 변환 완료:', videoUrl);
+                        thumbnailUrl = ''; // 썸네일 대신 video 태그 사용
+                    }
+                    // Google Drive URL 처리
+                    else if (videoUrl.includes('drive.google.com')) {
+                        videoSource = 'google-drive';
+                        // 여러 형식의 Google Drive URL 처리
+                        const patterns = [
+                            /\/d\/([a-zA-Z0-9-_]+)/,  // /d/{fileId} 형식
+                            /id=([a-zA-Z0-9-_]+)/,     // id={fileId} 형식
+                            /\/file\/d\/([a-zA-Z0-9-_]+)/, // /file/d/{fileId} 형식
+                            /[-\w]{25,}/                // 기본 패턴
+                        ];
+                        
+                        for (const pattern of patterns) {
+                            const match = videoUrl.match(pattern);
+                            if (match) {
+                                fileId = match[1] || match[0];
+                                break;
+                            }
+                        }
+                        
+                        if (fileId) {
+                            // preview URL이 아닌 경우에만 변환
+                            if (!videoUrl.includes('/preview')) {
+                                videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                            }
+                            // 썸네일 URL 생성
+                            thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+                        }
+                    } 
+                    // 미드저니 비디오 URL 처리 (직접 MP4 링크)
+                    else if (videoUrl.includes('.mp4') || videoUrl.includes('midjourney') || videoUrl.includes('cdn.')) {
+                        videoSource = 'midjourney';
+                        // 미드저니 비디오는 직접 재생 가능한 URL
+                        // 썸네일은 비디오 첫 프레임 사용 (video 태그로 처리)
+                        thumbnailUrl = ''; // 썸네일 대신 video 태그 사용
+                    }
+                    // 기타 비디오 플랫폼
+                    else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                        videoSource = 'youtube';
+                        // YouTube 처리 로직 (필요시 추가)
+                    }
+                    else if (videoUrl.includes('vimeo.com')) {
+                        videoSource = 'vimeo';
+                        // Vimeo 처리 로직 (필요시 추가)
                     }
                 }
                 
+                // 썸네일 처리 - 미드저니, 드롭박스는 video 태그 사용
+                let thumbnailHTML = '';
+                if (videoSource === 'midjourney' || videoSource === 'dropbox' || videoUrl.includes('.mp4')) {
+                    // 미드저니, 드롭박스 또는 직접 MP4 링크의 경우 video 태그로 썸네일 생성
+                    console.log(`📹 ${videoSource} 썸네일 생성:`, videoUrl);
+                    
+                    // 드롭박스의 경우 crossorigin 제거 (CORS 문제 방지)
+                    const crossOrigin = videoSource === 'dropbox' ? '' : 'crossorigin="anonymous"';
+                    
+                    thumbnailHTML = `
+                        <video class="video-thumbnail" 
+                               style="position: absolute; width: 100%; height: 100%; object-fit: cover; pointer-events: none;"
+                               muted
+                               preload="metadata"
+                               ${crossOrigin}>
+                            <source src="${videoUrl}#t=0.1" type="video/mp4">
+                        </video>`;
+                } else if (thumbnailUrl) {
+                    // Google Drive 등 썸네일 URL이 있는 경우
+                    thumbnailHTML = `<img class="video-thumbnail" 
+                         src="${thumbnailUrl}" 
+                         alt="${item.title}" 
+                         onerror="this.style.display='none'; this.parentElement.classList.add('no-thumbnail')">`;
+                }
+                
                 return `
-                    <div class="gallery-item" data-type="${item.type}">
-                        <div class="gallery-item-video" onclick="openLightbox('${videoUrl}', '${item.type}')">
-                            ${thumbnailUrl ? `<img class="video-thumbnail" src="${thumbnailUrl}" alt="${item.title}" onerror="this.style.display='none'">` : ''}
+                    <div class="gallery-item" data-type="${item.type}" data-video-source="${videoSource}">
+                        <div class="gallery-item-video ${!thumbnailHTML ? 'no-thumbnail' : ''}" 
+                             onclick="openLightbox('${videoUrl}', '${item.type}')"
+                             style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a);">
+                            ${thumbnailHTML}
                             <div class="video-play-btn">▶</div>
+                            <div style="position: absolute; bottom: 10px; left: 10px; right: 10px; 
+                                       color: rgba(255,255,255,0.6); font-size: 11px; 
+                                       text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                                🎥 ${item.tool ? item.tool.toUpperCase() : videoSource.toUpperCase()}
+                            </div>
                         </div>
                         <div class="gallery-item-info">
                             <div class="gallery-item-title">${item.title || '영상 제목 없음'}</div>
@@ -1106,10 +1259,51 @@
                 video.src = '';
             } else if (type === 'video') {
                 image.style.display = 'none';
-                video.style.display = 'block';
-                video.src = url;
-                video.setAttribute('allowfullscreen', 'true');
-                video.setAttribute('allow', 'autoplay; fullscreen');
+                
+                // 드롭박스 URL 변환 (라이트박스용)
+                let finalUrl = url;
+                if (url.includes('dropbox.com')) {
+                    console.log('🎬 라이트박스 드롭박스 URL:', url);
+                    // 드롭박스 URL을 직접 재생 가능한 형식으로 변환
+                    if (url.includes('www.dropbox.com')) {
+                        // www.dropbox.com을 dl.dropboxusercontent.com으로 변경
+                        finalUrl = url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+                        finalUrl = finalUrl.replace(/[?&]dl=0/, '');
+                    } else if (url.includes('dl=0')) {
+                        finalUrl = url.replace('dl=0', 'raw=1');
+                    } else if (!url.includes('raw=1') && !url.includes('dl.dropboxusercontent.com')) {
+                        finalUrl = url + (url.includes('?') ? '&' : '?') + 'raw=1';
+                    }
+                    console.log('🔄 라이트박스 변환된 URL:', finalUrl);
+                }
+                
+                // 미드저니, 드롭박스 또는 직접 MP4 링크인 경우 video 태그로 재생
+                if (finalUrl.includes('.mp4') || finalUrl.includes('midjourney') || finalUrl.includes('cdn.') || finalUrl.includes('dropbox.com')) {
+                    // 드롭박스의 경우 crossorigin 제거
+                    const crossOrigin = finalUrl.includes('dropbox.com') ? '' : 'crossorigin="anonymous"';
+                    
+                    // iframe 대신 video 태그 사용
+                    const videoHTML = `
+                        <video controls autoplay style="width: 100%; height: 100%; max-width: 90vw; max-height: 90vh;" ${crossOrigin}>
+                            <source src="${finalUrl}" type="video/mp4">
+                            브라우저가 비디오를 지원하지 않습니다.
+                        </video>
+                    `;
+                    // iframe을 video 태그로 교체
+                    const lightboxContent = document.querySelector('.lightbox-content');
+                    const existingVideo = lightboxContent.querySelector('video');
+                    if (existingVideo) {
+                        existingVideo.remove();
+                    }
+                    video.style.display = 'none';
+                    lightboxContent.insertAdjacentHTML('beforeend', videoHTML);
+                } else {
+                    // Google Drive 등 iframe으로 재생
+                    video.style.display = 'block';
+                    video.src = finalUrl;
+                    video.setAttribute('allowfullscreen', 'true');
+                    video.setAttribute('allow', 'autoplay; fullscreen');
+                }
             }
             
             lightbox.classList.add('active');
@@ -1124,6 +1318,13 @@
                 // 소스 초기화
                 document.getElementById('lightbox-image').src = '';
                 document.getElementById('lightbox-video').src = '';
+                
+                // video 태그 제거 (미드저니 비디오용)
+                const lightboxContent = document.querySelector('.lightbox-content');
+                const videoElement = lightboxContent.querySelector('video');
+                if (videoElement) {
+                    videoElement.remove();
+                }
             }
         }
 
