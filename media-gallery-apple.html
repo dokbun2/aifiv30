@@ -1109,22 +1109,26 @@
                     // Dropbox URL 처리
                     if (videoUrl.includes('dropbox.com')) {
                         videoSource = 'dropbox';
-                        console.log('🎬 드롭박스 URL 감지:', videoUrl);
+                        console.log('🎬 드롭박스 URL 감지 (createGalleryItem):', videoUrl);
                         
-                        // Dropbox 공유 링크를 직접 재생 가능한 URL로 변환
-                        // 방법 1: www.dropbox.com을 dl.dropboxusercontent.com으로 변경
-                        if (videoUrl.includes('www.dropbox.com')) {
-                            videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-                            // dl=0 파라미터 제거
-                            videoUrl = videoUrl.replace(/[?&]dl=0/, '');
-                        } 
-                        // 방법 2: dl=0을 raw=1로 변경
+                        // 드롭박스 URL 변환 로직 (loadStoryboardMedia와 동일하게)
+                        // Case 1: 이미 raw=1로 변환된 경우 - 그대로 사용
+                        if (videoUrl.includes('raw=1')) {
+                            console.log('✅ 이미 변환된 드롭박스 URL (raw=1)');
+                        }
+                        // Case 2: dl.dropboxusercontent.com으로 변환된 경우 - 그대로 사용
+                        else if (videoUrl.includes('dl.dropboxusercontent.com')) {
+                            console.log('✅ 이미 변환된 드롭박스 URL (dl.dropboxusercontent.com)');
+                        }
+                        // Case 3: dl=0이 포함된 경우 - raw=1로 변환
                         else if (videoUrl.includes('dl=0')) {
                             videoUrl = videoUrl.replace('dl=0', 'raw=1');
-                        } 
-                        // 방법 3: 파라미터가 없으면 raw=1 추가
-                        else if (!videoUrl.includes('raw=1') && !videoUrl.includes('dl.dropboxusercontent.com')) {
-                            videoUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'raw=1';
+                            console.log('🔄 드롭박스 URL 변환 (dl=0 → raw=1):', videoUrl);
+                        }
+                        // Case 4: dl 파라미터가 없는 경우 - raw=1 추가
+                        else if (!videoUrl.includes('dl=') && !videoUrl.includes('raw=')) {
+                            videoUrl = videoUrl.includes('?') ? videoUrl + '&raw=1' : videoUrl + '?raw=1';
+                            console.log('🔄 드롭박스 URL에 raw=1 추가:', videoUrl);
                         }
                         
                         console.log('🔄 드롭박스 URL 변환 완료:', videoUrl);
