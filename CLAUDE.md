@@ -142,5 +142,6 @@ Each application maintains its own data schema:
 - Test backward compatibility with existing data
 - Update JSON export/import functions
 
-##  Notes
-- Always answer in korean.
+## rules
+- 답변은 한국어로 해줘
+- 아이콘은 rails_icons 쓰고, tabler 써줘 

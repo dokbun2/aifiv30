@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>미디어 갤러리 - AIFI</title>
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    
     <link rel="stylesheet" href="apple-developer-style.css">
     <style>
         /* 서브 탭 스타일 */
@@ -514,14 +522,24 @@
             }
         }
     </style>
+    <!-- Tabler Icons Library -->
+    <script src="tabler-icons.js"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="apple-nav">
-        <div class="nav-content">
-            <a href="index.html" class="nav-brand">MEDIA GALLERY</a>
+        <div class="nav-content" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="index.html" class="nav-link" style="font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span class="nav-icon-mg"></span>
+                    홈
+                </a>
+                <script>
+                    document.querySelector('.nav-icon-mg').innerHTML = getIcon('home', 18);
+                </script>
+            </div>
+            <a href="index.html" class="nav-brand" style="position: absolute; left: 50%; transform: translateX(-50%);">MEDIA GALLERY</a>
             <ul class="nav-menu">
-                <li><a href="index.html#features" class="nav-link">홈</a></li>
                 <li><a href="storyboard/index.html" class="nav-link">스토리보드</a></li>
                 <li><a href="concept-art/index.html" class="nav-link">컨셉아트</a></li>
             </ul>
@@ -540,18 +558,29 @@
                 </div>
                 <div class="tab-navigation">
                     <button class="tab-btn active" data-tab="storyboard" onclick="switchTab('storyboard')">
-                        🎬 스토리보드
+                        <span class="tab-icon-film"></span> 스토리보드
                         <span class="tab-count" id="storyboard-count">0</span>
                     </button>
                     <button class="tab-btn" data-tab="conceptart" onclick="switchTab('conceptart')">
-                        🎨 컨셉아트
+                        <span class="tab-icon-palette"></span> 컨셉아트
                         <span class="tab-count" id="conceptart-count">0</span>
                     </button>
+                    <script>
+                        setTimeout(() => {
+                            document.querySelector('.tab-icon-film').innerHTML = getIcon('movie', 16);
+                            document.querySelector('.tab-icon-palette').innerHTML = getIcon('palette', 16);
+                        }, 100);
+                    </script>
                 </div>
                 <div class="action-buttons" style="display: flex; gap: 8px; margin-left: 16px;">
                     <button class="import-btn" onclick="syncFromLocalStorage()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" title="스토리보드와 컨셉아트에서 데이터 가져오기">
-                        <span>🔄</span> 가져오기
+                        <span class="icon-sync"></span> 가져오기
                     </button>
+                    <script>
+                        setTimeout(() => {
+                            document.querySelector('.icon-sync').innerHTML = getIcon('refresh', 16);
+                        }, 100);
+                    </script>
                 </div>
             </div>
         </div>
@@ -564,11 +593,11 @@
             <!-- 스토리보드 내부 탭 (이미지/영상) -->
             <div class="sub-tab-navigation" style="display: flex;">
                 <button class="sub-tab-btn active" data-subtab="images" onclick="switchSubTab('images')">
-                    🖼️ 이미지
+                    <span class="icon-image"></span> 이미지
                     <span class="sub-tab-count" id="storyboard-images-count">(0)</span>
                 </button>
                 <button class="sub-tab-btn" data-subtab="videos" onclick="switchSubTab('videos')">
-                    🎥 영상
+                    <span class="icon-video"></span> 영상
                     <span class="sub-tab-count" id="storyboard-videos-count">(0)</span>
                 </button>
             </div>
@@ -598,7 +627,7 @@
     <!-- Sync Status Modal -->
     <div id="sync-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 20px; min-width: 300px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); z-index: 10000;">
         <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 15px;">🔄</div>
+            <div style="font-size: 48px; margin-bottom: 15px;" class="icon-loading"></div>
             <div id="sync-status-text" style="color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 500;"></div>
             <div id="sync-details" style="margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.6);"></div>
         </div>
@@ -726,7 +755,7 @@
             if (galleryData.storyboard[filterType] && typeof galleryData.storyboard[filterType] === 'string' && galleryData.storyboard[filterType].trim() !== '') {
                 storyboardGallery.innerHTML = galleryData.storyboard[filterType];
             } else {
-                const emptyIcon = filterType === 'images' ? '🖼️' : '🎥';
+                const emptyIcon = filterType === 'images' ? '<span class="icon-photo-empty"></span>' : '<span class="icon-video-empty"></span>';
                 const emptyText = filterType === 'images' ? '이미지' : '영상';
                 storyboardGallery.innerHTML = `
                     <div class="empty-state">
@@ -966,7 +995,7 @@
             // 데이터 저장
             galleryData.storyboard.images = imagesHTML || `
                 <div class="empty-state">
-                    <div class="empty-state-icon">🖼️</div>
+                    <div class="empty-state-icon icon-empty-image"></div>
                     <div class="empty-state-title">스토리보드 이미지가 없습니다</div>
                     <div class="empty-state-text">스토리보드에서 이미지를 추가하면 여기에 표시됩니다</div>
                 </div>
@@ -974,7 +1003,7 @@
             
             galleryData.storyboard.videos = videosHTML || `
                 <div class="empty-state">
-                    <div class="empty-state-icon">🎥</div>
+                    <div class="empty-state-icon icon-empty-video"></div>
                     <div class="empty-state-title">스토리보드 영상이 없습니다</div>
                     <div class="empty-state-text">스토리보드에서 영상을 추가하면 여기에 표시됩니다</div>
                 </div>
@@ -1529,6 +1558,39 @@
             const modal = document.getElementById('sync-modal');
             modal.style.display = 'none';
         }
+        
+        // Tabler Icons Rendering for Media Gallery
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sub-tab icons
+            const iconImage = document.querySelector('.icon-image');
+            if (iconImage) {
+                iconImage.innerHTML = getTablerIcon('photo', 16);
+            }
+            
+            const iconVideo = document.querySelector('.icon-video');
+            if (iconVideo) {
+                iconVideo.innerHTML = getTablerIcon('video', 16);
+            }
+            
+            // Loading icon
+            const iconLoading = document.querySelector('.icon-loading');
+            if (iconLoading) {
+                iconLoading.innerHTML = getTablerIcon('refresh', 48);
+            }
+            
+            // Empty state icons
+            const iconEmptyImage = document.querySelector('.icon-empty-image');
+            if (iconEmptyImage) {
+                iconEmptyImage.innerHTML = getTablerIcon('photo', 48);
+                iconEmptyImage.style.opacity = '0.5';
+            }
+            
+            const iconEmptyVideo = document.querySelector('.icon-empty-video');
+            if (iconEmptyVideo) {
+                iconEmptyVideo.innerHTML = getTablerIcon('video', 48);
+                iconEmptyVideo.style.opacity = '0.5';
+            }
+        });
     </script>
 </body>
 </html>

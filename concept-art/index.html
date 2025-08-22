@@ -36,7 +36,11 @@
     <meta property="kakao:image" content="https://aifiwb.netlify.app/og-image-concept.jpg">
 
     <!-- 파비콘 -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+    <link rel="icon" type="image/x-icon" href="../favicon_io/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="../favicon_io/site.webmanifest">
     
     <style>
         /* Additional styles for concept art page */
@@ -661,14 +665,24 @@
             transform: scale(1.02);
         }
     </style>
+    <!-- Tabler Icons Library -->
+    <script src="../tabler-icons.js"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="apple-nav">
-        <div class="nav-content">
-            <a href="#" class="nav-brand">CONCEPT ART</a>
+        <div class="nav-content" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="../index.html" class="nav-link" style="font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span class="nav-icon-home"></span>
+                    홈
+                </a>
+                <script>
+                    document.querySelector('.nav-icon-home').innerHTML = getTablerIcon('home', 18);
+                </script>
+            </div>
+            <a href="#" class="nav-brand" style="position: absolute; left: 50%; transform: translateX(-50%);">CONCEPT ART</a>
             <ul class="nav-menu">
-                <li><a href="../index.html#features" class="nav-link">홈</a></li>
                 <li><a href="../storyboard/index.html" class="nav-link">스토리보드</a></li>
                 <li><a href="../media-gallery-apple.html" class="nav-link">미디어 갤러리</a></li>
             </ul>

@@ -15,17 +15,27 @@
     <meta property="og:image" content="https://aifiwb.netlify.app/og-image.jpg">
 
     <!-- 파비콘 -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon_io/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
     
     <!-- Apple Developer Style -->
     <link rel="stylesheet" href="apple-developer-style.css">
     
+    <!-- Tabler Icons Library -->
+    <script src="tabler-icons.js"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="apple-nav">
         <div class="nav-content">
-            <a href="#features" class="nav-brand">🎬 AIFI FRAME WORK</a>
+            <a href="#features" class="nav-brand" style="display: flex; align-items: center; gap: 8px;">
+                <img src="favicon_io/favicon-32x32.png" alt="AIFI Logo" width="24" height="24" style="display: inline-block;">
+                AIFI FRAME WORK
+            </a>
             <ul class="nav-menu">
                 <li><a href="#features" class="nav-link">영상제작</a></li>
                 <li><a href="#tools" class="nav-link">GPTS</a></li>
@@ -100,7 +110,7 @@
                 <!-- Storyboard Card -->
                 <div class="feature-card-detailed" id="video-production" onclick="window.location.href='storyboard/index.html'">
                     <div class="card-gradient-header card-header-dark">
-                        <div class="card-icon-large">🎬</div>
+                        <div class="card-icon-large" id="icon-storyboard"></div>
                         <h3>영상 프레임워크 스토리보드</h3>
                     </div>
                     <div class="card-detailed-content">
@@ -109,10 +119,10 @@
                             시퀀스, 씬, 샷 단위로 체계적으로 관리하며 다양한 AI 도구와 연동됩니다.
                         </p>
                         <ul class="feature-list">
-                            <li>✨ 시퀀스/씬/샷 계층 구조 관리</li>
-                            <li>✨ AI 영상 생성 도구 통합 (Luma, Kling, Veo2, Runway)</li>
-                            <li>✨ 이미지 및 오디오 관리</li>
-                            <li>✨ 프롬프트 엔지니어링 지원</li>
+                            <li><span class="list-icon-check1"></span> 시퀀스/씬/샷 계층 구조 관리</li>
+                            <li><span class="list-icon-check2"></span> AI 영상 생성 도구 통합 (Luma, Kling, Veo2, Runway)</li>
+                            <li><span class="list-icon-check3"></span> 이미지 및 오디오 관리</li>
+                            <li><span class="list-icon-check4"></span> 프롬프트 엔지니어링 지원</li>
                         </ul>
                         <div class="feature-button feature-button-primary">
                             ✓ 진행 데이터 준비 완료
@@ -123,7 +133,7 @@
                 <!-- Concept Art Card -->
                 <div class="feature-card-detailed" onclick="window.location.href='concept-art/index.html'">
                     <div class="card-gradient-header card-header-dark">
-                        <div class="card-icon-large">🎨</div>
+                        <div class="card-icon-large" id="icon-conceptart"></div>
                         <h3>컨셉아트 프롬프트 라이브러리</h3>
                     </div>
                     <div class="card-detailed-content">
@@ -132,10 +142,10 @@
                             이미지 갤러리 시스템입니다.
                         </p>
                         <ul class="feature-list">
-                            <li>✨ 캐릭터/장소/소품 카테고리 관리</li>
-                            <li>✨ 다중 AI 도구 프롬프트 지원</li>
-                            <li>✨ 캐릭터 변형 프롬프트 생성</li>
-                            <li>✨ 이미지 갤러리 및 데이터 관리</li>
+                            <li><span class="list-icon-check5"></span> 캐릭터/장소/소품 카테고리 관리</li>
+                            <li><span class="list-icon-check6"></span> 다중 AI 도구 프롬프트 지원</li>
+                            <li><span class="list-icon-check7"></span> 캐릭터 변형 프롬프트 생성</li>
+                            <li><span class="list-icon-check8"></span> 이미지 갤러리 및 데이터 관리</li>
                         </ul>
                         <div class="feature-button feature-button-primary">
                             활성 프로젝트
@@ -146,7 +156,7 @@
                 <!-- Prompt Generator Card -->
                 <div class="feature-card-detailed" onclick="window.location.href='prompt-builder.html'">
                     <div class="card-gradient-header card-header-dark">
-                        <div class="card-icon-large">📝</div>
+                        <div class="card-icon-large" id="icon-prompt"></div>
                         <h3>이미지 프롬프트 생성기</h3>
                     </div>
                     <div class="card-detailed-content">
@@ -155,10 +165,10 @@
                             구조화된 프롬프트 편집기로 체계적으로 관리합니다.
                         </p>
                         <ul class="feature-list">
-                            <li>✨ 텍스트 및 이미지 기반 프롬프트 생성</li>
-                            <li>✨ 구조별 카드 편집기 (STYLE, MEDIUM, CAMERA)</li>
-                            <li>✨ 실시간 프롬프트 미리보기</li>
-                            <li>✨ CSV 내보내기 및 데이터 관리</li>
+                            <li><span class="list-icon-check9"></span> 텍스트 및 이미지 기반 프롬프트 생성</li>
+                            <li><span class="list-icon-check10"></span> 구조별 카드 편집기 (STYLE, MEDIUM, CAMERA)</li>
+                            <li><span class="list-icon-check11"></span> 실시간 프롬프트 미리보기</li>
+                            <li><span class="list-icon-check12"></span> CSV 내보내기 및 데이터 관리</li>
                         </ul>
                         <div class="feature-button feature-button-primary">
                             활성 프로젝트
@@ -169,7 +179,7 @@
                 <!-- Media Gallery Card -->
                 <div class="feature-card-detailed" onclick="window.location.href='media-gallery-apple.html'">
                     <div class="card-gradient-header card-header-dark">
-                        <div class="card-icon-large">🖼️</div>
+                        <div class="card-icon-large" id="icon-gallery"></div>
                         <h3>미디어 갤러리</h3>
                     </div>
                     <div class="card-detailed-content">
@@ -178,10 +188,10 @@
                             확인할 수 있는 통합 갤러리입니다.
                         </p>
                         <ul class="feature-list">
-                            <li>✨ 스토리보드 이미지/영상 모음</li>
-                            <li>✨ 컨셉아트 갤러리</li>
-                            <li>✨ 필터링 및 정렬 기능</li>
-                            <li>✨ 라이트박스 뷰어</li>
+                            <li><span class="list-icon-check13"></span> 스토리보드 이미지/영상 모음</li>
+                            <li><span class="list-icon-check14"></span> 컨셉아트 갤러리</li>
+                            <li><span class="list-icon-check15"></span> 필터링 및 정렬 기능</li>
+                            <li><span class="list-icon-check16"></span> 라이트박스 뷰어</li>
                         </ul>
                         <div class="feature-button feature-button-primary">
                             활성 프로젝트
@@ -201,7 +211,7 @@
                 <div class="stage-cards-grid">
                 <div class="stage-upload-card" onclick="goToStoryboardWithImport()" title="시나리오">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">📜</span>
+                        <span class="stage-emoji stage-icon-2"></span>
                     </div>
                     <div>
                         <h4>STAGE 2</h4>
@@ -211,7 +221,7 @@
                 
                 <div class="stage-upload-card" onclick="goToConceptArtWithStage4Import()" title="컨셉아트">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">🎨</span>
+                        <span class="stage-emoji stage-icon-4"></span>
                     </div>
                     <div>
                         <h4>STAGE 4</h4>
@@ -221,7 +231,7 @@
                 
                 <div class="stage-upload-card" onclick="goToStoryboardWithStage5Import()" title="장면분할">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">✂️</span>
+                        <span class="stage-emoji stage-icon-5"></span>
                     </div>
                     <div>
                         <h4>STAGE 5</h4>
@@ -231,7 +241,7 @@
                 
                 <div class="stage-upload-card" onclick="goToStoryboardWithStage6Import()" title="샷이미지">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">📷</span>
+                        <span class="stage-emoji stage-icon-6"></span>
                     </div>
                     <div>
                         <h4>STAGE 6</h4>
@@ -241,7 +251,7 @@
                 
                 <div class="stage-upload-card" onclick="goToStoryboardWithStage7Import()" title="영상">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">🎥</span>
+                        <span class="stage-emoji stage-icon-7"></span>
                     </div>
                     <div>
                         <h4>STAGE 7</h4>
@@ -251,7 +261,7 @@
                 
                 <div class="stage-upload-card" onclick="goToStoryboardWithStage8Import()" title="오디오">
                     <div class="stage-icon-wrapper">
-                        <span class="stage-emoji">🎧</span>
+                        <span class="stage-emoji stage-icon-8"></span>
                     </div>
                     <div>
                         <h4>STAGE 8</h4>
@@ -307,7 +317,7 @@
                     <h3 class="tool-category-title">커뮤니티</h3>
                     <div class="tool-items">
                         <a href="https://cafe.naver.com/aifi" target="_blank" class="tool-item">
-                            <span class="tool-icon">💬</span>
+                            <span class="tool-icon tool-icon-chat"></span>
                             <div class="tool-info">
                                 <h4>AIFI 네이버카페</h4>
                                 <p>커뮤니티 & 지원</p>
@@ -315,7 +325,7 @@
                             <span class="tool-arrow">→</span>
                         </a>
                         <a href="https://www.youtube.com/@AiFi79" target="_blank" class="tool-item">
-                            <span class="tool-icon">📺</span>
+                            <span class="tool-icon tool-icon-youtube"></span>
                             <div class="tool-info">
                                 <h4>AIFI 유튜브</h4>
                                 <p>튜토리얼 & 가이드</p>
@@ -330,7 +340,7 @@
                     <h3 class="tool-category-title">AI 도구</h3>
                     <div class="tool-items">
                         <a href="https://chatgpt.com/g/g-67b6834763f48191a1835094c4ffa350-potori-myujig" target="_blank" class="tool-item">
-                            <span class="tool-icon">🎵</span>
+                            <span class="tool-icon tool-icon-music"></span>
                             <div class="tool-info">
                                 <h4>포토리뮤직</h4>
                                 <p>AI 음악 생성</p>
@@ -338,7 +348,7 @@
                             <span class="tool-arrow">→</span>
                         </a>
                         <a href="https://aififrame.netlify.app/" target="_blank" class="tool-item">
-                            <span class="tool-icon">🎞️</span>
+                            <span class="tool-icon tool-icon-frame"></span>
                             <div class="tool-info">
                                 <h4>프레임 추출기</h4>
                                 <p>비디오 프레임 추출</p>
@@ -353,7 +363,7 @@
                     <h3 class="tool-category-title">개발 도구</h3>
                     <div class="tool-items">
                         <a href="https://jsoneditoronline.org/" target="_blank" class="tool-item">
-                            <span class="tool-icon">📝</span>
+                            <span class="tool-icon tool-icon-json"></span>
                             <div class="tool-info">
                                 <h4>JSON 에디터</h4>
                                 <p>데이터 편집 도구</p>
@@ -588,6 +598,118 @@
             link.addEventListener('click', function() {
                 setTimeout(updateActiveNav, 100);
             });
+        });
+        
+        // Tabler Icons Rendering
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation brand icon
+            const brandIcon = document.querySelector('.brand-icon');
+            if (brandIcon) {
+                brandIcon.innerHTML = getTablerIcon('movie', 20);
+            }
+            
+            // Card icons
+            const iconStoryboard = document.getElementById('icon-storyboard');
+            if (iconStoryboard) {
+                iconStoryboard.innerHTML = getTablerIcon('movie', 48);
+            }
+            
+            const iconConceptart = document.getElementById('icon-conceptart');
+            if (iconConceptart) {
+                iconConceptart.innerHTML = getTablerIcon('palette', 48);
+            }
+            
+            const iconPrompt = document.getElementById('icon-prompt');
+            if (iconPrompt) {
+                iconPrompt.innerHTML = getTablerIcon('edit', 48);
+            }
+            
+            const iconGallery = document.getElementById('icon-gallery');
+            if (iconGallery) {
+                iconGallery.innerHTML = getTablerIcon('photo', 48);
+            }
+            
+            // Check icons in lists
+            for (let i = 1; i <= 16; i++) {
+                const checkIcons = document.querySelectorAll('.list-icon-check' + i);
+                checkIcons.forEach(icon => {
+                    icon.innerHTML = getTablerIcon('check', 16);
+                    icon.style.display = 'inline-block';
+                    icon.style.marginRight = '6px';
+                    icon.style.color = '#10b981';
+                });
+            }
+            
+            // Stage icons
+            const stageIcon2 = document.querySelector('.stage-icon-2');
+            if (stageIcon2) {
+                stageIcon2.innerHTML = getTablerIcon('file', 32);
+            }
+            
+            const stageIcon4 = document.querySelector('.stage-icon-4');
+            if (stageIcon4) {
+                stageIcon4.innerHTML = getTablerIcon('palette', 32);
+            }
+            
+            const stageIcon5 = document.querySelector('.stage-icon-5');
+            if (stageIcon5) {
+                stageIcon5.innerHTML = getTablerIcon('cut', 32);
+                if (!stageIcon5.innerHTML || stageIcon5.innerHTML === '') {
+                    // Fallback if 'cut' icon doesn't exist
+                    stageIcon5.innerHTML = getTablerIcon('scissors', 32);
+                }
+            }
+            
+            const stageIcon6 = document.querySelector('.stage-icon-6');
+            if (stageIcon6) {
+                stageIcon6.innerHTML = getTablerIcon('photo', 32);
+            }
+            
+            const stageIcon7 = document.querySelector('.stage-icon-7');
+            if (stageIcon7) {
+                stageIcon7.innerHTML = getTablerIcon('video', 32);
+            }
+            
+            const stageIcon8 = document.querySelector('.stage-icon-8');
+            if (stageIcon8) {
+                stageIcon8.innerHTML = getTablerIcon('headphones', 32);
+                if (!stageIcon8.innerHTML || stageIcon8.innerHTML === '') {
+                    // Fallback if 'headphones' icon doesn't exist
+                    stageIcon8.innerHTML = getTablerIcon('volume', 32);
+                }
+            }
+            
+            // Tool icons
+            const toolIconChat = document.querySelector('.tool-icon-chat');
+            if (toolIconChat) {
+                toolIconChat.innerHTML = getTablerIcon('messageCircle', 24);
+            }
+            
+            const toolIconYoutube = document.querySelector('.tool-icon-youtube');
+            if (toolIconYoutube) {
+                toolIconYoutube.innerHTML = getTablerIcon('brandYoutube', 24);
+                if (!toolIconYoutube.innerHTML || toolIconYoutube.innerHTML === '') {
+                    toolIconYoutube.innerHTML = getTablerIcon('video', 24);
+                }
+            }
+            
+            const toolIconMusic = document.querySelector('.tool-icon-music');
+            if (toolIconMusic) {
+                toolIconMusic.innerHTML = getTablerIcon('music', 24);
+            }
+            
+            const toolIconFrame = document.querySelector('.tool-icon-frame');
+            if (toolIconFrame) {
+                toolIconFrame.innerHTML = getTablerIcon('photo', 24);
+            }
+            
+            const toolIconJson = document.querySelector('.tool-icon-json');
+            if (toolIconJson) {
+                toolIconJson.innerHTML = getTablerIcon('fileCode', 24);
+                if (!toolIconJson.innerHTML || toolIconJson.innerHTML === '') {
+                    toolIconJson.innerHTML = getTablerIcon('code', 24);
+                }
+            }
         });
     </script>
 </body>

@@ -149,6 +149,7 @@ body {
   background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);

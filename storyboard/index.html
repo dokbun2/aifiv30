@@ -19,7 +19,11 @@
     <meta property="og:description" content="AI 기반 영상 제작을 위한 종합적인 스토리보드 관리 시스템">
     
     <!-- 파비콘 -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    <link rel="icon" type="image/x-icon" href="../favicon_io/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="../favicon_io/site.webmanifest">
     
     <!-- Apple Developer Style CSS -->
     <link rel="stylesheet" href="../apple-developer-style.css">
@@ -491,14 +495,24 @@
             display: none;
         }
     </style>
+    <!-- Tabler Icons Library -->
+    <script src="../tabler-icons.js"></script>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="apple-nav">
-        <div class="nav-content">
-            <a href="#" onclick="event.preventDefault(); return false;" class="nav-brand" style="cursor: pointer;">STORYBOARD</a>
+        <div class="nav-content" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="../index.html" class="nav-link" style="font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span class="nav-icon"></span>
+                    홈
+                </a>
+                <script>
+                    document.querySelector('.nav-icon').innerHTML = getIcon('home', 18);
+                </script>
+            </div>
+            <a href="#" onclick="event.preventDefault(); return false;" class="nav-brand" style="cursor: pointer; position: absolute; left: 50%; transform: translateX(-50%);">STORYBOARD</a>
             <ul class="nav-menu">
-                <li><a href="../index.html#features" class="nav-link">홈</a></li>
                 <li><a href="../concept-art/index.html" class="nav-link">컨셉아트</a></li>
                 <li><a href="../media-gallery-apple.html" class="nav-link">미디어 갤러리</a></li>
             </ul>
