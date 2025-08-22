@@ -604,8 +604,20 @@
             let shotGroups = {};
             let totalMedia = 0;
 
-            // localStorage에서 storyboardData 가져오기
-            const storyboardData = localStorage.getItem('storyboardData');
+            // localStorage에서 모든 breakdownData 가져오기
+            let storyboardData = null;
+            
+            // 모든 localStorage keys 확인하여 breakdownData 찾기
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('breakdownData_')) {
+                    storyboardData = localStorage.getItem(key);
+                    if (storyboardData) {
+                        console.log('스토리보드 데이터 찾음:', key);
+                        break;
+                    }
+                }
+            }
             
             if (storyboardData) {
                 try {
@@ -951,7 +963,19 @@
             let conceptArtCount = 0;
             
             // 스토리보드 데이터 확인
-            const storyboardData = localStorage.getItem('storyboardData');
+            let storyboardData = null;
+            
+            // 모든 localStorage keys 확인하여 breakdownData 찾기
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('breakdownData_')) {
+                    storyboardData = localStorage.getItem(key);
+                    if (storyboardData) {
+                        console.log('동기화용 스토리보드 데이터 찾음:', key);
+                        break;
+                    }
+                }
+            }
             if (storyboardData) {
                 try {
                     const data = JSON.parse(storyboardData);
