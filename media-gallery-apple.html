@@ -793,8 +793,8 @@
         // 컨셉아트 미디어 로드
         function loadConceptArtMedia() {
             const conceptArtGallery = document.getElementById('conceptart-gallery');
-            let mediaItems = [];
-            let hasMedia = false;
+            let categoryGroups = {};
+            let totalMedia = 0;
 
             const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
             
@@ -810,31 +810,41 @@
                     
                     categories.forEach(category => {
                         if (parsedData[category] && Array.isArray(parsedData[category])) {
+                            // 카테고리별 그룹 초기화
+                            if (!categoryGroups[category]) {
+                                categoryGroups[category] = {
+                                    title: categoryNames[category],
+                                    items: []
+                                };
+                            }
+                            
                             parsedData[category].forEach(item => {
                                 // 메인 이미지
                                 if (item.image_url) {
-                                    hasMedia = true;
-                                    mediaItems.push({
+                                    categoryGroups[category].items.push({
                                         url: item.image_url,
                                         title: item.name || '이름 없음',
-                                        subtitle: categoryNames[category],
+                                        description: item.description || '',
                                         type: 'image',
-                                        category: category
+                                        category: category,
+                                        source: 'main'
                                     });
+                                    totalMedia++;
                                 }
                                 
                                 // 이미지 갤러리
                                 if (item.imageGallery && Array.isArray(item.imageGallery)) {
                                     item.imageGallery.forEach((img, idx) => {
                                         if (img && img.url) {
-                                            hasMedia = true;
-                                            mediaItems.push({
+                                            categoryGroups[category].items.push({
                                                 url: img.url,
-                                                title: img.title || `${item.name} ${idx + 1}`,
-                                                subtitle: `${categoryNames[category]} - ${img.description || ''}`,
+                                                title: img.title || `${item.name} - 갤러리 ${idx + 1}`,
+                                                description: img.description || '',
                                                 type: 'image',
-                                                category: category
+                                                category: category,
+                                                source: 'gallery'
                                             });
+                                            totalMedia++;
                                         }
                                     });
                                 }
@@ -846,13 +856,34 @@
                 }
             }
 
-            // 갤러리 렌더링
-            if (hasMedia && mediaItems.length > 0) {
+            // 갤러리 렌더링 - 그룹 기반 구조 사용
+            if (hasMedia && categoryGroups.characters.length + categoryGroups.locations.length + categoryGroups.props.length > 0) {
                 let galleryHTML = '';
-                mediaItems.forEach(item => {
-                    galleryHTML += createGalleryItem(item);
+                let totalCount = 0;
+                
+                // 각 카테고리별로 그룹 렌더링
+                ['characters', 'locations', 'props'].forEach(category => {
+                    const items = categoryGroups[category];
+                    if (items.length > 0) {
+                        const categoryTitle = category === 'characters' ? '캐릭터' : 
+                                            category === 'locations' ? '로케이션' : '프롭';
+                        
+                        galleryHTML += `<div class="media-group">
+                            <h3 class="group-title">${categoryTitle} (${items.length})</h3>
+                            <div class="gallery-grid">`;
+                        
+                        items.forEach(item => {
+                            galleryHTML += createGalleryItem(item);
+                        });
+                        
+                        galleryHTML += `</div></div>`;
+                        totalCount += items.length;
+                    }
                 });
+                
                 conceptArtGallery.innerHTML = galleryHTML;
+                // 카운트 업데이트
+                document.getElementById('conceptart-count').textContent = totalCount;
             } else {
                 conceptArtGallery.innerHTML = `
                     <div class="empty-state">
@@ -861,10 +892,9 @@
                         <div class="empty-state-text">컨셉아트를 추가하면 여기에 표시됩니다</div>
                     </div>
                 `;
+                // 카운트 업데이트
+                document.getElementById('conceptart-count').textContent = 0;
             }
-
-            // 카운트 업데이트
-            document.getElementById('conceptart-count').textContent = mediaItems.length;
         }
 
         // 갤러리 아이템 생성
@@ -985,13 +1015,18 @@
                             if (shot.image_design && shot.image_design.ai_generated_images) {
                                 Object.values(shot.image_design.ai_generated_images).forEach(toolImages => {
                                     if (toolImages && typeof toolImages === 'object') {
-                                        storyboardCount += Object.keys(toolImages).length;
+                                        // 객체의 각 이미지가 실제로 URL을 가지고 있는지 확인
+                                        Object.values(toolImages).forEach(img => {
+                                            if ((typeof img === 'string' && img) || (img && img.url)) {
+                                                storyboardCount++;
+                                            }
+                                        });
                                     }
                                 });
                             }
                             // 참조 이미지 카운트
                             if (shot.reference_images && Array.isArray(shot.reference_images)) {
-                                storyboardCount += shot.reference_images.filter(ref => ref.url).length;
+                                storyboardCount += shot.reference_images.filter(ref => ref && ref.url).length;
                             }
                             // 비디오 카운트
                             if (shot.video_urls) {
