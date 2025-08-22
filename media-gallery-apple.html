@@ -6,6 +6,45 @@
     <title>미디어 갤러리 - AIFI</title>
     <link rel="stylesheet" href="apple-developer-style.css">
     <style>
+        /* 서브 탭 스타일 */
+        .sub-tab-navigation {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+        
+        .sub-tab-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .sub-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .sub-tab-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .sub-tab-count {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -522,6 +561,17 @@
     <div class="main-content">
         <!-- Storyboard Tab -->
         <div id="storyboard-tab" class="tab-content active">
+            <!-- 스토리보드 내부 탭 (이미지/영상) -->
+            <div class="sub-tab-navigation" style="display: flex; gap: 8px; margin-bottom: 20px; padding: 0 20px;">
+                <button class="sub-tab-btn active" data-subtab="images" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                    🖼️ 이미지
+                    <span class="sub-tab-count" id="storyboard-images-count">(0)</span>
+                </button>
+                <button class="sub-tab-btn" data-subtab="videos" style="padding: 8px 16px; background: transparent; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: rgba(255, 255, 255, 0.7); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                    🎥 영상
+                    <span class="sub-tab-count" id="storyboard-videos-count">(0)</span>
+                </button>
+            </div>
             <div class="gallery-grid" id="storyboard-gallery">
                 <!-- 스토리보드 갤러리 아이템들이 여기에 동적으로 로드됨 -->
             </div>
@@ -529,6 +579,7 @@
 
         <!-- Concept Art Tab -->
         <div id="conceptart-tab" class="tab-content">
+            <!-- 컨셉아트는 이미지만 있으므로 탭 없음 -->
             <div class="gallery-grid" id="conceptart-gallery">
                 <!-- 컨셉아트 갤러리 아이템들이 여기에 동적으로 로드됨 -->
             </div>
@@ -556,9 +607,16 @@
     <script>
         // 갤러리 데이터 관리
         const galleryData = {
-            storyboard: [],
+            storyboard: {
+                images: [],
+                videos: [],
+                all: []
+            },
             conceptart: []
         };
+        
+        // 현재 활성화된 서브 탭
+        let currentSubTab = 'images';
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
@@ -568,16 +626,24 @@
 
         // 이벤트 리스너 설정
         function setupEventListeners() {
-            // 탭 전환
+            // 메인 탭 전환
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const tabName = this.dataset.tab;
                     switchTab(tabName);
                 });
             });
+            
+            // 서브 탭 전환 (스토리보드 내부)
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const subTabName = this.dataset.subtab;
+                    switchSubTab(subTabName);
+                });
+            });
         }
 
-        // 탭 전환
+        // 메인 탭 전환
         function switchTab(tabName) {
             // 버튼 활성화 상태 변경
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -590,6 +656,52 @@
                 content.classList.remove('active');
             });
             document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // 스토리보드 탭이면 서브 탭 보이기
+            if (tabName === 'storyboard') {
+                document.querySelector('.sub-tab-navigation').style.display = 'flex';
+            }
+        }
+        
+        // 서브 탭 전환 (스토리보드 내부)
+        function switchSubTab(subTabName) {
+            currentSubTab = subTabName;
+            
+            // 버튼 활성화 상태 변경
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'transparent';
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                btn.style.color = 'rgba(255, 255, 255, 0.7)';
+            });
+            
+            const activeBtn = document.querySelector(`.sub-tab-btn[data-subtab="${subTabName}"]`);
+            activeBtn.classList.add('active');
+            activeBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+            activeBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            activeBtn.style.color = 'white';
+            
+            // 스토리보드 갤러리 필터링
+            filterStoryboardGallery(subTabName);
+        }
+        
+        // 스토리보드 갤러리 필터링
+        function filterStoryboardGallery(filterType) {
+            const storyboardGallery = document.getElementById('storyboard-gallery');
+            
+            if (galleryData.storyboard[filterType] && galleryData.storyboard[filterType].length > 0) {
+                storyboardGallery.innerHTML = galleryData.storyboard[filterType];
+            } else {
+                const emptyIcon = filterType === 'images' ? '🖼️' : '🎥';
+                const emptyText = filterType === 'images' ? '이미지' : '영상';
+                storyboardGallery.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">${emptyIcon}</div>
+                        <div class="empty-state-title">스토리보드 ${emptyText}가 없습니다</div>
+                        <div class="empty-state-text">스토리보드에서 ${emptyText}를 추가하면 여기에 표시됩니다</div>
+                    </div>
+                `;
+            }
         }
 
         // 모든 미디어 로드
@@ -600,9 +712,9 @@
 
         // 스토리보드 미디어 로드
         function loadStoryboardMedia() {
-            const storyboardGallery = document.getElementById('storyboard-gallery');
             let shotGroups = {};
-            let totalMedia = 0;
+            let totalImages = 0;
+            let totalVideos = 0;
 
             // localStorage에서 모든 breakdownData 가져오기
             let storyboardData = null;
@@ -670,7 +782,7 @@
                                                     tool: tool,
                                                     imageId: imageId
                                                 });
-                                                totalMedia++;
+                                                totalImages++;
                                             }
                                         });
                                     }
