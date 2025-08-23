@@ -1116,23 +1116,31 @@ body {
 
 .card-gradient-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 10px 14px;
+  padding: 12px 16px;
   color: white;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex-direction: row;
 }
 
 .card-header-dark {
   background: rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-direction: row;
 }
 
 .card-icon-large {
-  font-size: 24px;
+  font-size: 30px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-gradient-header h3 {
@@ -1140,7 +1148,7 @@ body {
   font-weight: 600;
   margin: 0;
   color: white;
-  line-height: 1.1;
+  line-height: 1.4;
   text-align: left;
   flex: 1;
 }
