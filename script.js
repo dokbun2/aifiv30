@@ -5,14 +5,14 @@ let pendingNavigationUrl = null;
 function clearAllTempData() {
     if (confirm('스토리보드, 컨셉아트, 프로젝트 스테이지의 모든 임시 업로드 데이터가 삭제됩니다.\n계속하시겠습니까?')) {
         try {
-            // Stage 관련 임시 데이터 삭제
+            // Stage 관련 임시 데이터 및 업로드 플래그 삭제
             const stageKeys = [
-                'stage2TempJson', 'stage2TempFileName',
-                'stage4TempJson', 'stage4TempFileName',
-                'stage5TempJsonFiles', 'stage5TempFileNames',
-                'stage6TempJsonFiles', 'stage6TempFileNames',
-                'stage7TempJsonFiles', 'stage7TempFileNames',
-                'stage8TempJsonFiles', 'stage8TempFileNames'
+                'stage2TempJson', 'stage2TempFileName', 'stage2Uploaded',
+                'stage4TempJson', 'stage4TempFileName', 'stage4Uploaded',
+                'stage5TempJsonFiles', 'stage5TempFileNames', 'stage5Uploaded',
+                'stage6TempJsonFiles', 'stage6TempFileNames', 'stage6Uploaded',
+                'stage7TempJsonFiles', 'stage7TempFileNames', 'stage7Uploaded',
+                'stage8TempJsonFiles', 'stage8TempFileNames', 'stage8Uploaded'
             ];
             
             stageKeys.forEach(key => {
@@ -33,6 +33,11 @@ function clearAllTempData() {
                 if (checkIcon) {
                     checkIcon.remove();
                 }
+            });
+            
+            // 업로드 카드 상태 초기화
+            document.querySelectorAll('.stage-upload-card').forEach(card => {
+                card.classList.remove('uploaded');
             });
             
             // 사용자에게 성공 메시지 표시
@@ -74,6 +79,90 @@ function resetIndividualUploadState() {
     
     // pendingNavigationUrl 초기화
     pendingNavigationUrl = null;
+}
+
+// 스테이지 카드 업로드 상태 체크 및 업데이트
+function checkAndUpdateStageCards() {
+    // Stage 2 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage2Uploaded') === 'true' || localStorage.getItem('stage2TempJson')) {
+        const stage2Card = document.querySelector('.stage-upload-card[title="시나리오"]');
+        if (stage2Card) {
+            stage2Card.classList.add('uploaded');
+        }
+    }
+    
+    // Stage 4 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage4Uploaded') === 'true' || localStorage.getItem('stage4TempJson')) {
+        const stage4Card = document.querySelector('.stage-upload-card[title="컨셉아트"]');
+        if (stage4Card) {
+            stage4Card.classList.add('uploaded');
+        }
+    }
+    
+    // Stage 5 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage5Uploaded') === 'true' || localStorage.getItem('stage5TempJsonFiles')) {
+        const stage5Card = document.querySelector('.stage-upload-card[title="장면분할"]');
+        if (stage5Card) {
+            stage5Card.classList.add('uploaded');
+        }
+    }
+    
+    // Stage 6 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage6Uploaded') === 'true' || localStorage.getItem('stage6TempJsonFiles')) {
+        const stage6Card = document.querySelector('.stage-upload-card[title="샷이미지"]');
+        if (stage6Card) {
+            stage6Card.classList.add('uploaded');
+        }
+    }
+    
+    // Stage 7 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage7Uploaded') === 'true' || localStorage.getItem('stage7TempJsonFiles')) {
+        const stage7Card = document.querySelector('.stage-upload-card[title="영상"]');
+        if (stage7Card) {
+            stage7Card.classList.add('uploaded');
+        }
+    }
+    
+    // Stage 8 체크 - 업로드 플래그 또는 데이터 존재 여부 확인
+    if (localStorage.getItem('stage8Uploaded') === 'true' || localStorage.getItem('stage8TempJsonFiles')) {
+        const stage8Card = document.querySelector('.stage-upload-card[title="오디오"]');
+        if (stage8Card) {
+            stage8Card.classList.add('uploaded');
+        }
+    }
+}
+
+// 개별 스테이지 업로드 카드 상태 업데이트
+function updateStageUploadCard(stageNumber) {
+    let selector = '';
+    
+    switch(stageNumber) {
+        case 2:
+            selector = '.stage-upload-card[title="시나리오"]';
+            break;
+        case 4:
+            selector = '.stage-upload-card[title="컨셉아트"]';
+            break;
+        case 5:
+            selector = '.stage-upload-card[title="장면분할"]';
+            break;
+        case 6:
+            selector = '.stage-upload-card[title="샷이미지"]';
+            break;
+        case 7:
+            selector = '.stage-upload-card[title="영상"]';
+            break;
+        case 8:
+            selector = '.stage-upload-card[title="오디오"]';
+            break;
+    }
+    
+    if (selector) {
+        const card = document.querySelector(selector);
+        if (card && !card.classList.contains('uploaded')) {
+            card.classList.add('uploaded');
+        }
+    }
 }
 
 // 기존에 저장된 스테이지 데이터 파라미터를 URL에 추가
@@ -765,7 +854,14 @@ function handleStage2FileSelect(event) {
             // localStorage에 임시 저장
             localStorage.setItem('stage2TempJson', e.target.result);
             localStorage.setItem('stage2TempFileName', file.name);
+            
+            // Stage 2 업로드 완료 플래그 저장 (영구 보관)
+            localStorage.setItem('stage2Uploaded', 'true');
+            
             console.log('💾 Stage 2 데이터 localStorage 저장 완료');
+            
+            // Stage 2 카드 즉시 업데이트
+            updateStageUploadCard(2);
             
             // 순차 업로드 모달에서 호출된 경우
             const modal = document.getElementById('sequential-upload-modal');
@@ -831,10 +927,16 @@ function handleStage4FileSelect(event) {
             localStorage.setItem('stage4TempFileName', file.name);
             localStorage.setItem('stage4ProjectType', projectType);
             
+            // Stage 4 업로드 완료 플래그 저장 (영구 보관)
+            localStorage.setItem('stage4Uploaded', 'true');
+            
             console.log(`Stage 4 JSON 파일을 임시 저장했습니다. (${projectType} 프로젝트)`);
             
             // 업로드 완료 메시지 표시
             showStageUploadComplete(4);
+            
+            // Stage 4 카드 즉시 업데이트
+            updateStageUploadCard(4);
             
             // 순차 업로드 모달에서 호출된 경우
             const modal = document.getElementById('sequential-upload-modal');
@@ -931,6 +1033,12 @@ function handleStage5FileSelect(event) {
                     localStorage.removeItem('stage5TempProcessed');
                     
                     console.log(`Stage 5 JSON 파일 총 ${allFileContents.length}개를 임시 저장했습니다.`);
+                    
+                    // Stage 5 업로드 완료 플래그 저장 (영구 보관)
+                    localStorage.setItem('stage5Uploaded', 'true');
+                    
+                    // Stage 5 카드 즉시 업데이트
+                    updateStageUploadCard(5);
                     
                     // 업로드 완료 메시지 표시
                     showStageUploadComplete(5);
@@ -1038,6 +1146,12 @@ function handleStage6FileSelect(event) {
                     
                     console.log(`Stage 6 JSON 파일 총 ${allFileContents.length}개를 임시 저장했습니다.`);
                     
+                    // Stage 6 업로드 완료 플래그 저장 (영구 보관)
+                    localStorage.setItem('stage6Uploaded', 'true');
+                    
+                    // Stage 6 카드 즉시 업데이트
+                    updateStageUploadCard(6);
+                    
                     // 업로드 완료 메시지 표시
                     showStageUploadComplete(6);
                     
@@ -1139,6 +1253,12 @@ function handleStage7FileSelect(event) {
                     
                     console.log(`Stage 7 JSON 파일 총 ${allFileContents.length}개를 임시 저장했습니다.`);
                     
+                    // Stage 7 업로드 완료 플래그 저장 (영구 보관)
+                    localStorage.setItem('stage7Uploaded', 'true');
+                    
+                    // Stage 7 카드 즉시 업데이트
+                    updateStageUploadCard(7);
+                    
                     // 업로드 완료 메시지 표시
                     showStageUploadComplete(7);
                     
@@ -1239,6 +1359,12 @@ function handleStage8FileSelect(event) {
                     localStorage.removeItem('stage8TempProcessed');
                     
                     console.log(`Stage 8 JSON 파일 총 ${allFileContents.length}개를 임시 저장했습니다.`);
+                    
+                    // Stage 8 업로드 완료 플래그 저장 (영구 보관)
+                    localStorage.setItem('stage8Uploaded', 'true');
+                    
+                    // Stage 8 카드 즉시 업데이트
+                    updateStageUploadCard(8);
                     
                     // 업로드 완료 메시지 표시
                     showStageUploadComplete(8);
@@ -1912,6 +2038,9 @@ function showStageUploadComplete(stageNumber) {
     
     // 메인 페이지의 Stage 카드에 완료 표시 추가
     markStageCardAsCompleted(stageNumber);
+    
+    // 스테이지 업로드 카드 상태 업데이트
+    updateStageUploadCard(stageNumber);
     
     // 프로젝트 카드 상태 업데이트
     updateProjectCardStatus();

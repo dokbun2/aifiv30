@@ -1344,6 +1344,53 @@ body {
   border-color: rgba(100, 122, 255, 0.5);
 }
 
+/* 업로드 완료 상태 스타일 */
+.stage-upload-card.uploaded {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.15) 0%, rgba(48, 209, 88, 0.08) 100%);
+  border: 1.5px solid rgba(52, 199, 89, 0.4);
+  box-shadow: 0 0 20px rgba(52, 199, 89, 0.1);
+}
+
+.stage-upload-card.uploaded:hover {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.2) 0%, rgba(48, 209, 88, 0.12) 100%);
+  border-color: rgba(52, 199, 89, 0.6);
+  box-shadow: 0 12px 24px rgba(52, 199, 89, 0.15);
+  transform: translateY(-4px);
+}
+
+/* 체크 마크 아이콘 */
+.stage-upload-card.uploaded::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(52, 199, 89, 0.9);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  animation: checkMarkAppear 0.3s ease-out;
+}
+
+@keyframes checkMarkAppear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .stage-icon-wrapper {
   position: relative;
   width: 48px;

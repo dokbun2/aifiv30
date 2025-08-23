@@ -614,6 +614,10 @@
         
         // Tabler Icons Rendering
         document.addEventListener('DOMContentLoaded', function() {
+            // 스테이지 카드 업로드 상태 체크
+            if (typeof checkAndUpdateStageCards === 'function') {
+                checkAndUpdateStageCards();
+            }
             // Navigation brand icon
             const brandIcon = document.querySelector('.brand-icon');
             if (brandIcon) {
