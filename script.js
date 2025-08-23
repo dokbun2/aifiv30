@@ -1,57 +1,6 @@
 // 업로드 후 이동할 URL을 저장할 전역 변수
 let pendingNavigationUrl = null;
 
-// 모든 임시 데이터 초기화 함수
-function clearAllTempData() {
-    if (confirm('스토리보드, 컨셉아트, 프로젝트 스테이지의 모든 임시 업로드 데이터가 삭제됩니다.\n계속하시겠습니까?')) {
-        try {
-            // Stage 관련 임시 데이터 및 업로드 플래그 삭제
-            const stageKeys = [
-                'stage2TempJson', 'stage2TempFileName', 'stage2Uploaded',
-                'stage4TempJson', 'stage4TempFileName', 'stage4Uploaded',
-                'stage5TempJsonFiles', 'stage5TempFileNames', 'stage5Uploaded',
-                'stage6TempJsonFiles', 'stage6TempFileNames', 'stage6Uploaded',
-                'stage7TempJsonFiles', 'stage7TempFileNames', 'stage7Uploaded',
-                'stage8TempJsonFiles', 'stage8TempFileNames', 'stage8Uploaded'
-            ];
-            
-            stageKeys.forEach(key => {
-                localStorage.removeItem(key);
-            });
-            
-            // 업로드 상태 초기화
-            if (typeof uploadStatus !== 'undefined') {
-                Object.keys(uploadStatus).forEach(key => {
-                    uploadStatus[key] = false;
-                });
-            }
-            
-            // Stage 카드 완료 상태 초기화
-            document.querySelectorAll('.stage-card').forEach(card => {
-                card.classList.remove('stage-completed');
-                const checkIcon = card.querySelector('.stage-check-icon');
-                if (checkIcon) {
-                    checkIcon.remove();
-                }
-            });
-            
-            // 업로드 카드 상태 초기화
-            document.querySelectorAll('.stage-upload-card').forEach(card => {
-                card.classList.remove('uploaded');
-            });
-            
-            // 사용자에게 성공 메시지 표시
-            alert('캐시 데이터가 성공적으로 초기화되었습니다.');
-            
-            // 페이지 새로고침으로 상태 완전 초기화
-            location.reload();
-        } catch (error) {
-            console.error('데이터 초기화 중 오류 발생:', error);
-            alert('데이터 초기화 중 오류가 발생했습니다.');
-        }
-    }
-}
-
 // 개별 스테이지 업로드 상태 초기화 함수
 function resetIndividualUploadState() {
     // uploadStatus가 아직 정의되지 않았다면 먼저 정의
@@ -548,6 +497,12 @@ function clearAllTempData() {
         'stage7TempProcessed', 'stage8TempProcessed'
     ];
     
+    // 업로드 완료 플래그 삭제
+    const uploadedFlags = [
+        'stage2Uploaded', 'stage4Uploaded', 'stage5Uploaded',
+        'stage6Uploaded', 'stage7Uploaded', 'stage8Uploaded'
+    ];
+    
     let deletedCount = 0;
     
     // 임시 데이터 삭제
@@ -560,6 +515,14 @@ function clearAllTempData() {
     
     // 처리 완료 플래그 삭제
     processedFlags.forEach(key => {
+        if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+            deletedCount++;
+        }
+    });
+    
+    // 업로드 완료 플래그 삭제
+    uploadedFlags.forEach(key => {
         if (localStorage.getItem(key)) {
             localStorage.removeItem(key);
             deletedCount++;
@@ -619,6 +582,12 @@ function clearAllTempData() {
         }
     });
     
+    // Stage 업로드 카드의 uploaded 클래스 제거 (녹색 완료 상태 제거)
+    const stageUploadCards = document.querySelectorAll('.stage-upload-card');
+    stageUploadCards.forEach(card => {
+        card.classList.remove('uploaded');
+    });
+    
     // 프로젝트 카드 상태 업데이트
     updateProjectCardStatus();
     
@@ -637,6 +606,9 @@ function clearAllTempData() {
               `• 컨셉아트 데이터\n` +
               `• 수정된 프롬프트\n\n` +
               `이제 새로운 프로젝트를 시작할 수 있습니다.`);
+        
+        // 페이지 새로고침으로 상태 완전 초기화
+        location.reload();
     } else {
         alert('초기화할 데이터가 없습니다.');
     }
@@ -2642,31 +2614,119 @@ function restoreCompletedStages() {
     });
 }
 
-// 히어로 비디오 자동재생 보장
+// 히어로 비디오 자동재생 및 사운드 컨트롤
 document.addEventListener('DOMContentLoaded', function() {
     const heroVideo = document.getElementById('heroVideo');
+    const soundControlBtn = document.getElementById('soundControlBtn');
+    const soundOffIcon = document.getElementById('soundOffIcon');
+    const soundOnIcon = document.getElementById('soundOnIcon');
+    const soundTooltip = document.querySelector('.sound-tooltip');
+    
+    // 재방문자 체크 (Media Engagement 대체)
+    const isReturningVisitor = localStorage.getItem('returningVisitor');
+    const lastVisit = localStorage.getItem('lastVisit');
+    const now = new Date().getTime();
+    
+    // 24시간 이내 재방문자는 소리 자동재생 시도
+    const isFrequentVisitor = lastVisit && (now - parseInt(lastVisit)) < 86400000;
+    
     if (heroVideo) {
-        // 비디오 재생 시도
-        heroVideo.play().catch(function(error) {
-            console.log("자동재생이 차단되었습니다. 사용자 상호작용 후 재생됩니다.", error);
-            
-            // 사용자 상호작용 시 비디오 재생
-            document.addEventListener('click', function playVideo() {
-                heroVideo.play();
-                heroVideo.muted = false; // 소리 켜기
-                document.removeEventListener('click', playVideo);
-            }, { once: true });
+        // 재방문자나 자주 방문하는 사용자는 소리와 함께 재생 시도
+        if (isReturningVisitor && isFrequentVisitor) {
+            heroVideo.muted = false;
+            heroVideo.play().then(() => {
+                console.log('소리와 함께 자동재생 성공');
+                updateSoundButton(true);
+            }).catch(() => {
+                // 실패하면 음소거로 재생
+                heroVideo.muted = true;
+                heroVideo.play().then(() => {
+                    console.log('음소거 자동재생으로 전환');
+                    showSoundPrompt();
+                });
+            });
+        } else {
+            // 첫 방문자는 음소거로 재생
+            heroVideo.muted = true;
+            heroVideo.play().then(() => {
+                console.log('음소거 자동재생');
+                showSoundPrompt();
+            });
+        }
+        
+        // 방문 기록 저장
+        localStorage.setItem('returningVisitor', 'true');
+        localStorage.setItem('lastVisit', now.toString());
+        
+        // 사운드 컨트롤 버튼 이벤트
+        if (soundControlBtn) {
+            soundControlBtn.addEventListener('click', function() {
+                if (heroVideo.muted) {
+                    // 소리 켜기
+                    heroVideo.muted = false;
+                    updateSoundButton(true);
+                    soundTooltip.textContent = '클릭하여 음소거';
+                    
+                    // 사용자가 소리를 켠 것을 기록
+                    localStorage.setItem('preferSound', 'true');
+                } else {
+                    // 음소거
+                    heroVideo.muted = true;
+                    updateSoundButton(false);
+                    soundTooltip.textContent = '클릭하여 사운드 켜기';
+                }
+            });
+        }
+        
+        // 사용자 제스처 감지 (스크롤, 클릭, 터치)
+        let gestureDetected = false;
+        const detectGesture = function() {
+            if (!gestureDetected && heroVideo.muted && localStorage.getItem('preferSound') === 'true') {
+                heroVideo.muted = false;
+                updateSoundButton(true);
+                gestureDetected = true;
+                console.log('사용자 제스처 감지 - 소리 활성화');
+            }
+        };
+        
+        // 다양한 사용자 제스처 감지
+        ['scroll', 'touchstart', 'mousedown'].forEach(event => {
+            document.addEventListener(event, detectGesture, { once: true });
         });
         
         // 비디오 로드 에러 처리
         heroVideo.addEventListener('error', function(e) {
             console.error('비디오 로드 에러:', e);
         });
-        
-        // 비디오가 준비되면 재생
-        heroVideo.addEventListener('canplay', function() {
-            heroVideo.play();
-        });
+    }
+    
+    // 사운드 버튼 UI 업데이트
+    function updateSoundButton(soundOn) {
+        if (soundOn) {
+            soundOffIcon.style.display = 'none';
+            soundOnIcon.style.display = 'block';
+            soundControlBtn.classList.add('active');
+            soundControlBtn.title = '음소거';
+        } else {
+            soundOffIcon.style.display = 'block';
+            soundOnIcon.style.display = 'none';
+            soundControlBtn.classList.remove('active');
+            soundControlBtn.title = '사운드 켜기';
+        }
+    }
+    
+    // 사운드 활성화 안내 표시
+    function showSoundPrompt() {
+        if (soundControlBtn && !localStorage.getItem('soundPromptShown')) {
+            // 버튼에 주목 애니메이션 추가
+            soundControlBtn.style.animation = 'pulse 2s infinite';
+            
+            // 3초 후 애니메이션 제거
+            setTimeout(() => {
+                soundControlBtn.style.animation = '';
+                localStorage.setItem('soundPromptShown', 'true');
+            }, 3000);
+        }
     }
 });
 
