@@ -150,6 +150,9 @@
             margin-bottom: 20px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            height: calc(100vh - 180px);  /* 전체 섹션 높이 설정 */
+            display: flex;
+            flex-direction: column;
         }
         
         .nav-controls {
@@ -200,7 +203,8 @@
         
         /* Navigation Tree */
         .nav-tree {
-            max-height: calc(100vh - 400px);
+            max-height: calc(100vh - 200px);  /* 사이드바 높이를 최대한 늘림 */
+            min-height: 500px;  /* 최소 높이 보장 */
             overflow-y: auto;
         }
         
@@ -530,8 +534,8 @@
                     </div>
                 </div>
                 <div class="storyboard-header-buttons">
-                    <button class="compact-btn compact-btn-primary" onclick="document.getElementById('file-input').click()">JSON 가져오기</button>
-                    <button class="compact-btn compact-btn-primary" onclick="if(window.exportJSON) window.exportJSON()">JSON 내보내기 ↓</button>
+                    <button class="compact-btn compact-btn-primary" onclick="document.getElementById('file-input').click()">JSON 업로드</button>
+                    <button class="compact-btn compact-btn-primary" onclick="if(window.exportJSON) window.exportJSON()">JSON 다운로드</button>
                     <button class="compact-btn compact-btn-danger" onclick="if(confirm('모든 데이터를 삭제하시겠습니까?')) { if(window.clearAllData) window.clearAllData() }">데이터 초기화</button>
                 </div>
             </div>
