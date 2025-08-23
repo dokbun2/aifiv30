@@ -981,9 +981,7 @@ body {
 .features-header {
   text-align: center;
   margin-bottom: 12px;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
   position: relative;
 }
 
@@ -1001,14 +999,14 @@ body {
 
 /* Clear Temp Data Button - Apple Style Design */
 .clear-temp-data-btn {
-  position: absolute;
-  right: -60px;
-  top: 0;
-  transform: translateY(-25%);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  position: fixed;
+  right: 40px;
+  top: 80px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(29, 29, 31, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
@@ -1016,26 +1014,28 @@ body {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .clear-temp-data-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-25%) scale(1.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(45, 45, 48, 0.98);
+  transform: scale(1.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
 .clear-temp-data-btn:active {
-  transform: translateY(-25%) scale(0.98);
-  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
+  background: rgba(50, 50, 53, 0.98);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
 .refresh-icon {
-  width: 20px;
-  height: 20px;
-  color: rgba(255, 255, 255, 0.8);
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.9);
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1053,28 +1053,19 @@ body {
 @media (max-width: 1024px) {
   .clear-temp-data-btn {
     right: 20px;
-    top: -45px;
-    transform: translateY(0);
-  }
-  
-  .clear-temp-data-btn:hover {
-    transform: translateY(0) scale(1.05);
-  }
-  
-  .clear-temp-data-btn:active {
-    transform: translateY(0) scale(0.98);
+    top: 70px;
   }
 }
 
 @media (max-width: 768px) {
   .clear-temp-data-btn {
-    right: 10px;
-    top: -40px;
+    right: 15px;
+    top: 60px;
     width: 36px;
     height: 36px;
   }
   
-  .refresh-icon {
+  .clear-temp-data-btn .refresh-icon {
     width: 18px;
     height: 18px;
   }
