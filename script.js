@@ -2642,3 +2642,31 @@ function restoreCompletedStages() {
     });
 }
 
+// 히어로 비디오 자동재생 보장
+document.addEventListener('DOMContentLoaded', function() {
+    const heroVideo = document.getElementById('heroVideo');
+    if (heroVideo) {
+        // 비디오 재생 시도
+        heroVideo.play().catch(function(error) {
+            console.log("자동재생이 차단되었습니다. 사용자 상호작용 후 재생됩니다.", error);
+            
+            // 사용자 상호작용 시 비디오 재생
+            document.addEventListener('click', function playVideo() {
+                heroVideo.play();
+                heroVideo.muted = false; // 소리 켜기
+                document.removeEventListener('click', playVideo);
+            }, { once: true });
+        });
+        
+        // 비디오 로드 에러 처리
+        heroVideo.addEventListener('error', function(e) {
+            console.error('비디오 로드 에러:', e);
+        });
+        
+        // 비디오가 준비되면 재생
+        heroVideo.addEventListener('canplay', function() {
+            heroVideo.play();
+        });
+    }
+});
+
