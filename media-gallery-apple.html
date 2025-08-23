@@ -807,11 +807,13 @@
                             const shotTitle = shot.shot_title || shot.description || '';
                             const sceneId = shot.scene_id || '';
                             
-                            // 샷별 미디어 그룹 초기화
+                            // 샷별 미디어 그룹 초기화 - 제목 정보 포함
                             if (!shotGroups[shotId]) {
+                                // shot.title이 있으면 사용, 없으면 shot_title 사용
+                                const displayTitle = shot.title || shotTitle || shot.description || '';
                                 shotGroups[shotId] = {
                                     shotNumber: shotNumber,
-                                    shotTitle: shotTitle,
+                                    shotTitle: displayTitle,
                                     sceneId: sceneId,
                                     images: [],
                                     videos: [],
@@ -938,10 +940,15 @@
                     
                     // AI 생성 이미지
                     group.images.forEach(image => {
+                        // 샷 제목이 있으면 사용, 없으면 기본 형식 사용
+                        const displayTitle = group.shotTitle ? 
+                            `${group.shotTitle}` : 
+                            `${group.shotNumber} - ${image.title}`;
+                        
                         imagesHTML += createGalleryItem({
                             url: image.url,
-                            title: `${group.shotNumber} - ${image.title}`,
-                            subtitle: image.description || group.shotTitle,
+                            title: displayTitle,
+                            subtitle: `${image.tool.toUpperCase()} - ${image.imageId}`,
                             type: 'image',
                             tool: image.tool
                         });
@@ -976,10 +983,15 @@
                     `;
                     
                     group.videos.forEach(video => {
+                        // 샷 제목이 있으면 사용, 없으면 기본 형식 사용
+                        const displayTitle = group.shotTitle ? 
+                            `${group.shotTitle}` : 
+                            `${group.shotNumber} - ${video.title}`;
+                        
                         videosHTML += createGalleryItem({
                             url: video.url,
-                            title: `${group.shotNumber} - ${video.title}`,
-                            subtitle: group.shotTitle,
+                            title: displayTitle,
+                            subtitle: `${video.tool.toUpperCase()} 영상 - ${video.imageId}`,
                             type: 'video',
                             tool: video.tool
                         });
@@ -1076,7 +1088,7 @@
                                     console.log(`    🖼️ 메인 이미지 URL:`, item.image_url);
                                     categoryGroups[category].items.push({
                                         url: item.image_url,
-                                        title: item.name || '이름 없음',
+                                        title: item.name || item.name_kr || '이름 없음',
                                         description: item.description || '',
                                         type: 'image',
                                         category: category,
@@ -1092,10 +1104,12 @@
                                         const imageData = item.additional_images[imageKey];
                                         if (imageData && imageData.url) {
                                             console.log(`      📸 추가 이미지 ${imageKey}:`, imageData.url);
+                                            // 컨셉아트 제목 사용 (name 또는 name_kr)
+                                            const conceptName = item.name || item.name_kr || '이름 없음';
                                             categoryGroups[category].items.push({
                                                 url: imageData.url,
-                                                title: imageData.title || `${item.name} - ${imageKey}`,
-                                                description: imageData.description || '',
+                                                title: imageData.title || conceptName,
+                                                description: imageData.description || `${conceptName} - ${imageKey}`,
                                                 type: 'image',
                                                 category: category,
                                                 source: 'additional'

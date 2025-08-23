@@ -984,6 +984,7 @@ body {
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 }
 
 .features-title {
@@ -1001,9 +1002,9 @@ body {
 /* Clear Temp Data Button - Apple Style Design */
 .clear-temp-data-btn {
   position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  right: -60px;
+  top: 0;
+  transform: translateY(-25%);
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -1021,13 +1022,13 @@ body {
 
 .clear-temp-data-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-50%) scale(1.05);
+  transform: translateY(-25%) scale(1.05);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
 .clear-temp-data-btn:active {
-  transform: translateY(-50%) scale(0.98);
+  transform: translateY(-25%) scale(0.98);
   background: rgba(255, 255, 255, 0.2);
 }
 
@@ -1046,6 +1047,37 @@ body {
 .clear-temp-data-btn:active .refresh-icon {
   transform: rotate(-360deg);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile responsive for clear button */
+@media (max-width: 1024px) {
+  .clear-temp-data-btn {
+    right: 20px;
+    top: -45px;
+    transform: translateY(0);
+  }
+  
+  .clear-temp-data-btn:hover {
+    transform: translateY(0) scale(1.05);
+  }
+  
+  .clear-temp-data-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+@media (max-width: 768px) {
+  .clear-temp-data-btn {
+    right: 10px;
+    top: -40px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .refresh-icon {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .features-subtitle {
