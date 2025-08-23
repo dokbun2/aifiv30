@@ -295,32 +295,91 @@
                 </p>
             </div>
             
-            <!-- Stage Buttons Grid -->
-            <div class="stage-buttons-grid">
-                <a href="https://chatgpt.com/g/g-68a33472d33081918e0faeb8a0674bf5-stage-1dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 1</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a336cf727081918ae7db5075a9c6da-stage-2dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 2</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a341a33e048191b837e58322e2c335-stage-3dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 3</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a344b34d7c81918420e2f85213927b-stage-4dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 4</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a34c7cb76881918eb2254d5c9a5ce6-stage-5dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 5</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a3b146b7688191b53e98f4cf810a16-stage-6dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 6</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a3b399a6408191be66d00a9a50cf1e-stage-7dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 7</span>
-                </a>
-                <a href="https://chatgpt.com/g/g-68a3b601cbc881919067f5f5874a49e6-stage-8dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
-                    <span class="stage-text">STAGE 8</span>
-                </a>
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="video-production">
+                    <svg class="tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                        <line x1="7" y1="2" x2="7" y2="22"></line>
+                        <line x1="17" y1="2" x2="17" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="7" x2="7" y2="7"></line>
+                        <line x1="2" y1="17" x2="7" y2="17"></line>
+                        <line x1="17" y1="17" x2="22" y2="17"></line>
+                        <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                    영상제작
+                </button>
+                <button class="tab-button" data-tab="cf-production">
+                    <svg class="tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    CF제작
+                </button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Video Production Tab -->
+                <div class="tab-panel active" id="video-production-tab">
+                    <div class="stage-buttons-grid">
+                        <a href="https://chatgpt.com/g/g-68a33472d33081918e0faeb8a0674bf5-stage-1dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 1</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a336cf727081918ae7db5075a9c6da-stage-2dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 2</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a341a33e048191b837e58322e2c335-stage-3dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 3</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a344b34d7c81918420e2f85213927b-stage-4dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 4</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a34c7cb76881918eb2254d5c9a5ce6-stage-5dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 5</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a3b146b7688191b53e98f4cf810a16-stage-6dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 6</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a3b399a6408191be66d00a9a50cf1e-stage-7dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 7</span>
+                        </a>
+                        <a href="https://chatgpt.com/g/g-68a3b601cbc881919067f5f5874a49e6-stage-8dangye-aifi-yeongsangpeureimweokeu" target="_blank" class="stage-button">
+                            <span class="stage-text">STAGE 8</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- CF Production Tab -->
+                <div class="tab-panel" id="cf-production-tab">
+                    <div class="stage-buttons-grid">
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 1</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 2</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 3</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 4</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 5</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 6</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 7</span>
+                        </a>
+                        <a href="#" target="_blank" class="stage-button cf-stage">
+                            <span class="stage-text">STAGE 8</span>
+                        </a>
+                    </div>
+                </div>
             </div>
             
             <div class="tools-grid">
@@ -626,8 +685,36 @@
             }
         });
         
+        // Tab Switching Functionality
+        function initTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panels
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding panel
+                    const targetPanel = document.getElementById(targetTab + '-tab');
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                    }
+                });
+            });
+        }
+        
         // Tabler Icons Rendering
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tab navigation
+            initTabNavigation();
+            
             // 스테이지 카드 업로드 상태 체크
             if (typeof checkAndUpdateStageCards === 'function') {
                 checkAndUpdateStageCards();
