@@ -600,6 +600,20 @@
             });
         });
         
+        // Smooth scroll for anchor links
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle smooth scrolling for hash links
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+        });
+        
         // Tabler Icons Rendering
         document.addEventListener('DOMContentLoaded', function() {
             // Navigation brand icon

@@ -530,15 +530,15 @@
     <nav class="apple-nav">
         <div class="nav-content" style="justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 20px;">
-                <a href="index.html" class="nav-link" style="font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                    <span class="nav-icon-mg"></span>
+                <a href="index.html#features" class="nav-link" style="font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                    <span class="nav-icon-mg" style="display: flex; align-items: center;"></span>
                     홈
                 </a>
                 <script>
                     document.querySelector('.nav-icon-mg').innerHTML = getIcon('home', 18);
                 </script>
             </div>
-            <a href="index.html" class="nav-brand" style="position: absolute; left: 50%; transform: translateX(-50%);">MEDIA GALLERY</a>
+            <a href="#" onclick="event.preventDefault(); return false;" class="nav-brand" style="cursor: pointer; position: absolute; left: 50%; transform: translateX(-50%);">MEDIA GALLERY</a>
             <ul class="nav-menu">
                 <li><a href="storyboard/index.html" class="nav-link">스토리보드</a></li>
                 <li><a href="concept-art/index.html" class="nav-link">컨셉아트</a></li>
