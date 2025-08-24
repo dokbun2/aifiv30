@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모바일 비디오 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        
+        .test-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 모바일 최적화 */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+        
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 3;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 400px;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        button {
+            background: #0066CC;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        button:hover {
+            background: #0055B3;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #51cf66;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .info {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <div class="video-container">
+            <video 
+                id="testVideo" 
+                autoplay 
+                muted 
+                loop 
+                playsinline 
+                webkit-playsinline
+                x-webkit-airplay="allow"
+                preload="auto"
+                poster="og-image.jpg">
+                <source src="hero-background.mp4" type="video/mp4">
+                <source src="hero-background(수정).mp4" type="video/mp4">
+                브라우저가 비디오를 지원하지 않습니다.
+            </video>
+        </div>
+        
+        <div class="overlay"></div>
+        
+        <div class="content">
+            <h1>모바일 비디오 테스트</h1>
+            
+            <div class="info">
+                <div class="status" id="deviceInfo">디바이스 정보 확인 중...</div>
+                <div class="status" id="videoStatus">비디오 상태 확인 중...</div>
+                <div class="status" id="playStatus">재생 상태: 대기 중</div>
+            </div>
+            
+            <button onclick="playVideo()">수동 재생</button>
+            <button onclick="toggleMute()">음소거 토글</button>
+            <button onclick="resetVideo()">비디오 리셋</button>
+        </div>
+    </div>
+    
+    <script>
+        const video = document.getElementById('testVideo');
+        const deviceInfo = document.getElementById('deviceInfo');
+        const videoStatus = document.getElementById('videoStatus');
+        const playStatus = document.getElementById('playStatus');
+        
+        // 디바이스 정보 표시
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        deviceInfo.innerHTML = `
+            모바일: ${isMobile ? '예' : '아니오'}<br>
+            iOS: ${isIOS ? '예' : '아니오'}<br>
+            Android: ${isAndroid ? '예' : '아니오'}<br>
+            화면 크기: ${window.innerWidth}x${window.innerHeight}
+        `;
+        
+        // 비디오 상태 업데이트
+        function updateVideoStatus() {
+            videoStatus.innerHTML = `
+                준비 상태: ${video.readyState}<br>
+                일시정지: ${video.paused ? '예' : '아니오'}<br>
+                음소거: ${video.muted ? '예' : '아니오'}<br>
+                소스: ${video.currentSrc ? '로드됨' : '없음'}
+            `;
+        }
+        
+        // 초기 상태 업데이트
+        updateVideoStatus();
+        
+        // 비디오 이벤트 리스너
+        video.addEventListener('loadstart', () => {
+            console.log('비디오 로드 시작');
+            playStatus.textContent = '재생 상태: 로드 시작';
+            playStatus.className = 'status';
+        });
+        
+        video.addEventListener('loadeddata', () => {
+            console.log('비디오 데이터 로드 완료');
+            updateVideoStatus();
+        });
+        
+        video.addEventListener('canplay', () => {
+            console.log('비디오 재생 가능');
+            playStatus.textContent = '재생 상태: 재생 가능';
+            playStatus.className = 'status';
+        });
+        
+        video.addEventListener('playing', () => {
+            console.log('비디오 재생 중');
+            playStatus.textContent = '재생 상태: 재생 중';
+            playStatus.className = 'status success';
+            updateVideoStatus();
+        });
+        
+        video.addEventListener('pause', () => {
+            console.log('비디오 일시정지');
+            playStatus.textContent = '재생 상태: 일시정지';
+            playStatus.className = 'status';
+            updateVideoStatus();
+        });
+        
+        video.addEventListener('error', (e) => {
+            const error = video.error;
+            console.error('비디오 에러:', error);
+            playStatus.textContent = `재생 상태: 에러 (${error?.message || '알 수 없음'})`;
+            playStatus.className = 'status error';
+            updateVideoStatus();
+        });
+        
+        // 자동 재생 시도
+        function attemptAutoPlay() {
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('자동 재생 성공');
+                        playStatus.textContent = '재생 상태: 자동 재생 성공';
+                        playStatus.className = 'status success';
+                    })
+                    .catch((error) => {
+                        console.warn('자동 재생 실패:', error);
+                        playStatus.textContent = '재생 상태: 자동 재생 실패 (수동 재생 버튼을 눌러주세요)';
+                        playStatus.className = 'status error';
+                        
+                        // 사용자 상호작용 대기
+                        document.addEventListener('click', () => {
+                            video.play().catch(console.error);
+                        }, { once: true });
+                        
+                        document.addEventListener('touchstart', () => {
+                            video.play().catch(console.error);
+                        }, { once: true });
+                    });
+            }
+        }
+        
+        // 수동 재생
+        function playVideo() {
+            video.play()
+                .then(() => {
+                    console.log('수동 재생 성공');
+                    playStatus.textContent = '재생 상태: 수동 재생 성공';
+                    playStatus.className = 'status success';
+                })
+                .catch((error) => {
+                    console.error('수동 재생 실패:', error);
+                    playStatus.textContent = `재생 상태: 수동 재생 실패 (${error.message})`;
+                    playStatus.className = 'status error';
+                });
+        }
+        
+        // 음소거 토글
+        function toggleMute() {
+            video.muted = !video.muted;
+            updateVideoStatus();
+            
+            if (!video.muted && video.paused) {
+                video.play().catch(console.error);
+            }
+        }
+        
+        // 비디오 리셋
+        function resetVideo() {
+            video.load();
+            setTimeout(() => {
+                attemptAutoPlay();
+            }, 100);
+        }
+        
+        // 페이지 로드 시 자동 재생 시도
+        if (video.readyState >= 2) {
+            attemptAutoPlay();
+        } else {
+            video.addEventListener('loadedmetadata', attemptAutoPlay, { once: true });
+        }
+        
+        // 주기적 상태 업데이트
+        setInterval(updateVideoStatus, 2000);
+    </script>
+</body>
+</html>

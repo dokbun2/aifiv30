@@ -2649,6 +2649,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let isPlayAttempted = false;
         let playbackStarted = false;
         
+        // 모바일 디바이스 감지
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+            || (window.innerWidth <= 768);
+        
         // 비디오 재생 함수 - 안정화 버전
         function attemptVideoPlay() {
             // 중복 재생 시도 방지
@@ -2668,6 +2672,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 음소거 상태로 재생 (브라우저 정책 준수)
             heroVideo.muted = true;
+            
+            // 모바일 최적화 설정
+            if (isMobileDevice) {
+                heroVideo.setAttribute('webkit-playsinline', 'true');
+                heroVideo.setAttribute('x-webkit-airplay', 'allow');
+                heroVideo.setAttribute('x5-video-player-type', 'h5');
+                heroVideo.setAttribute('x5-video-player-fullscreen', 'false');
+                heroVideo.setAttribute('x5-video-orientation', 'portraint');
+                
+                // iOS Safari 특별 처리
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (isIOS) {
+                    // iOS에서는 사용자 상호작용 없이는 자동재생이 어려우므로
+                    // 비디오 포스터 이미지 설정
+                    if (!heroVideo.hasAttribute('poster')) {
+                        heroVideo.setAttribute('poster', 'hero-poster.jpg');
+                    }
+                    console.log('📱 iOS 최적화 적용');
+                }
+                
+                console.log('📱 모바일 비디오 최적화 설정 적용');
+            }
             
             // 재생 시도
             const playPromise = heroVideo.play();
@@ -2764,6 +2790,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (error?.code === 4) {
                 console.error('지원되지 않는 비디오 형식 또는 파일을 찾을 수 없음');
                 
+                // 비디오 요소에 에러 클래스 추가
+                heroVideo.classList.add('error');
+                
+                // 히어로 섹션에 비디오 에러 클래스 추가 (폴백 배경 활성화)
+                const heroSection = document.querySelector('.hero-section');
+                if (heroSection) {
+                    heroSection.classList.add('video-error');
+                }
+                
                 // 대체 비디오 시도
                 const sources = heroVideo.querySelectorAll('source');
                 if (sources.length > 1 && !heroVideo.dataset.fallbackTried) {
@@ -2771,6 +2806,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     heroVideo.dataset.fallbackTried = 'true';
                     sources[0].remove(); // 첫 번째 소스 제거
                     heroVideo.load(); // 다시 로드
+                } else {
+                    // 모든 시도 실패 시 사운드 컨트롤 버튼 숨기기
+                    if (soundControlBtn) {
+                        soundControlBtn.style.display = 'none';
+                    }
                 }
             }
         });
