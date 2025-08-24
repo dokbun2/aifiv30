@@ -2621,6 +2621,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const soundOffIcon = document.getElementById('soundOffIcon');
     const soundOnIcon = document.getElementById('soundOnIcon');
     const soundTooltip = document.querySelector('.sound-tooltip');
+    const videoStatus = document.getElementById('videoStatus');
+    const videoStatusText = document.getElementById('videoStatusText');
+    
+    // 디버깅 모드 (개발 시에만 true로 설정)
+    const DEBUG_MODE = false;
+    
+    // 비디오 상태 업데이트 함수
+    function updateVideoStatus(message) {
+        if (DEBUG_MODE && videoStatus && videoStatusText) {
+            videoStatus.style.display = 'block';
+            videoStatusText.textContent = message;
+            console.log('비디오 상태:', message);
+        }
+    }
     
     // 재방문자 체크 (Media Engagement 대체)
     const isReturningVisitor = localStorage.getItem('returningVisitor');
@@ -2631,27 +2645,169 @@ document.addEventListener('DOMContentLoaded', function() {
     const isFrequentVisitor = lastVisit && (now - parseInt(lastVisit)) < 86400000;
     
     if (heroVideo) {
-        // 재방문자나 자주 방문하는 사용자는 소리와 함께 재생 시도
-        if (isReturningVisitor && isFrequentVisitor) {
-            heroVideo.muted = false;
-            heroVideo.play().then(() => {
-                console.log('소리와 함께 자동재생 성공');
-                updateSoundButton(true);
-            }).catch(() => {
-                // 실패하면 음소거로 재생
-                heroVideo.muted = true;
-                heroVideo.play().then(() => {
-                    console.log('음소거 자동재생으로 전환');
-                    showSoundPrompt();
-                });
-            });
-        } else {
-            // 첫 방문자는 음소거로 재생
+        // 재생 시도 플래그 (중복 방지)
+        let isPlayAttempted = false;
+        let playbackStarted = false;
+        
+        // 비디오 재생 함수 - 안정화 버전
+        function attemptVideoPlay() {
+            // 중복 재생 시도 방지
+            if (isPlayAttempted || playbackStarted) {
+                console.log('⏸️ 재생 시도 중복 방지');
+                return;
+            }
+            
+            // 비디오가 이미 재생 중이면 스킵
+            if (!heroVideo.paused && !heroVideo.ended) {
+                console.log('▶️ 비디오 이미 재생 중');
+                playbackStarted = true;
+                return;
+            }
+            
+            isPlayAttempted = true;
+            
+            // 음소거 상태로 재생 (브라우저 정책 준수)
             heroVideo.muted = true;
-            heroVideo.play().then(() => {
-                console.log('음소거 자동재생');
-                showSoundPrompt();
+            
+            // 재생 시도
+            const playPromise = heroVideo.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('✅ 비디오 재생 시작');
+                        playbackStarted = true;
+                        
+                        // 사운드 버튼 상태 업데이트
+                        updateSoundButton(false);
+                        
+                        // 재생 시도 플래그 리셋
+                        setTimeout(() => {
+                            isPlayAttempted = false;
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ 자동재생 실패:', error.message);
+                        isPlayAttempted = false;
+                        
+                        // 사용자 상호작용 대기
+                        const playOnInteraction = (e) => {
+                            // 사운드 버튼 클릭은 제외
+                            if (e.target.closest('.sound-control-btn')) {
+                                return;
+                            }
+                            
+                            heroVideo.play()
+                                .then(() => {
+                                    console.log('✅ 수동 재생 성공');
+                                    playbackStarted = true;
+                                    updateSoundButton(heroVideo.muted === false);
+                                })
+                                .catch(err => {
+                                    console.error('❌ 재생 실패:', err);
+                                });
+                        };
+                        
+                        // 클릭 이벤트만 사용 (더 안정적)
+                        document.addEventListener('click', playOnInteraction, { once: true });
+                    });
+            }
+        }
+        
+        // 비디오 상태 이벤트 모니터링
+        let dataLoaded = false;
+        
+        heroVideo.addEventListener('loadeddata', () => {
+            if (!dataLoaded) {
+                console.log('📹 비디오 데이터 로드 완료');
+                dataLoaded = true;
+                attemptVideoPlay();
+            }
+        });
+        
+        // playing 이벤트로 재생 확인
+        heroVideo.addEventListener('playing', () => {
+            console.log('▶️ 비디오 재생 중');
+            playbackStarted = true;
+        });
+        
+        // pause 이벤트 감지
+        heroVideo.addEventListener('pause', () => {
+            console.log('⏸️ 비디오 일시정지');
+            // 의도하지 않은 정지인 경우 재시작
+            if (!heroVideo.ended && playbackStarted) {
+                setTimeout(() => {
+                    if (heroVideo.paused && !heroVideo.ended) {
+                        console.log('🔄 비디오 재시작 시도');
+                        heroVideo.play().catch(e => console.log('재시작 실패:', e));
+                    }
+                }, 500);
+            }
+        });
+        
+        // ended 이벤트 - 루프 확인
+        heroVideo.addEventListener('ended', () => {
+            console.log('🔚 비디오 종료 - 루프 재시작');
+            playbackStarted = false;
+            isPlayAttempted = false;
+        });
+        
+        heroVideo.addEventListener('error', (e) => {
+            const error = heroVideo.error;
+            console.error('❌ 비디오 에러:', {
+                code: error?.code,
+                message: error?.message,
+                src: heroVideo.currentSrc
             });
+            
+            // 에러 코드별 처리
+            if (error?.code === 4) {
+                console.error('지원되지 않는 비디오 형식 또는 파일을 찾을 수 없음');
+                
+                // 대체 비디오 시도
+                const sources = heroVideo.querySelectorAll('source');
+                if (sources.length > 1 && !heroVideo.dataset.fallbackTried) {
+                    console.log('🔄 대체 비디오 소스 시도');
+                    heroVideo.dataset.fallbackTried = 'true';
+                    sources[0].remove(); // 첫 번째 소스 제거
+                    heroVideo.load(); // 다시 로드
+                }
+            }
+        });
+        
+        // 비디오 초기 상태 확인 및 재생
+        console.log('📊 비디오 초기 상태:', {
+            readyState: heroVideo.readyState,
+            paused: heroVideo.paused,
+            src: heroVideo.currentSrc || '소스 없음'
+        });
+        
+        // 비디오 초기화 및 재생
+        function initVideo() {
+            // 비디오가 준비되었는지 확인
+            if (heroVideo.readyState >= 2) {
+                // 메타데이터가 로드됨
+                console.log('🎬 비디오 준비 완료, 재생 시도');
+                attemptVideoPlay();
+            } else {
+                // 메타데이터 로드 대기
+                console.log('⏳ 비디오 메타데이터 로드 대기');
+                heroVideo.addEventListener('loadedmetadata', () => {
+                    console.log('📊 메타데이터 로드 완료');
+                    attemptVideoPlay();
+                }, { once: true });
+            }
+        }
+        
+        // DOM 로드 상태 확인
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // 약간의 지연 후 초기화 (다른 스크립트 로드 대기)
+            setTimeout(initVideo, 200);
+        } else {
+            // DOM 로드 완료 대기
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initVideo, 200);
+            }, { once: true });
         }
         
         // 방문 기록 저장
@@ -2662,42 +2818,44 @@ document.addEventListener('DOMContentLoaded', function() {
         if (soundControlBtn) {
             soundControlBtn.addEventListener('click', function() {
                 if (heroVideo.muted) {
+                    // 소리 켜기 전에 재생 상태 저장
+                    const wasPlaying = !heroVideo.paused;
+                    
                     // 소리 켜기
                     heroVideo.muted = false;
+                    
+                    // 재생이 중단된 경우 다시 재생
+                    if (wasPlaying && heroVideo.paused) {
+                        heroVideo.play().then(() => {
+                            console.log('🔊 사운드 켜고 재생 재개');
+                        }).catch(e => {
+                            console.log('사운드 전환 중 재생 실패, 음소거로 복귀');
+                            heroVideo.muted = true;
+                            heroVideo.play();
+                        });
+                    }
+                    
                     updateSoundButton(true);
                     soundTooltip.textContent = '클릭하여 음소거';
-                    
-                    // 사용자가 소리를 켠 것을 기록
                     localStorage.setItem('preferSound', 'true');
                 } else {
                     // 음소거
                     heroVideo.muted = true;
                     updateSoundButton(false);
                     soundTooltip.textContent = '클릭하여 사운드 켜기';
+                    localStorage.setItem('preferSound', 'false');
+                    
+                    // 음소거 후에도 재생 유지
+                    if (heroVideo.paused) {
+                        heroVideo.play();
+                    }
                 }
             });
         }
         
-        // 사용자 제스처 감지 (스크롤, 클릭, 터치)
-        let gestureDetected = false;
-        const detectGesture = function() {
-            if (!gestureDetected && heroVideo.muted && localStorage.getItem('preferSound') === 'true') {
-                heroVideo.muted = false;
-                updateSoundButton(true);
-                gestureDetected = true;
-                console.log('사용자 제스처 감지 - 소리 활성화');
-            }
-        };
+        // 자동 소리 활성화 제거 (재생 중단 방지)
+        // 사용자가 명시적으로 사운드 버튼을 클릭해야만 소리 활성화
         
-        // 다양한 사용자 제스처 감지
-        ['scroll', 'touchstart', 'mousedown'].forEach(event => {
-            document.addEventListener(event, detectGesture, { once: true });
-        });
-        
-        // 비디오 로드 에러 처리
-        heroVideo.addEventListener('error', function(e) {
-            console.error('비디오 로드 에러:', e);
-        });
     }
     
     // 사운드 버튼 UI 업데이트
