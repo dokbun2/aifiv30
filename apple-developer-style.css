@@ -250,14 +250,24 @@ body {
   .hero-video-background {
     /* 모바일에서도 비디오 표시 */
     display: block;
-    /* 성능 최적화를 위한 설정 */
-    width: 100%;
-    height: 100%;
+    /* 위치 설정 - 중앙 정렬 유지 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* 모바일에 맞는 크기 설정 */
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    /* 중앙 정렬을 위한 transform - 성능 최적화 포함 */
+    transform: translate(-50%, -50%) translateZ(0);
+    -webkit-transform: translate3d(-50%, -50%, 0);
+    /* 비디오가 화면을 꽉 채우도록 */
     object-fit: cover;
     /* 모바일 성능 개선 */
     will-change: transform;
-    transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .hero-video-overlay {
@@ -267,6 +277,47 @@ body {
       rgba(0, 0, 0, 0.3) 0%,
       rgba(0, 0, 0, 0.5) 100%
     );
+  }
+}
+
+/* 세로 모드 최적화 */
+@media (max-width: 768px) and (orientation: portrait) {
+  .hero-video-background {
+    /* 세로 모드에서는 width를 늘려서 화면을 채움 */
+    min-width: 100vw;
+    min-height: 100vh;
+    width: 177.77vh; /* 16:9 비율 유지 */
+    height: 100vh;
+  }
+}
+
+/* 가로 모드 최적화 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-video-background {
+    /* 가로 모드에서는 height를 늘려서 화면을 채움 */
+    min-width: 100vw;
+    min-height: 100vh;
+    width: 100vw;
+    height: 56.25vw; /* 16:9 비율 유지 */
+  }
+}
+
+/* 작은 모바일 디바이스 (iPhone SE, etc) */
+@media (max-width: 375px) {
+  .hero-video-background {
+    /* 작은 화면에서 더 나은 커버리지 */
+    min-width: 120%;
+    min-height: 120%;
+  }
+}
+
+/* 태블릿 세로 모드 */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .hero-video-background {
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: 100%;
   }
 }
 
