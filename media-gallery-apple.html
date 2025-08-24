@@ -1039,7 +1039,14 @@
             let categoryGroups = {};
             let totalMedia = 0;
 
-            const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            // v1.3 먼저 시도, 없으면 v1.2 사용
+            let conceptArtData = localStorage.getItem('conceptArtManagerData_v1.3');
+            if (!conceptArtData) {
+                conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+                console.log('📚 v1.3 데이터 없음, v1.2 데이터 사용');
+            } else {
+                console.log('📚 v1.3 컨셉아트 데이터 사용');
+            }
             console.log('📚 컨셉아트 localStorage 데이터 존재:', !!conceptArtData);
             
             if (conceptArtData) {
@@ -1083,11 +1090,12 @@
                                 const item = categoryData[itemId];
                                 console.log(`  📌 ${category} 아이템 ${itemId}:`, item);
                                 
-                                // 메인 이미지 URL
-                                if (item.image_url) {
-                                    console.log(`    🖼️ 메인 이미지 URL:`, item.image_url);
+                                // 메인 이미지 URL - v1.3 (main_image_url) 또는 구버전 (image_url) 체크
+                                const mainImageUrl = item.main_image_url || item.image_url;
+                                if (mainImageUrl) {
+                                    console.log(`    🖼️ 메인 이미지 URL:`, mainImageUrl);
                                     categoryGroups[category].items.push({
-                                        url: item.image_url,
+                                        url: mainImageUrl,
                                         title: item.name || item.name_kr || '이름 없음',
                                         description: item.description || '',
                                         type: 'image',
@@ -1100,23 +1108,93 @@
                                 // additional_images 필드 확인 (image_1, image_2, image_3)
                                 if (item.additional_images && typeof item.additional_images === 'object') {
                                     console.log(`    🎨 추가 이미지:`, item.additional_images);
-                                    Object.keys(item.additional_images).forEach(imageKey => {
+                                    
+                                    // image_1, image_2 형식 처리
+                                    for (let i = 1; i <= 4; i++) {
+                                        const imageKey = `image_${i}`;
                                         const imageData = item.additional_images[imageKey];
                                         if (imageData && imageData.url) {
                                             console.log(`      📸 추가 이미지 ${imageKey}:`, imageData.url);
-                                            // 컨셉아트 제목 사용 (name 또는 name_kr)
                                             const conceptName = item.name || item.name_kr || '이름 없음';
                                             categoryGroups[category].items.push({
                                                 url: imageData.url,
                                                 title: imageData.title || conceptName,
-                                                description: imageData.description || `${conceptName} - ${imageKey}`,
+                                                description: imageData.description || `${conceptName} - 참조 ${i}`,
                                                 type: 'image',
                                                 category: category,
                                                 source: 'additional'
                                             });
                                             totalMedia++;
                                         }
+                                    }
+                                    
+                                    // AI 도구별 추가 이미지 (하위 호환성)
+                                    Object.keys(item.additional_images).forEach(key => {
+                                        if (!key.startsWith('image_') && Array.isArray(item.additional_images[key])) {
+                                            item.additional_images[key].forEach((imgData, index) => {
+                                                if (imgData && imgData.url) {
+                                                    console.log(`      📸 AI 도구 ${key} 이미지 ${index}:`, imgData.url);
+                                                    const conceptName = item.name || item.name_kr || '이름 없음';
+                                                    categoryGroups[category].items.push({
+                                                        url: imgData.url,
+                                                        title: imgData.title || conceptName,
+                                                        description: imgData.description || `${conceptName} - ${key} ${index + 1}`,
+                                                        type: 'image',
+                                                        category: category,
+                                                        source: 'additional'
+                                                    });
+                                                    totalMedia++;
+                                                }
+                                            });
+                                        }
                                     });
+                                }
+                                
+                                // generated_images 구조 처리 (하위 호환성)
+                                if (item.generated_images) {
+                                    console.log(`    🎯 Generated images:`, item.generated_images);
+                                    
+                                    // base_prompts 처리
+                                    if (item.generated_images.base_prompts) {
+                                        Object.entries(item.generated_images.base_prompts).forEach(([tool, url]) => {
+                                            if (url) {
+                                                console.log(`      🖼️ Generated base ${tool}:`, url);
+                                                const conceptName = item.name || item.name_kr || '이름 없음';
+                                                categoryGroups[category].items.push({
+                                                    url: url,
+                                                    title: `${conceptName} - ${tool}`,
+                                                    description: `${tool} 기본 생성 이미지`,
+                                                    type: 'image',
+                                                    category: category,
+                                                    source: 'generated'
+                                                });
+                                                totalMedia++;
+                                            }
+                                        });
+                                    }
+                                    
+                                    // variations 처리
+                                    if (item.generated_images.variations) {
+                                        Object.entries(item.generated_images.variations).forEach(([tool, variations]) => {
+                                            if (variations && typeof variations === 'object') {
+                                                Object.entries(variations).forEach(([varKey, url]) => {
+                                                    if (url) {
+                                                        console.log(`      🖼️ Generated variation ${tool}/${varKey}:`, url);
+                                                        const conceptName = item.name || item.name_kr || '이름 없음';
+                                                        categoryGroups[category].items.push({
+                                                            url: url,
+                                                            title: `${conceptName} - ${tool}`,
+                                                            description: `${tool} ${varKey}`,
+                                                            type: 'image',
+                                                            category: category,
+                                                            source: 'generated'
+                                                        });
+                                                        totalMedia++;
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
                             });
                         } else {
@@ -1503,8 +1581,13 @@
                 }
             }
             
-            // 컨셉아트 데이터 확인
-            const conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+            // 컨셉아트 데이터 확인 - v1.3 버전 우선, 없으면 v1.2 확인
+            let conceptArtData = localStorage.getItem('conceptArtManagerData_v1.3');
+            if (!conceptArtData) {
+                conceptArtData = localStorage.getItem('conceptArtManagerData_v1.2');
+                console.log('v1.3 데이터 없음, v1.2 데이터 사용');
+            }
+            
             if (conceptArtData) {
                 try {
                     const data = JSON.parse(conceptArtData);
@@ -1518,12 +1601,62 @@
                         if (categoryData && typeof categoryData === 'object') {
                             Object.keys(categoryData).forEach(itemId => {
                                 const item = categoryData[itemId];
-                                if (item.image_url) conceptArtCount++;
-                                // additional_images 확인
+                                
+                                // main_image_url (v1.3) 또는 image_url (구버전) 확인
+                                if (item.main_image_url || item.image_url) {
+                                    conceptArtCount++;
+                                    console.log(`${category}/${itemId}: 메인 이미지 발견`);
+                                }
+                                
+                                // additional_images 확인 (v1.3 구조)
                                 if (item.additional_images && typeof item.additional_images === 'object') {
-                                    conceptArtCount += Object.keys(item.additional_images).filter(key => 
-                                        item.additional_images[key] && item.additional_images[key].url
-                                    ).length;
+                                    // image_1, image_2 형식 체크
+                                    for (let i = 1; i <= 4; i++) {
+                                        const imageKey = `image_${i}`;
+                                        const imageData = item.additional_images[imageKey];
+                                        if (imageData && imageData.url) {
+                                            conceptArtCount++;
+                                            console.log(`${category}/${itemId}: 추가 이미지 ${i} 발견`);
+                                        }
+                                    }
+                                    
+                                    // AI 도구별 추가 이미지도 체크 (하위 호환성)
+                                    Object.keys(item.additional_images).forEach(key => {
+                                        if (!key.startsWith('image_') && Array.isArray(item.additional_images[key])) {
+                                            item.additional_images[key].forEach((img, index) => {
+                                                if (img && img.url) {
+                                                    conceptArtCount++;
+                                                    console.log(`${category}/${itemId}: AI 도구 ${key} 이미지 ${index} 발견`);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                                
+                                // generated_images 확인 (하위 호환성)
+                                if (item.generated_images) {
+                                    // base_prompts 체크
+                                    if (item.generated_images.base_prompts) {
+                                        Object.entries(item.generated_images.base_prompts).forEach(([tool, url]) => {
+                                            if (url) {
+                                                conceptArtCount++;
+                                                console.log(`${category}/${itemId}: generated_images base ${tool} 발견`);
+                                            }
+                                        });
+                                    }
+                                    // variations 체크
+                                    if (item.generated_images.variations) {
+                                        Object.entries(item.generated_images.variations).forEach(([tool, variations]) => {
+                                            if (variations && typeof variations === 'object') {
+                                                Object.entries(variations).forEach(([varKey, url]) => {
+                                                    if (url) {
+                                                        conceptArtCount++;
+                                                        console.log(`${category}/${itemId}: generated_images variation ${tool}/${varKey} 발견`);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
                             });
                         }
