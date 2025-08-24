@@ -493,6 +493,41 @@ const dataManager = {
                     }
                 }
                 
+                // 이미지 URL 처리 - main_image_url과 additional_images 구조 추가
+                if (item.image_url) {
+                    convertedItem.main_image_url = item.image_url;
+                } else if (item.generated_images?.base_prompts) {
+                    // generated_images에서 첫 번째 이미지를 main_image_url로 설정
+                    const firstImage = Object.values(item.generated_images.base_prompts)[0];
+                    if (firstImage) {
+                        convertedItem.main_image_url = firstImage;
+                    }
+                }
+                
+                // additional_images 처리
+                if (item.additional_images) {
+                    convertedItem.additional_images = item.additional_images;
+                } else if (item.reference_images) {
+                    // reference_images를 additional_images로 변환
+                    convertedItem.additional_images = {};
+                    let imageIndex = 1;
+                    for (const [key, imageData] of Object.entries(item.reference_images)) {
+                        if (imageIndex <= 3) { // 최대 3개까지만
+                            convertedItem.additional_images[`image_${imageIndex}`] = {
+                                url: imageData.url || imageData,
+                                description: imageData.description || '',
+                                type: 'reference'
+                            };
+                            imageIndex++;
+                        }
+                    }
+                }
+                
+                // generated_images 구조도 함께 유지 (하위 호환성)
+                if (item.generated_images) {
+                    convertedItem.generated_images = item.generated_images;
+                }
+                
                 if (category === 'characters' && item.variations) {
                     convertedItem.character_variations = {};
                     for (const [aiTool, variations] of Object.entries(item.variations)) {
@@ -543,7 +578,27 @@ const dataManager = {
                 state.conceptArtData = this.convertStage4ToV12(data.concept_art_collection);
                 console.log('Version 3.0 데이터 변환 완료');
             } else {
+                // v1.3 이상 버전의 데이터는 그대로 사용
                 state.conceptArtData = data.concept_art_collection;
+                
+                // 이미지 구조 확인 및 호환성 처리
+                console.log('이미지 구조 확인 중...');
+                for (const [category, concepts] of Object.entries(state.conceptArtData)) {
+                    for (const [conceptId, concept] of Object.entries(concepts)) {
+                        // main_image_url과 additional_images가 있는지 확인
+                        if (concept.main_image_url || concept.additional_images) {
+                            console.log(`${conceptId}: 새로운 이미지 구조 감지됨 (v1.3+)`);
+                        }
+                        // generated_images만 있는 경우 main_image_url로 변환
+                        else if (concept.generated_images?.base_prompts) {
+                            const firstImage = Object.values(concept.generated_images.base_prompts)[0];
+                            if (firstImage) {
+                                concept.main_image_url = firstImage;
+                                console.log(`${conceptId}: generated_images를 main_image_url로 변환`);
+                            }
+                        }
+                    }
+                }
             }
             
             state.projectInfo = data.project_info || { project_id: "N/A", total_concept_arts: 0 };
@@ -624,6 +679,8 @@ const dataManager = {
     },
 
     selectConcept: function(type, id) {
+        console.log(`selectConcept 호출: ${type}/${id}`);
+        
         state.currentConceptType = type;
         state.currentConceptId = id;
         
@@ -633,6 +690,16 @@ const dataManager = {
         
         // 컨셉 상세 정보 표시
         uiRenderer.displayConceptDetail();
+        
+        // 선택된 컨셉의 이미지 갤러리 업데이트
+        const concept = state.conceptArtData[type][id];
+        if (concept) {
+            console.log('선택된 컨셉:', concept);
+            
+            // 이미지 로드 및 갤러리 업데이트
+            imageManager.loadAndDisplayImages(concept);
+            imageManager.updateImageGallery(concept);
+        }
     }
 };
 
@@ -2232,12 +2299,21 @@ const imageManager = {
         const galleryContent = document.getElementById('image-gallery-content');
         if (!galleryContent) return;
         
+        console.log('updateImageGallery 호출됨:', concept);
         galleryContent.innerHTML = '';
         
         // 이미지가 있는지 확인
         const hasMainImage = concept?.main_image_url;
         const hasAdditionalImages = concept?.additional_images && Object.keys(concept.additional_images).length > 0;
         const hasGeneratedImages = concept?.generated_images;
+        
+        console.log('이미지 상태:', {
+            hasMainImage: hasMainImage,
+            main_image_url: concept?.main_image_url,
+            hasAdditionalImages: hasAdditionalImages,
+            additional_images: concept?.additional_images,
+            hasGeneratedImages: hasGeneratedImages
+        });
         
         if (!hasMainImage && !hasAdditionalImages && !hasGeneratedImages) {
             galleryContent.innerHTML = '<div class="no-image-message">컨셉아트를 선택하고 이미지를 추가하면 갤러리가 표시됩니다.</div>';
@@ -2250,25 +2326,39 @@ const imageManager = {
         const processImageUrl = (url) => {
             if (!url) return null;
             
+            console.log('Processing image URL:', url);
+            
             // Google Drive URL 처리
             if (url.includes('drive.google.com')) {
                 const match = url.match(/[-\w]{25,}/);
                 if (match) {
-                    return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w400`;
+                    const processedUrl = `https://drive.google.com/thumbnail?id=${match[0]}&sz=w400`;
+                    console.log('Google Drive URL processed:', processedUrl);
+                    return processedUrl;
                 }
             }
             
             // Dropbox URL 처리
             if (url.includes('dropbox.com')) {
-                return url.replace('?dl=0', '?raw=1');
+                const processedUrl = url.replace('?dl=0', '?raw=1');
+                console.log('Dropbox URL processed:', processedUrl);
+                return processedUrl;
+            }
+            
+            // Midjourney CDN URL은 그대로 사용
+            if (url.includes('cdn.midjourney.com')) {
+                console.log('Midjourney CDN URL, using as-is:', url);
+                return url;
             }
             
             // 일반 이미지 URL
+            console.log('Regular URL, using as-is:', url);
             return url;
         };
         
         // 메인 이미지 추가
         if (concept.main_image_url) {
+            console.log('메인 이미지 URL 발견:', concept.main_image_url);
             const processedUrl = processImageUrl(concept.main_image_url);
             if (processedUrl) {
                 images.push({
@@ -2277,15 +2367,22 @@ const imageManager = {
                     type: '메인 이미지',
                     title: '메인 이미지'
                 });
+                console.log('메인 이미지 추가됨:', processedUrl);
             }
         }
         
         // 추가 이미지들 (새로운 구조 - image_1, image_2, etc.)
-        if (concept.additional_images) {
+        if (concept.additional_images && typeof concept.additional_images === 'object') {
+            console.log('추가 이미지 발견:', concept.additional_images);
+            // 기존 AI 도구 기반 구조와 새로운 image_1, image_2 구조 모두 지원
+            const keys = Object.keys(concept.additional_images);
+            
+            // image_1, image_2 형식 확인
             for (let i = 1; i <= 4; i++) {
                 const imageKey = `image_${i}`;
                 const imageData = concept.additional_images[imageKey];
                 if (imageData && imageData.url) {
+                    console.log(`추가 이미지 ${i} URL:`, imageData.url);
                     const processedUrl = processImageUrl(imageData.url);
                     if (processedUrl) {
                         images.push({
@@ -2296,9 +2393,32 @@ const imageManager = {
                             description: imageData.description || '',
                             imageType: imageData.type || 'reference'
                         });
+                        console.log(`추가 이미지 ${i} 추가됨:`, processedUrl);
                     }
                 }
             }
+            
+            // AI 도구별 추가 이미지도 확인 (하위 호환성)
+            for (const key of keys) {
+                if (!key.startsWith('image_') && Array.isArray(concept.additional_images[key])) {
+                    concept.additional_images[key].forEach((imgData, index) => {
+                        if (imgData && imgData.url) {
+                            const processedUrl = processImageUrl(imgData.url);
+                            if (processedUrl) {
+                                images.push({
+                                    url: processedUrl,
+                                    aiTool: key,
+                                    type: '추가 이미지',
+                                    title: `${key} - 추가 ${index + 1}`,
+                                    description: imgData.description || ''
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        } else {
+            console.log('추가 이미지 없음 또는 유효하지 않은 형식');
         }
         
         // 기존 generated_images 구조도 지원 (하위 호환성)
@@ -2338,10 +2458,12 @@ const imageManager = {
         }
         
         if (images.length === 0) {
+            console.log('이미지 배열이 비어있음');
             galleryContent.innerHTML = '<div class="no-image-message">아직 추가된 이미지가 없습니다.</div>';
             return;
         }
         
+        console.log(`총 ${images.length}개의 이미지를 갤러리에 표시합니다:`, images);
         images.forEach(imageData => {
             const card = this.createImageCard(imageData);
             galleryContent.appendChild(card);
@@ -2803,6 +2925,58 @@ function initialize() {
                 .then(() => {
                     uiRenderer.updateProjectInfo();
                     uiRenderer.renderSidebar();
+                    
+                    // 이미지 갤러리 업데이트를 위해 첫 번째 컨셉 자동 선택
+                    const categories = ['characters', 'locations', 'props'];
+                    let conceptSelected = false;
+                    
+                    for (const category of categories) {
+                        const concepts = state.conceptArtData[category];
+                        if (concepts && Object.keys(concepts).length > 0) {
+                            const firstConceptId = Object.keys(concepts)[0];
+                            const concept = state.conceptArtData[category][firstConceptId];
+                            
+                            console.log(`첫 번째 컨셉 자동 선택: ${category}/${firstConceptId}`);
+                            console.log('선택된 컨셉 데이터:', concept);
+                            
+                            dataManager.selectConcept(category, firstConceptId);
+                            conceptSelected = true;
+                            
+                            // 이미지 갤러리를 무조건 업데이트 (탭 상태와 관계없이)
+                            setTimeout(() => {
+                                console.log('이미지 갤러리 업데이트 시작...');
+                                imageManager.updateImageGallery(concept);
+                                
+                                // 갤러리 탭 활성화
+                                const galleryTab = document.getElementById('image-gallery-tab');
+                                const galleryButton = document.querySelector('[onclick*="image-gallery-tab"]');
+                                if (galleryTab && galleryButton) {
+                                    // 모든 탭 숨기기
+                                    document.querySelectorAll('.tab-content').forEach(tab => {
+                                        tab.style.display = 'none';
+                                        tab.classList.remove('active');
+                                    });
+                                    document.querySelectorAll('.tab-button').forEach(btn => {
+                                        btn.classList.remove('active');
+                                    });
+                                    
+                                    // 갤러리 탭 활성화
+                                    galleryTab.style.display = 'block';
+                                    galleryTab.classList.add('active');
+                                    galleryButton.classList.add('active');
+                                    
+                                    console.log('이미지 갤러리 탭 활성화됨');
+                                }
+                            }, 100);
+                            
+                            break;
+                        }
+                    }
+                    
+                    if (!conceptSelected) {
+                        console.log('선택할 수 있는 컨셉아트가 없습니다.');
+                    }
+                    
                     utils.showToast('JSON 파일을 성공적으로 가져왔습니다.');
                 })
                 .catch(error => {
@@ -2907,12 +3081,9 @@ window.showVariantTypeTab = uiRenderer.showVariantTypeTab.bind(uiRenderer);
 window.promptManager = promptManager;
 window.imageManager = imageManager;
 window.selectConcept = function(type, id) {
+    console.log(`window.selectConcept 호출: ${type}/${id}`);
     dataManager.selectConcept(type, id);
-    uiRenderer.displayConceptDetail();
-    const concept = state.conceptArtData[type][id];
-    if (concept) {
-        imageManager.loadAndDisplayImages(concept);
-    }
+    // selectConcept 내부에서 이미 처리하므로 중복 호출 제거
 };
 
 // DOM 로드 완료 시 초기화
