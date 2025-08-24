@@ -172,7 +172,7 @@ window.showMessage = function(message, type) {
             if (messageElement.parentNode) {
                 messageElement.remove();
             }
-        }, 5000);
+        }, 2000);  // 5초에서 2초로 단축
     }
 };
 
