@@ -1680,10 +1680,20 @@ body {
    ========================================== */
 .stage-buttons-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
   margin: 20px 0;
   padding: 0 20px;
+}
+
+/* 영화제작 탭 특별 레이아웃 - 10개 버튼 */
+#video-production-tab .stage-buttons-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* CF제작 탭 레이아웃 - 8개 버튼 */
+#cf-production-tab .stage-buttons-grid {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .stage-button {
@@ -1952,6 +1962,15 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     padding: 0 15px;
+  }
+  
+  /* 모바일에서도 레이아웃 유지 */
+  #video-production-tab .stage-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  #cf-production-tab .stage-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .stage-button {
