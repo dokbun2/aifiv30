@@ -71,6 +71,115 @@ const utils = {
 // ===== dataManager.js 내용 =====
 const STORAGE_KEY = 'conceptArtManagerData_v1.2';
 
+// 한글 -> 영어 매핑 테이블
+const CSV_FIELD_MAPPING = {
+    // STYLE 관련
+    '3D 시네마틱 SF 호러 캐릭터 아트': '3D cinematic SF horror character art',
+    '3D 시네마틱 SF 캐릭터 아트': '3D cinematic SF character art',
+    '3D 사이버펑크 캐릭터 아트': '3D cyberpunk character art',
+    '3D 디스토피아 캐릭터 아트': '3D dystopian character art',
+    '3D 포스트아포칼립스 캐릭터 아트': '3D post-apocalyptic character art',
+    '3D 근미래 캐릭터 아트': '3D near-future character art',
+    '3D 호러 SF 크리쳐 디자인 초상': '3D horror sci-fi creature design portrait',
+    '시네마틱 포스트아포칼립스 도시 풍경': 'cinematic post-apocalyptic cityscape',
+    '3D 포토리얼 렌더': '3D photorealistic render',
+    
+    // MEDIUM 관련
+    '3D 렌더': '3D render',
+    '3D 모델': '3D model',
+    '디지털 아트': 'digital art',
+    '컨셉 아트': 'concept art',
+    '일러스트레이션': 'illustration',
+    
+    // CHARACTER 관련
+    '한국인 남성 32세 특수요원': 'Korean male 32 years old special agent',
+    '한국인 여성 28세 해커': 'Korean female 28 years old hacker',
+    '외국인 남성 45세 용병': 'Foreign male 45 years old mercenary',
+    '한국인 남성 35세 과학자': 'Korean male 35 years old scientist',
+    'AI 감염된 인간-기계 하이브리드 포식자': 'AI-infected human-machine hybrid apex predator',
+    
+    // LOCATION 관련
+    '폐허가 된 서울 도심': 'ruined Seoul downtown',
+    '사이버펑크 부산 거리': 'cyberpunk Busan streets',
+    '버려진 연구 시설': 'abandoned research facility',
+    '지하 벙커': 'underground bunker',
+    '정전된 도심 대로 긴급 경보음': 'blackout city avenue emergency sirens',
+    
+    // CAMERA 관련
+    '미디엄 샷': 'medium shot',
+    '미디엄 샷 약간 로우 앵글': 'medium shot slightly low angle',
+    '미디엄 클로즈업 로우 앵글': 'medium close-up low angle',
+    '와이드샷 로우 앵글': 'wide shot low angle',
+    '클로즈업': 'close-up',
+    '풀샷': 'full shot',
+    '와이드 샷': 'wide shot',
+    '로우 앵글': 'low angle',
+    '하이 앵글': 'high angle',
+    '더치 앵글': 'dutch angle',
+    '오버 더 숄더': 'over the shoulder',
+    
+    // GAZE 관련
+    '정면 응시 경계 태세': 'front gaze alert stance',
+    '측면 응시': 'side gaze',
+    '카메라 응시': 'looking at camera',
+    '먼 곳 응시': 'looking into distance',
+    
+    // CHARACTER_SHEET 관련
+    '캐릭터 시트': 'character sheet',
+    '전신 턴어라운드': 'full body turnaround',
+    '표정 변화': 'expression variations',
+    
+    // BODY_TYPE 관련
+    '180cm 탄탄한 체형 전술 장비': '180cm athletic build tactical gear',
+    '운동선수 체형': 'athletic build',
+    '근육질 체형': 'muscular build',
+    '날씬한 체형': 'slim build',
+    
+    // HAIR 관련
+    '검은색 짧은 헤어컷': 'black short haircut',
+    '갈색 긴 머리': 'brown long hair',
+    '금발 웨이브': 'blonde wavy hair',
+    '은발': 'silver hair',
+    
+    // FACE_SHAPE 관련
+    '각진 얼굴 뚜렷한 턱선': 'angular face distinct jawline',
+    '둥근 얼굴': 'round face',
+    '갸름한 얼굴': 'oval face',
+    'V라인 얼굴': 'v-shaped face',
+    
+    // FACIAL_FEATURES 관련
+    '집중된 눈빛 얇은 수염 빨의 작은 흉터': 'focused eyes thin beard small scar on cheek',
+    '날카로운 눈빛': 'sharp eyes',
+    '부드러운 표정': 'soft expression',
+    '카리스마 있는 표정': 'charismatic expression',
+    
+    // QUALITY 관련
+    '매우 디테일하고 전문적인 8K': 'highly detailed, professional, 8K',
+    '고품질': 'high quality',
+    '초고해상도': 'ultra high resolution',
+    
+    // LIGHTING 관련
+    '극적인 조명': 'dramatic lighting',
+    '시네마틱 조명': 'cinematic lighting',
+    '무드 있는 조명': 'moody lighting',
+    '림라이트': 'rim lighting',
+    '키 라이트': 'key lighting',
+    
+    // STYLE TYPE (필드명)
+    '스타일': 'STYLE',
+    '매체': 'MEDIUM',
+    '캐릭터': 'CHARACTER',
+    '카메라': 'CAMERA',
+    '품질': 'QUALITY',
+    '조명': 'LIGHTING',
+    '파라미터': 'PARAMETERS',
+    '시선': 'GAZE',
+    '체형': 'BODY_TYPE',
+    '헤어': 'HAIR',
+    '얼굴형': 'FACE_SHAPE',
+    '얼굴 특징': 'FACIAL_FEATURES'
+};
+
 const VARIATION_TYPES_MAP = {
     'age': { name_kr: '연령 변형', name_en: 'Age Variation', schema_key_base: 'age' },
     'expression': { name_kr: '표정 변형', name_en: 'Expression Variation', schema_key_base: 'expression' },
@@ -295,7 +404,16 @@ const dataManager = {
                 
                 // csv_data 보존 - 중요!
                 if (item.csv_data) {
-                    convertedItem.csv_data = item.csv_data;
+                    // csv_data_en이 있으면 영어 원본으로 사용
+                    if (item.csv_data_en) {
+                        convertedItem.csv_data_en = item.csv_data_en;
+                        convertedItem.csv_data = item.csv_data;
+                    } else {
+                        // 하위 호환성: csv_data만 있는 경우 처리
+                        convertedItem.csv_data = item.csv_data;
+                        // 영어 원본 데이터가 따로 없으면 csv_data를 영어로 간주
+                        convertedItem.csv_data_en = item.csv_data;
+                    }
                 }
                 
                 if (item.prompts) {
@@ -323,6 +441,7 @@ const dataManager = {
                             
                             // prompt_translated를 universal로 사용 (첫 번째 도구의 번역만 사용)
                             if (promptData.prompt_translated && !convertedItem.prompts.universal) {
+                                // 수정: universal에는 영어 원본을 저장해야 함
                                 convertedItem.prompts.universal = promptData.prompt_english || '';
                                 convertedItem.prompts.universal_translated = promptData.prompt_translated;
                             }
@@ -672,50 +791,103 @@ const uiRenderer = {
         
         let hasData = false;
         
-        // 영문 데이터 파싱 - csv_data에서 영어 값, prompts.universal_translated에서 한글 값
+        // Stage 4 JSON 형식: prompts.universal에서 영어 데이터 파싱
         let englishData = {};
         let koreanData = {};
         
-        // csv_data가 있으면 이것을 영어 원본으로 사용
-        if (concept.csv_data && typeof concept.csv_data === 'object') {
-            englishData = concept.csv_data;
-        }
-        
-        // prompts.universal_translated에서 한글 번역 파싱
-        if (concept.prompts && concept.prompts.universal_translated) {
-            const koreanPrompt = concept.prompts.universal_translated;
-            // 세미콜론으로 구분된 각 항목을 파싱
-            const items = koreanPrompt.split(';');
+        // prompts.universal에서 영어 데이터 파싱
+        if (concept.prompts && concept.prompts.universal) {
+            const englishPrompt = concept.prompts.universal;
+            const items = englishPrompt.split(';');
             items.forEach(item => {
                 const parts = item.trim().split(':');
                 if (parts.length >= 2) {
                     const key = parts[0].trim();
                     const value = parts.slice(1).join(':').trim();
-                    koreanData[key] = value;
+                    englishData[key] = value;
                 }
             });
         }
         
-        // csv_data가 있으면 직접 사용 (JSON 파일에서 가져온 데이터)
+        // csv_data가 있으면 한글 데이터로 사용 (Stage 4 JSON 형식)
         if (concept.csv_data && typeof concept.csv_data === 'object') {
-            // csv_data의 모든 필드를 순회하며 표시 (빈 값도 포함)
-            for (const [fieldName, value] of Object.entries(concept.csv_data)) {
-                if (value !== undefined && value !== null) {
+            koreanData = concept.csv_data;
+        }
+        
+        // 데이터 표시 - csv_data의 키를 기준으로 표시
+        const dataToDisplay = concept.csv_data || {};
+        
+        if (Object.keys(dataToDisplay).length > 0) {
+            // dataToDisplay의 모든 필드를 순회하며 표시 (빈 값도 포함)
+            for (const [fieldName, koreanValue] of Object.entries(dataToDisplay)) {
+                if (koreanValue !== undefined && koreanValue !== null) {
                     hasData = true;
                     const row = tbody.insertRow();
                     
                     // ID 컬럼
                     row.insertCell(0).textContent = fieldName;
                     
-                    // 원본 (영문) 컬럼 - csv_data의 값을 그대로 사용
+                    // 원본 (영문) 컬럼 - englishData에서 매칭되는 값 찾기
                     const originalCell = row.insertCell(1);
-                    originalCell.textContent = value;
+                    let englishValue = englishData[fieldName] || '';
+                    
+                    // 영어 데이터가 없으면 CSV_FIELD_MAPPING으로 변환 시도
+                    if (!englishValue && koreanValue) {
+                        englishValue = CSV_FIELD_MAPPING[koreanValue] || '';
+                        
+                        // 직접 매핑이 없는 경우 동적 변환 시도
+                        if (!englishValue && typeof koreanValue === 'string') {
+                            // 복합 문구를 단어별로 변환 시도
+                            const words = koreanValue.split(' ');
+                            const translatedWords = words.map(word => {
+                                // 개별 단어 매핑 확인
+                                if (CSV_FIELD_MAPPING[word]) {
+                                    return CSV_FIELD_MAPPING[word];
+                                }
+                                // 숫자와 단위는 그대로 유지
+                                if (/^\d+/.test(word)) {
+                                    return word.replace('세', ' years old').replace('cm', 'cm');
+                                }
+                                return word;
+                            });
+                            
+                            // 특정 패턴 처리
+                            let translated = translatedWords.join(' ');
+                            
+                            // 일반적인 한글 패턴을 영어로 변환
+                            translated = translated
+                                .replace(/미디엄\s+샷\s+약간\s+로우\s+앵글/g, 'medium shot slightly low angle')
+                                .replace(/약간/g, 'slightly')
+                                .replace(/로우\s+앵글/g, 'low angle')
+                                .replace(/하이\s+앵글/g, 'high angle')
+                                .replace(/정면/g, 'front')
+                                .replace(/측면/g, 'side')
+                                .replace(/응시/g, 'gaze')
+                                .replace(/경계\s+태세/g, 'alert stance')
+                                .replace(/전술\s+장비/g, 'tactical gear')
+                                .replace(/탄탄한\s+체형/g, 'athletic build')
+                                .replace(/짧은/g, 'short')
+                                .replace(/검은색/g, 'black')
+                                .replace(/헤어컷/g, 'haircut')
+                                .replace(/각진\s+얼굴/g, 'angular face')
+                                .replace(/뚜렷한\s+턱선/g, 'distinct jawline')
+                                .replace(/집중된\s+눈빛/g, 'focused eyes')
+                                .replace(/얇은\s+수염/g, 'thin beard')
+                                .replace(/옅은\s+수염/g, 'light stubble')
+                                .replace(/작은\s+흉터/g, 'small scar')
+                                .replace(/뺨의/g, 'on cheek')
+                                .replace(/빨의/g, 'on cheek');
+                            
+                            englishValue = translated !== koreanValue ? translated : '';
+                        }
+                    }
+                    
+                    originalCell.textContent = englishValue;
                     originalCell.style.color = '#aaa';
                     
-                    // 번역본 (한글) 컬럼 - 파싱된 한글 데이터에서 가져오기
+                    // 번역본 (한글) 컬럼 - 한글 값 그대로 표시
                     const translationCell = row.insertCell(2);
-                    const koreanValue = koreanData[fieldName] || '';
-                    translationCell.textContent = koreanValue;
+                    translationCell.textContent = koreanValue || '';
                     translationCell.style.color = '#fff';
                 }
             }
