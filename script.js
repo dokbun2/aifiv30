@@ -2681,15 +2681,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 heroVideo.setAttribute('x5-video-player-fullscreen', 'false');
                 heroVideo.setAttribute('x5-video-orientation', 'portraint');
                 
+                // 모바일 성능 최적화
+                heroVideo.setAttribute('preload', 'metadata'); // 메타데이터만 미리 로드
+                heroVideo.setAttribute('poster', 'og-image.jpg'); // 포스터 이미지 설정
+                
                 // iOS Safari 특별 처리
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 if (isIOS) {
-                    // iOS에서는 사용자 상호작용 없이는 자동재생이 어려우므로
-                    // 비디오 포스터 이미지 설정
-                    if (!heroVideo.hasAttribute('poster')) {
-                        heroVideo.setAttribute('poster', 'hero-poster.jpg');
-                    }
+                    // iOS 최적화
+                    heroVideo.setAttribute('playsinline', 'true');
+                    heroVideo.setAttribute('webkit-playsinline', 'true');
                     console.log('📱 iOS 최적화 적용');
+                }
+                
+                // Android 특별 처리
+                const isAndroid = /Android/i.test(navigator.userAgent);
+                if (isAndroid) {
+                    // Android 최적화
+                    heroVideo.setAttribute('x5-playsinline', 'true');
+                    console.log('📱 Android 최적화 적용');
                 }
                 
                 console.log('📱 모바일 비디오 최적화 설정 적용');
